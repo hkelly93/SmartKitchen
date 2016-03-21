@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="assets/css/stylesheet.css" type="text/css"/>
+
+        <title>SmartKitchen -- Making food storage easier</title>
+
+        <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.js"></script>
+
+        <!-- Declares the AngularJS application and application constants. -->
+        <script src="assets/js/smartKitchen.js"></script>
+
+        <!-- Load in the AngularJS application controllers. -->
+        <script src="controllers/mainController.js"></script>
+        <script src="controllers/navController.js"></script>
+        <script src="controllers/healthController.js"></script>
+        <script src="controllers/inventoryController.js"></script>
+
+        <!-- Load in the AngularJS application services. -->
+        <script src="services/logService.js"></script>
+        <script src="services/refreshDataService.js"></script>
+        <script src="services/cacheService.js"></script>
+        <script src="services/restService.js"></script>
+    </head>
+    <body ng-app="smartKitchen" ng-controller="mainController">
+        <header>
+            <span>
+                <strong>Smart</strong>Kitchen
+            </span>
+            <nav id="top" ng-controller="navController">
+                <span ng-click="showAlerts()" ng-bind-html="alerts" class="alerts"></span>
+                <ul>
+                    <li>
+                        <a href="#">Inventory</a>
+                        <span class="small">{{inventory}}</span>
+                    </li>
+                    <li>
+                        <a href="#">Help</a>
+                    </li>
+                    <li>
+                        <a href="#">About</a>
+                    </li>
+                </ul>
+            </nav>
+            <div id="alerts" ng-show="alertsVisible" class="fade">
+                <ul>
+                    <li ng-repeat="alert in alertList | orderBy: '-severity'">
+                        <div class="alert-delete" ng-click="removeAlert(alert)">
+                            x
+                        </div>
+                        {{alert.message}}
+                    </li>
+                </ul>
+            </div>
+            <div id="slogan">
+                The future of
+                <br/>kichens begins
+                <br/>here.
+                <div class="large-button">
+                    Read More
+                </div>
+            </div>
+        </header>
+        <div id="content">
+            <div id="health" class="panel" ng-controller="healthController">
+                <div class="header">
+                    <span>Kitchen Health</span>
+                </div>
+                <table>
+                    <tr>
+                        <td>Fridge:</td>
+                        <td ng-bind-html="health.fridge">{{health.fridge}}</td>
+                        <td>Network:</td>
+                        <td ng-bind-html="health.network">{{health.network}}</td>
+                        <td>Scanner:</td>
+                        <td ng-bind-html="health.scanner">{{health.scanner}}</td>
+                    </tr>
+                </table>
+            </div>
+            <div id="latest-additions" class="panel" ng-controller="inventoryController">
+                <div class="header">
+                    <span>Latest Inventory</span>
+                </div>
+                <table>
+                    <tr ng-repeat="new in latest" ng-animate="'animate'">
+                        <td>
+                            <img ng-src="{{new.image}}" alt=""/>
+                        </td>
+                        <td>
+                            <span>
+                                <strong>Name</strong>:
+                                {{new.name}}<br/>
+                                <strong>Expiration Date</strong>:
+                                {{new.expires}}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="button">EDIT</div>
+                            <div class="button delete">DELETE</div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <footer>
+            <ul>
+                <li>
+                    Lastest Refresh:
+                    {{latestRefresh}}
+                </li>
+            </ul>
+            Copyright &copy; 2016 SmartKitchen. All Rights Reserved.
+        </footer>
+    </body>
+</html>
