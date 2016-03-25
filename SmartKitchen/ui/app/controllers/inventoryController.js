@@ -91,9 +91,15 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
 
                 function createProduct(response) {
                     var barcode = response.data.code,
-                        product = response.data.product.product_name;
+                        product = response.data.product.product_name,
+                        item = {
+                            name: product.product_name,
+                            image: product.image_front_thumb_url,
+                            expires: expirationDates[barcode],
+                            barcode: barcode
+                        };
 
-                    $scope.cache[barcode] = response.data;
+                    $scope.cache[barcode] = item;
                     $scope.newInventory.push(product);
 
                     $rootScope.addAlert(0, product + " was added to the inventory.");
@@ -117,6 +123,7 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                         // Search in the cache first.
                         if (barcode in $scope.cache) {
                             product = $scope.cache[barcode].name;
+                            logService.debug('inventoryController', 'Found ' + barcode + ' in cache.');
                         } else {
                             logService.debug('inventoryController', 'REST call for barcode ' + barcode);
                             var promise = restService.searchBarcode(barcode);
@@ -165,9 +172,15 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
             $scope.load();
         });
 
+        var saveCache = function(){
+            cache.setCache("inventoryController-inventory", $scope.cache);
+        };
+
+        window.onbeforeunload = saveCache;
+
         // Cleanup
         $scope.$on("$destroy", function() {
-            cache.setCache("inventoryController-inventory", $scope.cache);
+            saveCache();
             refreshDataService.unloadController('inventoryController');
         });
     }

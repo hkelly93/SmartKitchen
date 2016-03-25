@@ -8,7 +8,7 @@ app.factory('cache', [function() {
          */
         setCache: function(name, obj) {
             if (typeof(Storage) !== "undefined") {
-                localStorage.setItem(name, obj);
+                localStorage.setItem(name, JSON.stringify(obj));
             }
         },
 
@@ -20,9 +20,9 @@ app.factory('cache', [function() {
         getCache: function(name) {
             if (typeof(Storage) !== "undefined") {
                 var obj = localStorage.getItem(name);
-                return (obj == null) ? {} : obj;
+                return (obj === null) ? {} : JSON.parse(obj);
             }
             return {};
         }
-    }
+    };
 }]);
