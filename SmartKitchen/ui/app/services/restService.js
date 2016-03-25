@@ -11,7 +11,8 @@ app.factory('restService', ['$http', '$q',
 
         const localUri = 'assets/json/', // URI for local RESTful API.
             openFoodFactsUri = 'http://world.openfoodfacts.org/api/v0/product/', // URI for OFF RESTful api.
-            dataType = '.json'; // Datatype to get data back in.
+            dataType = '.json', // Datatype to get data back in.
+            timeout = 30 * 1000; // Timeout in milliseconds.
 
         var deferrer = {
             // http://ericnish.io/blog/add-success-and-error-to-angular-promises/
@@ -41,7 +42,7 @@ app.factory('restService', ['$http', '$q',
             /**
              * Wrapper for a promise.
              * @param  {http} request Request to promise.
-             * @return {promise}      Promise of HTTP request.
+             * @return {HttpPromise}      Promise of HTTP request.
              */
             defer: function(request) {
                 var dfd = deferrer.defer();
@@ -58,12 +59,13 @@ app.factory('restService', ['$http', '$q',
              * Gets the kitchen health from json/health.json.
              *
              * TODO: Replace this with a rest call when that gets implemented.
-             * @return {promise} The http GET request promise.
+             * @return {HttpPromise} The http GET request promise.
              */
             getHealth: function() {
                 return this.defer($http({
                     method: 'GET',
-                    url: localUri + 'health' + dataType
+                    url: localUri + 'health' + dataType,
+                    timeout: this.timeout
                 }));
             },
             /**
@@ -71,24 +73,26 @@ app.factory('restService', ['$http', '$q',
              * add an alert if there is anything new.
              *
              * TODO: Replace with a real REST call when implemented.
-             * @return {promise} The http GET request promise.
+             * @return {HttpPromise} The http GET request promise.
              */
             getInventory: function() {
                 return this.defer($http({
                     method: 'GET',
-                    url: localUri + 'inventory' + dataType
+                    url: localUri + 'inventory' + dataType,
+                    timeout: this.timeout
                 }));
             },
             /**
              * Gets the latest inventory from json/inventory.json.
              *
              * TODO: Replace this with a rest call when that gets implemented.
-             * @return {promise} The http GET request promise.
+             * @return {HttpPromise} The http GET request promise.
              */
             getLatest: function(success, failure) {
                 return this.defer($http({
                     method: 'GET',
-                    url: localUri + 'inventory' + dataType
+                    url: localUri + 'inventory' + dataType,
+                    timeout: this.timeout
                 }));
             },
             /**
@@ -96,12 +100,13 @@ app.factory('restService', ['$http', '$q',
              * @param  {String} barcode The barcode that is being looked up
              * @param  {function} success The function to execute on success
              * @param  {function} failure The function to execute on failure
-             * @return {promise} The http GET request promise.
+             * @return {HttpPromise} The http GET request promise.
              */
             searchBarcode: function(barcode) {
                 return this.defer($http({
                     method: 'GET',
-                    url: openFoodFactsUri + barcode + dataType
+                    url: openFoodFactsUri + barcode + dataType,
+                    timeout: this.timeout
                 }));
             }
         };

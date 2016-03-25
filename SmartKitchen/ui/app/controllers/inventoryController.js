@@ -9,6 +9,7 @@
 app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'cache', 'restService', 'logService', 'SEVERITY',
     function($scope, $rootScope, refreshData, cache, restService, logService, SEVERITY) {
         'use strict';
+        
         // Add this controller to the loaded controllers.
         refreshData.loadController('inventoryController');
         refreshData.refreshData('inventoryController', 'Refreshing inventory data.');
