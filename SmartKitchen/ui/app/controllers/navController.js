@@ -24,13 +24,17 @@ app.controller('navController', ['$scope', '$rootScope', 'refreshData', 'restSer
          * @return {null}
          */
         $scope.load = function() {
-            restService.getInventory(function success(response) {
+            var promise = restService.getInventory();
+
+            promise.success(function(response) {
                 $scope.inventory = '(' + response.data.length + ')';
-            }, function error(response) {
+            });
+
+            promise.error(function(response) {
                 $scope.inventory = '(0)';
                 $rootScope.addAlert(SEVERITY.CRITICAL, "Something went wrong and the inventory could not be found");
             });
-        }
+        };
 
         $scope.load();
     }

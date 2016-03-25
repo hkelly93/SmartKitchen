@@ -1,3 +1,5 @@
+/* jshint esversion: 6 */
+
 /**
  * Controls the inventory and refreshes the data.
  * @param  {String} 'healthController' Controller name
@@ -20,7 +22,29 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
          * @return {null}
          */
         $scope.load = function() {
-            restService.getLatest(function success(response) {
+            var expirationDates = {};
+
+            function createItem(response) {
+                var product = response.data.product,
+                    barcode = response.data.code,
+                    item = {
+                        name: product.product_name,
+                        image: product.image_front_thumb_url,
+                        expires: expirationDates[barcode],
+                        barcode: barcode
+                    };
+
+                $scope.newList.push(item);
+                $scope.cache[barcode] = item;
+            }
+
+            function latestInventoryError(response) {
+                $rootScope.addAlert(SEVERITY.WARNING, "Something went wrong and the latest inventory could not be found.");
+            }
+
+            var promise = restService.getLatest();
+
+            promise.success(function(response) {
                 $scope.newList = [];
                 var maxLength = (response.data.length < 3) ? response.data.length : 3,
                     i = 0,
@@ -32,6 +56,9 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                     elBarcode = response.data[i].barcode;
                     expiresDate = response.data[i].expirationdate;
 
+                    // This is necessary for the REST call below.
+                    expirationDates[elBarcode] = expiresDate;
+
                     // Search in the cache first.
                     if (elBarcode in $scope.cache) {
                         item = $scope.cache[elBarcode];
@@ -39,22 +66,9 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                     } else {
                         logService.debug('inventoryController', 'REST call for barcode ' + elBarcode);
 
-                        restService.searchBarcode(elBarcode, function success(response) {
-                            var product = response.data.product,
-                                barcode = response.data.code,
-                                item = {
-                                    name: product.product_name,
-                                    image: product.image_front_thumb_url,
-                                    expires: expiresDate,
-                                    barcode: barcode
-                                };
-
-                            $scope.newList.push(item);
-                            $scope.cache[barcode] = item;
-
-                        }, function error(response) {
-                            $rootScope.addAlert(SEVERITY.WARNING, "Something went wrong and the latest inventory could not be found.");
-                        });
+                        var promise = restService.searchBarcode(elBarcode);
+                        promise.success(createItem);
+                        promise.error(latestInventoryError);
                     }
                 }
 
@@ -65,49 +79,56 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                         }
                     }
                 }, true);
-            }, function error(response) {
-                // TODO: Add in function
             });
 
-            restService.getInventory(function success(response) {
-                    $scope.newInventory = [];
+            promise.error(function() {});
 
-                    var item,
-                        index,
-                        barcode,
-                        product;
+            promise = restService.getInventory();
 
-                    for (item in response.data) {
-                        index = $scope.inventory.indexOf(response.data[item]);
+            promise.success(function(response) {
+                $scope.newInventory = [];
 
-                        if (index < 0) {
-                            barcode = response.data[item].barcode;
+                function createProduct(response) {
+                    var barcode = response.data.code,
+                        product = response.data.product.product_name;
 
-                            // Search in the cache first.
-                            if (barcode in $scope.cache) {
-                                product = $scope.cache[barcode].name;
-                            } else {
-                                logService.debug('inventoryController', 'REST call for barcode ' + barcode);
-                                restService.searchBarcode(barcode, function success(response) {
-                                    var barcode = response.data.code,
-                                        product = response.data.product.product_name;
+                    $scope.cache[barcode] = response.data;
+                    $scope.newInventory.push(product);
 
-                                    $scope.cache[barcode] = response.data;
-                                    $scope.newInventory.push(product);
+                    $rootScope.addAlert(0, product + " was added to the inventory.");
+                }
 
-                                    $rootScope.addAlert(0, product + " was added to the inventory.");
-                                }, function error(response) {
-                                    $rootScope.addAlert(SEVERITY.WARNING, "Something went wrong and the latest inventory could not be found.");
-                                });
-                            }
+                function inventoryError(response) {
+                    $rootScope.addAlert(SEVERITY.WARNING, "Something went wrong and the latest inventory could not be found.");
+                }
+
+                var item,
+                    index,
+                    barcode,
+                    product;
+
+                for (item in response.data) {
+                    index = $scope.inventory.indexOf(response.data[item]);
+
+                    if (index < 0) {
+                        barcode = response.data[item].barcode;
+
+                        // Search in the cache first.
+                        if (barcode in $scope.cache) {
+                            product = $scope.cache[barcode].name;
+                        } else {
+                            logService.debug('inventoryController', 'REST call for barcode ' + barcode);
+                            var promise = restService.searchBarcode(barcode);
+                            promise.success(createProduct);
+                            promise.error(inventoryError);
                         }
                     }
-                    $scope.inventory = $scope.newInventory;
-                }),
-                function error(response) {
-                    // TODO: Add in function
-                };
-        }
+                }
+                $scope.inventory = $scope.newInventory;
+            });
+
+            promise.error(function(response) {});
+        };
 
         /**
          * Returns whether or not the inventory has changed.
@@ -133,8 +154,8 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                 }
             }
 
-            return equal
-        }
+            return equal;
+        };
 
         $scope.load();
 

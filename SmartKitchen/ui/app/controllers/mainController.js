@@ -56,7 +56,7 @@ app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', 'ref
             $scope.alertList.push(newAlert);
 
             createAlertSvg();
-        }
+        };
 
         $scope.removeAlert = function(alert) {
             var index = $scope.alertList.indexOf(alert);
@@ -66,17 +66,17 @@ app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', 'ref
                 $rootScope.addAlert(SEVERITY.WARNING, "Could not remove alert.");
             }
 
-            if ($scope.alertList.length == 0) {
+            if ($scope.alertList.length === 0) {
                 $scope.alertsVisible = false;
                 $scope.alerts = "";
             }
-        }
+        };
 
         function createAlertSvg() {
             var maxSeverity = 0,
                 color = "";
 
-            if ($scope.alertList.length == 0) {
+            if ($scope.alertList.length === 0) {
                 $scope.alerts = "";
                 return;
             }
@@ -125,7 +125,7 @@ app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', 'ref
                     break;
             }
             var circle = '<circle cx="10" cy="10" r="10" fill="' + color + '" />';
-            var text = '<text x="' + left + '" y="14" style="font-weight: 700;font-size: 8pt" >' + message + '</text>'
+            var text = '<text x="' + left + '" y="14" style="font-weight: 700;font-size: 8pt" >' + message + '</text>';
             var svg = '<svg width="25" height="25">' + circle + text + '</svg>';
             return svg;
         }
@@ -138,6 +138,6 @@ app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', 'ref
             } else {
                 createAlertSvg();
             }
-        }
+        };
     }
 ]);

@@ -1,3 +1,4 @@
+/*jshint esversion: 6 */
 /**
  * Controls the kitchen health and refreshes the data.
  * @param  {String} 'healthController' Controller name
@@ -25,7 +26,9 @@ app.controller('healthController', ['$scope', '$rootScope', '$sce', 'refreshData
          * @return {null}
          */
         $scope.load = function() {
-            function success(response) {
+            var promise = restService.getHealth();
+
+            promise.success(function(response) {
                 var element;
                 // Check the health
                 for (element in response.data) {
@@ -36,20 +39,18 @@ app.controller('healthController', ['$scope', '$rootScope', '$sce', 'refreshData
                 $scope.health = {
                     fridge: generateHealthSvg(response.data.fridge),
                     scanner: generateHealthSvg(response.data.scanner),
-                    network: generateHealthSvg(response.data.network),
+                    network: generateHealthSvg(response.data.network)
                 };
-            };
+            });
 
-            function error(response) {
+            promise.error(function(response) {
                 $rootScope.addAlert(SEVERITY.CRITICAL, "Something went wrong and the kitchen health could not be processed.");
                 $scope.health = {
                     fridge: generateHealthSvg(),
                     scanner: generateHealthSvg(),
                     network: generateHealthSvg()
                 };
-            }
-
-            restService.getHealth(success, error);
+            });
         };
 
         /**
