@@ -9,7 +9,7 @@
 app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'cache', 'restService', 'logService', 'SEVERITY',
     function($scope, $rootScope, refreshData, cache, restService, logService, SEVERITY) {
         'use strict';
-        
+
         // Add this controller to the loaded controllers.
         refreshData.loadController('inventoryController');
         refreshData.refreshData('inventoryController', 'Refreshing inventory data.');
@@ -93,8 +93,8 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                     var barcode = response.data.code,
                         product = response.data.product.product_name,
                         item = {
-                            name: product.product_name,
-                            image: product.image_front_thumb_url,
+                            name: response.data.product.product_name,
+                            image: response.data.product.image_front_thumb_url,
                             expires: expirationDates[barcode],
                             barcode: barcode
                         };

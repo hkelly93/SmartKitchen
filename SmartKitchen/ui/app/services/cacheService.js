@@ -8,6 +8,10 @@ app.factory('cache', [function() {
          */
         setCache: function(name, obj) {
             if (typeof(Storage) !== "undefined") {
+                if (obj !== undefined) {
+                    obj.date = +new Date();
+                }
+
                 localStorage.setItem(name, JSON.stringify(obj));
             }
         },
@@ -20,6 +24,16 @@ app.factory('cache', [function() {
         getCache: function(name) {
             if (typeof(Storage) !== "undefined") {
                 var obj = localStorage.getItem(name);
+
+                if (obj.date !== undefined) {
+                    var date = new Date();
+                    date.setDate(date.getDate() - 5); // Five days ago.
+
+                    var cacheDate = new Date(parseInt(JSON.parse(obj)));
+                    if (cacheDate < date) {
+                        return {};
+                    }
+                }
                 return (obj === null) ? {} : JSON.parse(obj);
             }
             return {};
