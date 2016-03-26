@@ -111,19 +111,14 @@ app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', 'ref
          */
         function generateAlertSvg(color, count) {
             var message = (count == 'X') ? count : '+' + count;
-            var left = 1;
+            var left = 0;
 
-            switch (count) {
-                case 'X':
-                    left = 7;
-                    break;
-                case (parseInt(count) < 10):
-                    left = 10;
-                    break;
-                case (parseInt(count) > 10):
-                    left = 1;
-                    break;
+            if (count === 'X') {
+                left = 7;
+            } else if (parseInt(count) < 10) {
+                left = 3;
             }
+
             var circle = '<circle cx="10" cy="10" r="10" fill="' + color + '" />';
             var text = '<text x="' + left + '" y="14" style="font-weight: 700;font-size: 8pt" >' + message + '</text>';
             var svg = '<svg width="25" height="25">' + circle + text + '</svg>';
