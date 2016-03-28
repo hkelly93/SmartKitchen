@@ -159,8 +159,8 @@ nav ul li a {
     font-size: 10pt;
     background-color: #FFFFFF;
     border: 1px solid #BEBEBE;
-    width: 33%;
     border-radius: 6px;
+    min-width: 400px;
 }
 .panel .header {
     width: 100%;
@@ -227,6 +227,16 @@ nav ul li a {
     background-color: #c0392b;
     border-bottom: 3px solid #e74c3c;
     cursor: pointer;
+}
+#content {
+    width: 33%;
+    float: left;
+}
+#inventory {
+    margin-right: 5px;
+    width: 66.6%;
+    display: inline-block;
+    float: right;
 }
 /*
     Footer styling.

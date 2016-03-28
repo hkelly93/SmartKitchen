@@ -103,7 +103,21 @@
                 </table>
             </div>
         </div>
-        <footer>
+        <div id="inventory">
+            <div class="panel" ng-controller="inventoryController">
+                <div class="header">
+                    <span>Inventory</span>
+                </div>
+                <table>
+                    <tr ng-repeat="section in (newInventory.length/3 | array)" ng-animate="'animate'">
+                        <td ng-repeat="item in newInventory.slice(3*$index, 3*$index + 3)">
+                            <img ng-src="{{item.image}}" alt="" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <!--<footer>
             <ul>
                 <li>
                     Lastest Refresh:
@@ -111,6 +125,6 @@
                 </li>
             </ul>
             Copyright &copy; 2016 SmartKitchen. All Rights Reserved.
-        </footer>
+        </footer>-->
     </body>
 </html>

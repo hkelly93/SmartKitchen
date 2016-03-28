@@ -1,6 +1,19 @@
 (function() {
     app = angular.module("smartKitchen", ['ngAnimate']);
 
+    // Used http://jsfiddle.net/3zhbB/6/ to figure this out.
+    app.filter('array', function() {
+        return function(arrayLength) {
+            arrayLength = Math.ceil(arrayLength);
+            var arr = new Array(arrayLength),
+                i = 0;
+            for (; i < arrayLength; i++) {
+                arr[i] = i;
+            }
+            return arr;
+        };
+    });
+
     // Enum for alert severities.
     app.constant('SEVERITY', {
         INFO: 0,

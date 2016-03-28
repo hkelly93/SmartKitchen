@@ -122,7 +122,8 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
 
                         // Search in the cache first.
                         if (barcode in $scope.cache) {
-                            product = $scope.cache[barcode].name;
+                            item = $scope.cache[barcode];
+                            $scope.newInventory.push(item);
                             logService.debug('inventoryController', 'Found ' + barcode + ' in cache.');
                         } else {
                             logService.debug('inventoryController', 'REST call for barcode ' + barcode);
