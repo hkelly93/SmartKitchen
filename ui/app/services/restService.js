@@ -76,13 +76,13 @@ app.factory('restService', ['$http', '$q',
              * TODO: Replace with a real REST call when implemented.
              * @return {HttpPromise} The http GET request promise.
              */
-            getInventory: function() {
-                return this.defer($http({
-                    method: 'GET',
-                    url: localUri + 'inventory' + dataType,
-                    timeout: this.timeout
-                }));
-            },
+            // getInventory: function() {
+            //     return this.defer($http({
+            //         method: 'GET',
+            //         url: localUri + 'inventory' + dataType,
+            //         timeout: this.timeout
+            //     }));
+            // },
             /**
              * Gets the latest inventory from json/inventory.json.
              *
@@ -93,6 +93,13 @@ app.factory('restService', ['$http', '$q',
                 return this.defer($http({
                     method: 'GET',
                     url: localUri + 'inventory' + dataType,
+                    timeout: this.timeout
+                }));
+            },
+            getInventory: function() {
+                return this.defer($http({
+                    method: 'GET',
+                    url: localRestUri + 'getInventory/',
                     timeout: this.timeout
                 }));
             },
@@ -130,13 +137,6 @@ app.factory('restService', ['$http', '$q',
                 return this.defer($http({
                     method: 'GET',
                     url: localRestUri + 'getScannerHealth/',
-                    timeout: this.timeout
-                }));
-            },
-            getInventoryRest: function() {
-                return this.defer($http({
-                    method: 'GET',
-                    url: localRestUri + 'getInventory/',
                     timeout: this.timeout
                 }));
             },

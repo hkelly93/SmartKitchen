@@ -16,7 +16,7 @@ def getFridgeHealth():
     else:
         FridgeNotHealth = 'not healthy'
         return FridgeNotHealth
-    
+
     fridgeHealth = "healthy"
     return fridgeHealth
 
@@ -28,9 +28,9 @@ def getNetworkHealth():
     else:
         NetworkNotHealth = 'not healthy'
         return NetworkNotHealth
-            
 
-    
+
+
 
 @app.route('/getScannerHealth/')
 def getScannerHealth():
@@ -40,13 +40,13 @@ def getScannerHealth():
     else:
         ScannerNotHealth = 'not healthy'
         return ScannerNotHealth
-    
+
 
 @app.route('/getInventory/')
 def getInventory():
-    with open('SmartKitchen-master/ui/app/assets/json/inventory.json') as json_file:
+    with open('json/inventory.json') as json_file:
         inventory = json.load(json_file)
-        return jsonify(results=inventory)
+        return json.dumps(inventory)
 
 
 @app.route('/addInventory/<string:barcode>/')
@@ -56,8 +56,8 @@ def addInventory(barcode):
         inventory = json.load(json_file, encoding='utf-8')
     with open('SmartKitchen-master/ui/app/assets/json/inventory.json', 'w') as json_file:
         inventory.append({"barcode": "8965342"})
-        json.dump(inventory, json_file)        
-   
+        json.dump(inventory, json_file)
+
 
 @app.route('/setExpirationDate/<string:date>/')
 def setExpirationDate(date):
