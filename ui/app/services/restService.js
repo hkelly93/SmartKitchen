@@ -10,6 +10,7 @@ app.factory('restService', ['$http', '$q',
         'use strict';
 
         const localUri = 'assets/json/', // URI for local RESTful API.
+            localRestUri = 'http://localhost:5000/',
             openFoodFactsUri = 'http://world.openfoodfacts.org/api/v0/product/', // URI for OFF RESTful api.
             dataType = '.json', // Datatype to get data back in.
             timeout = 30 * 1000; // Timeout in milliseconds.
@@ -88,7 +89,7 @@ app.factory('restService', ['$http', '$q',
              * TODO: Replace this with a rest call when that gets implemented.
              * @return {HttpPromise} The http GET request promise.
              */
-            getLatest: function(success, failure) {
+            getLatest: function() {
                 return this.defer($http({
                     method: 'GET',
                     url: localUri + 'inventory' + dataType,
@@ -108,7 +109,58 @@ app.factory('restService', ['$http', '$q',
                     url: openFoodFactsUri + barcode + dataType,
                     timeout: this.timeout
                 }));
-            }
+            },
+
+            // Soon to be implemented.
+            getFridgeHealth: function() {
+                return this.defer($http({
+                    method: 'GET',
+                    url: localRestUri + 'getFridgeHealth/',
+                    timeout: this.timeout
+                }));
+            },
+            getNetworkHealth: function() {
+                return this.defer($http({
+                    method: 'GET',
+                    url: localRestUri + 'getNetworkHealth/',
+                    timeout: this.timeout
+                }));
+            },
+            getScannerHealth: function() {
+                return this.defer($http({
+                    method: 'GET',
+                    url: localRestUri + 'getScannerHealth/',
+                    timeout: this.timeout
+                }));
+            },
+            getInventoryRest: function() {
+                return this.defer($http({
+                    method: 'GET',
+                    url: localRestUri + 'getInventory/',
+                    timeout: this.timeout
+                }));
+            },
+            removeFromInventory: function(item) {
+                return this.defer($http({
+                    method: 'DELETE',
+                    url: localRestUri + 'deleteFromInventory/' + item.barcode + '/',
+                    timeout: this.timeout
+                }));
+            },
+            setExpirationDate: function(item) {
+                var itemData = $.param({
+                    json: JSON.stringify({
+                        barcode: item.barcode,
+                        expirationdate: item.expirationdate
+                    })
+                });
+                return this.defer($http({
+                    method: 'PUT',
+                    url: localRestUri + 'setExpirationDate/' + item.barcode + '/' + item.expirationdate + '/',
+                    date: itemDate,
+                    timeout: this.timeout
+                }));
+            },
         };
     }
 ]);

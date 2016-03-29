@@ -25,15 +25,15 @@ app.factory('cache', [function() {
             if (typeof(Storage) !== "undefined") {
                 var obj = localStorage.getItem(name);
 
-                if (obj.date !== undefined) {
-                    var date = new Date();
-                    date.setDate(date.getDate() - 5); // Five days ago.
-
-                    var cacheDate = new Date(parseInt(JSON.parse(obj)));
-                    if (cacheDate < date) {
-                        return {};
-                    }
-                }
+                // if (obj !== undefined && obj.date !== undefined) {
+                //     var date = new Date();
+                //     date.setDate(date.getDate() - 5); // Five days ago.
+                //
+                //     var cacheDate = new Date(parseInt(JSON.parse(obj)));
+                //     if (cacheDate < date) {
+                //         return {};
+                //     }
+                // }
                 return (obj === null) ? {} : JSON.parse(obj);
             }
             return {};

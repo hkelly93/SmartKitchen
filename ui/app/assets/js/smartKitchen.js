@@ -4,6 +4,7 @@
     // Used http://jsfiddle.net/3zhbB/6/ to figure this out.
     app.filter('array', function() {
         return function(arrayLength) {
+            if (!arrayLength) return;
             arrayLength = Math.ceil(arrayLength);
             var arr = new Array(arrayLength),
                 i = 0;
