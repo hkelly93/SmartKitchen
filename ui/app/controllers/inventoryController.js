@@ -116,7 +116,7 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                     barcode,
                     product;
 
-                for (item in response.data) {
+                for (item = response.data.length - 1; item > 0; item--) {
                     index = $scope.inventory.indexOf(response.data[item]);
 
                     if (index < 0) {
@@ -124,8 +124,8 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
 
                         // Search in the cache first.
                         if (barcode in $scope.cache) {
-                            item = $scope.cache[barcode];
-                            $scope.newInventory.push(item);
+                            var entity = $scope.cache[barcode];
+                            $scope.newInventory.push(entity);
                             logService.debug('inventoryController', 'Found ' + barcode + ' in cache.');
                         } else {
                             logService.debug('inventoryController', 'REST call for barcode ' + barcode);
@@ -135,7 +135,11 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                         }
                     }
                 }
-                $scope.inventory = $scope.newInventory;
+                $scope.$watch('newInventory', function(n) {
+                    if (n.length === response.data.length - 1) {
+                        $scope.inventory = $scope.newInventory;
+                    }
+                });
             });
 
             promise.error(function(response) {});
