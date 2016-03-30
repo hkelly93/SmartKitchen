@@ -47,13 +47,15 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
 
             promise.success(function(response) {
                 $scope.newList = [];
-                var maxLength = (response.data.length < 3) ? response.data.length : 3,
-                    i = 0,
+
+                // Get the last three items.
+                var maxLength = (response.data.length < 3) ? response.data.length : response.data.length - 4,
+                    i = response.data.length - 1,
                     elBarcode,
                     expiresDate,
                     item;
 
-                for (i; i < maxLength; i++) {
+                for (i; i > maxLength; i--) {
                     elBarcode = response.data[i].barcode;
                     expiresDate = response.data[i].expirationdate;
 
@@ -74,7 +76,7 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                 }
 
                 $scope.$watch('newList', function(n) {
-                    if (n.length === maxLength) {
+                    if (n.length === 3) {
                         if (!$scope.isInventoryEqual()) {
                             $scope.latest = $scope.newList;
                         }

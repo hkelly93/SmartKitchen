@@ -9,4 +9,5 @@ Harrison Kelly -- Fixed a UI caching issue and stubbed out the async calls for t
 Tuesday March 29, 2015
 ======================
 
-Harrison Kelly -- Got rid of the unused icons.
+Harrison Kelly -- Got rid of the unused icons and changed the ordering of the Latest Inventory so that
+    it was actually the latest and not the first three items.
