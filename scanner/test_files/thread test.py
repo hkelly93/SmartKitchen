@@ -1,9 +1,8 @@
 #!/usr/bin/python
 
 import threading
-import scanner.scanner.scanner
-import requests
-import time
+
+from scanner.test_files import scanner
 
 barcode = False
 

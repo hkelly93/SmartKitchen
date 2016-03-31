@@ -10,7 +10,7 @@ app = Flask(__name__)
 
 @app.route('/getFridgeHealth/', methods=['GET'])
 def getFridgeHealth():
-    if os.path.isfile('SmartKitchen-master/ui/app/assets/json/health.json'):
+    if os.path.isfile('json/health.json'):
         FridgeHealth ='healthy'
         return FridgeHealth
     else:
@@ -20,9 +20,9 @@ def getFridgeHealth():
     fridgeHealth = "healthy"
     return fridgeHealth
 
-@app.route('/getNetworkHealth/')
+@app.route('/getNetworkHealth/', methods=['GET'])
 def getNetworkHealth():
-    if os.path.isfile('SmartKitchen/ui/app/assets/json/health.json'):
+    if os.path.isfile('json/health.json'):
         NetworkHealth ='healthy'
         return NetworkHealth
     else:
@@ -30,17 +30,35 @@ def getNetworkHealth():
         return NetworkNotHealth
 
 
+@app.route('/setScannerHealth/<string:status>/', methods=['POST'])
+def setScannerHealth(status):
+    health={}
+
+    with open('json/health.json', 'r') as json_file:
+        health = json.load(json_file, encoding='utf-8')
+    with open('json/health.json', 'w') as json_file:
+        health['scanner'] = status
+        json.dump(health, json_file)
+
+    return ''
+
 
 
 @app.route('/getScannerHealth/')
 def getScannerHealth():
+    with open('json/health.json', 'r') as json_file:
+        health = json.load(json_file, encoding='utf-8')
+        return health['scanner']
+
+    '''
+    # TODO should this really be a file????!!! or should the scanner POST to this?
     if os.path.isfile('SmartKitchen/scanner.json'):
         ScannerkHealth ='healthy'
         return ScannerHealth
     else:
         ScannerNotHealth = 'not healthy'
         return ScannerNotHealth
-
+    '''
 
 @app.route('/getInventory/')
 def getInventory():
@@ -50,7 +68,7 @@ def getInventory():
         return json.dumps(inventory)
 
 
-@app.route('/addInventory/<string:barcode>/', methods=['POST'])  # added the method at the end to not get a 405 error
+@app.route('/addInventory/<string:barcode>/', methods=['POST'])  # added methods=['POST'] to not get a 405 error
 def addInventory(barcode):
     inventory={}
     with open('json/inventory.json', 'r') as json_file:
@@ -59,9 +77,12 @@ def addInventory(barcode):
         inventory.append({"barcode": barcode})
         json.dump(inventory, json_file)
 
+    return ''
+
 @app.route('/setExpirationDate/<string:date>/')
 def setExpirationDate(date):
-    return "";
+    return ''
+
 '''
 @app.errorhandler(405)
 def not_found(error):
