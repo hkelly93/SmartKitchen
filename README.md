@@ -19,3 +19,6 @@ Brian Day -- started from scratch on scanner part of project it is now correctly
     and piping its output into our code. Scanner is also connected to the rest api, scanner health POST's to the
     rest api for now, may change
 
+Thursday March 31, 2016
+
+Ajay-- working on addInventory and setexpiration methods in REST API where i am getting more errors 
