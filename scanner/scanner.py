@@ -109,7 +109,7 @@ if __name__ == "__main__":
     try:
         while True:
             print 'main thread running'
-            time.sleep(3)  # update website status but not too often
+            time.sleep(10)  # update website status but not too often
 
             # print threading.active_count()  # will return 3 if all good
             if threading.active_count() == 3:
@@ -117,7 +117,7 @@ if __name__ == "__main__":
             else:  # 1 or 2 threads running
                 status = 'warning'
 
-                # power saver mode on? no? then don restart threads that are down
+                # power saver mode on? no, then restart threads that are down
                 if not eco_event.is_set():
                     # check what threads are not running and recreate them
                     if not t1.is_alive():
