@@ -21,4 +21,6 @@ Brian Day -- started from scratch on scanner part of project it is now correctly
 
 Thursday March 31, 2016
 
-Ajay-- working on addInventory and setexpiration methods in REST API where i am getting more errors 
+Ajay-- working on addInventory and setExpiration methods in REST API where i am getting more errors
+
+Brian Day -- scanner more flushed out, processes and threads die correctly when exited
