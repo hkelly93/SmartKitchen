@@ -2,6 +2,7 @@ import json
 import os.path
 
 from flask import Flask, jsonify, make_response
+from messages import Messages
 
 response_data = {}
 
