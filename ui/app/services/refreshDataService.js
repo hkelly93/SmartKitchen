@@ -76,8 +76,8 @@ app.factory('refreshData', ['$rootScope', '$interval', 'logService',
                     if (!refresh) return;
 
                     var event = '',
-                        isRunning = isRefreshing(controller);
-                    isLoaded = isLoaded(controller);
+                        isRunning = isRefreshing(controller),
+                        loaded = isLoaded(controller);
 
                     switch (controller) {
                         case 'navController':
