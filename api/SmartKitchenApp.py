@@ -2,6 +2,9 @@ import json
 import os.path
 
 from flask import Flask, jsonify, make_response
+import datetime
+
+from util.RestUtils import RestUtils
 from messages import Messages
 
 response_data = {}
@@ -73,14 +76,41 @@ def getInventory():
 # added methods=['POST'] to not get a 405 error
 @app.route('/addInventory/<string:barcode>/', methods=['POST'])
 def addInventory(barcode):
-    inventory = {}
-    with open('json/inventory.json', 'r') as json_file:
-        inventory = json.load(json_file, encoding='utf-8')
-    with open('json/inventory.json', 'w') as json_file:
-        inventory.append({"barcode": barcode})
-        json.dump(inventory, json_file)
+    """
+    Add an inventory entry for the given barcode.
+    """
+    inventory = ""
+    addedDate = datetime.datetime.today().strftime("%m/%d/%Y %H:%M:%S")
 
-    return ''
+    try:
+        with open('json/inventory.json', 'r') as json_file:
+            inventory = json_file.read()  # Get the current inventory.
+    except IOError:
+        return Messages.inventoryNotFound()
+
+    if (inventory != ""):  # If the current inventory is not empty
+        # Begin adding a new entry.
+        inventory = inventory.replace("}]", "}, {")
+
+        if not inventory.endswith("\n"):
+            inventory += "\n"
+
+        inventory += RestUtils.generateInventoryEntry(barcode, addedDate)
+    else:  # If the inventory is empty
+        inventory = "[{"
+
+        if not inventory.endswith("\n"):
+            inventory += "\n"
+
+        inventory += RestUtils.generateInventoryEntry(barcode, addedDate)
+
+    try:
+        with open('json/inventory.json', 'w') as json_file:
+            json_file.write(inventory)
+    except IOError:
+        return Messages.inventoryNotFound()
+
+    return inventory
 
 
 @app.route('/setExpirationDate/<string:date>/')
