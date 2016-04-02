@@ -92,7 +92,7 @@ app.factory('restService', ['$http', '$q',
             getLatest: function() {
                 return this.defer($http({
                     method: 'GET',
-                    url: localUri + 'inventory' + dataType,
+                    url: localRestUri + 'getInventory/',
                     timeout: this.timeout
                 }));
             },

@@ -77,9 +77,7 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
 
                 $scope.$watch('newList', function(n) {
                     if (n.length === 3) {
-                        if (!$scope.isInventoryEqual()) {
-                            $scope.latest = $scope.newList;
-                        }
+                        $scope.latest = $scope.newList;
                     }
                 }, true);
             });

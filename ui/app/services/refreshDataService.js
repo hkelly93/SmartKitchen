@@ -6,7 +6,7 @@ app.factory('refreshData', ['$rootScope', '$interval', 'logService',
             refreshingControllers = [], // List of controllers that are doing a refresh.
             latestRefresh = new Date(); // The last time the data was refreshed.
 
-        const refresh = false, // Whether or not to refresh the data.
+        const refresh = true, // Whether or not to refresh the data.
             refreshRate = 5; // in seconds.
 
         return {
