@@ -1,7 +1,7 @@
 import json
 import os.path
 
-from flask import Flask, jsonify,make_response
+from flask import Flask, jsonify, make_response
 
 response_data = {}
 
@@ -11,7 +11,7 @@ app = Flask(__name__)
 @app.route('/getFridgeHealth/', methods=['GET'])
 def getFridgeHealth():
     if os.path.isfile('json/health.json'):
-        FridgeHealth ='healthy'
+        FridgeHealth = 'healthy'
         return FridgeHealth
     else:
         FridgeNotHealth = 'not healthy'
@@ -20,10 +20,11 @@ def getFridgeHealth():
     fridgeHealth = "healthy"
     return fridgeHealth
 
+
 @app.route('/getNetworkHealth/', methods=['GET'])
 def getNetworkHealth():
     if os.path.isfile('json/health.json'):
-        NetworkHealth ='healthy'
+        NetworkHealth = 'healthy'
         return NetworkHealth
     else:
         NetworkNotHealth = 'not healthy'
@@ -32,7 +33,7 @@ def getNetworkHealth():
 
 @app.route('/setScannerHealth/<string:status>/', methods=['POST'])
 def setScannerHealth(status):
-    health={}
+    health = {}
 
     with open('json/health.json', 'r') as json_file:
         health = json.load(json_file, encoding='utf-8')
@@ -41,7 +42,6 @@ def setScannerHealth(status):
         json.dump(health, json_file)
 
     return ''
-
 
 
 @app.route('/getScannerHealth/')
@@ -60,6 +60,7 @@ def getScannerHealth():
         return ScannerNotHealth
     '''
 
+
 @app.route('/getInventory/')
 def getInventory():
     print 'get inventory'
@@ -68,9 +69,10 @@ def getInventory():
         return json.dumps(inventory)
 
 
-@app.route('/addInventory/<string:barcode>/', methods=['POST'])  # added methods=['POST'] to not get a 405 error
+# added methods=['POST'] to not get a 405 error
+@app.route('/addInventory/<string:barcode>/', methods=['POST'])
 def addInventory(barcode):
-    inventory={}
+    inventory = {}
     with open('json/inventory.json', 'r') as json_file:
         inventory = json.load(json_file, encoding='utf-8')
     with open('json/inventory.json', 'w') as json_file:
@@ -78,6 +80,7 @@ def addInventory(barcode):
         json.dump(inventory, json_file)
 
     return ''
+
 
 @app.route('/setExpirationDate/<string:date>/')
 def setExpirationDate(date):
