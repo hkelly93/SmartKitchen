@@ -1,8 +1,10 @@
 # SmartKitchen
-Add project description here
+A Kitchen application made to make remembering what is in your kitchen simpler. No more remembering whether or not you need to buy
+milk or if the milk expired. You can scan the barcode on your milk, when you bought it, set the inventory using the simple web application,
+and open the application at the grocery store to know if you need milk or not.
 
 # Contributors
-Add contributor names here
+Harrison Kelly, Brian Day, AjayKumar Sarikonda
 
 # Progress (Week 3/28)
 
