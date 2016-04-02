@@ -1,3 +1,5 @@
+/* jshint esversion: 6 */
+
 app.factory('refreshData', ['$rootScope', '$interval', 'logService',
     function($rootScope, $interval, logService) {
         var loadedControllers = [], // List of controllers currently loaded.
@@ -26,7 +28,7 @@ app.factory('refreshData', ['$rootScope', '$interval', 'logService',
             unloadController: function(controllerName) {
                 logService.debug('refreshDataService', 'Unloading ' + controllerName + '.');
                 var index = loadedControllers.indexOf(controllerName);
-                if (index != undefined && index > -1) {
+                if (index !== undefined && index > -1) {
                     loadedControllers.splice(index, 1);
                 }
 
@@ -49,27 +51,27 @@ app.factory('refreshData', ['$rootScope', '$interval', 'logService',
                 timer = $interval(function() {
                     var isLoaded = function(controllerName) {
                         return loadedControllers.indexOf(controllerName) > -1;
-                    }
+                    };
 
                     var setRefreshing = function(controllerName) {
                         refreshingControllers.push(controllerName);
-                    }
+                    };
 
                     var removeRefreshing = function(controllerName) {
                         index = refreshingControllers.indexOf(controllerName);
-                        if (index != undefined && index > -1) {
+                        if (index !== undefined && index > -1) {
                             refreshingControllers.splice(index, 1);
                         }
-                    }
+                    };
 
                     var isRefreshing = function(controllerName) {
                         return refreshingControllers.indexOf(controllerName) > -1;
-                    }
+                    };
 
                     var showDate = function() {
                         var date = new Date();
                         latestRefresh = date.toLocaleString().replace(",", "");
-                    }
+                    };
 
                     if (!refresh) return;
 
@@ -108,6 +110,6 @@ app.factory('refreshData', ['$rootScope', '$interval', 'logService',
                     }
                 });
             }
-        }
+        };
     }
 ]);
