@@ -21,35 +21,48 @@ app.controller('healthController', ['$scope', '$rootScope', '$sce', 'refreshData
             refreshDataService.unloadController('healthController');
         });
 
+        $scope.health = {
+            fridge: generateHealthSvg(),
+            scanner: generateHealthSvg(),
+            network: generateHealthSvg()
+        };
+
         /**
          * Load the data from the controller into the view.
          * @return {null}
          */
         $scope.load = function() {
-            var promise = restService.getHealth();
+            var fridgeHealthPromise = restService.getFridgeHealth();
 
-            promise.success(function(response) {
-                var element;
-                // Check the health
-                for (element in response.data) {
-                    if (response.data[element] !== STATUS.HEALTHY) {
-                        $rootScope.addAlert(SEVERITY.WARNING, element + " is not healthy.");
-                    }
-                }
-                $scope.health = {
-                    fridge: generateHealthSvg(response.data.fridge),
-                    scanner: generateHealthSvg(response.data.scanner),
-                    network: generateHealthSvg(response.data.network)
-                };
+            fridgeHealthPromise.success(function(response) {
+                $scope.health.fridge = generateHealthSvg(STATUS.HEALTHY);
             });
 
-            promise.error(function(response) {
-                $rootScope.addAlert(SEVERITY.CRITICAL, "Something went wrong and the kitchen health could not be processed.");
-                $scope.health = {
-                    fridge: generateHealthSvg(),
-                    scanner: generateHealthSvg(),
-                    network: generateHealthSvg()
-                };
+            fridgeHealthPromise.error(function(response) {
+                $scope.health.fridge = generateHealthSvg();
+                $rootScope.addAlert(SEVERITY.CRITICAL, response.data);
+            });
+
+            var networkHealthPromise = restService.getNetworkHealth();
+
+            networkHealthPromise.success(function(response) {
+                $scope.health.network = generateHealthSvg(STATUS.HEALTHY);
+            });
+
+            networkHealthPromise.error(function(response) {
+                $scope.health.network = generateHealthSvg();
+                $rootScope.addAlert(SEVERITY.CRITICAL, response.data);
+            });
+
+            var scannerHealthPromise = restService.getNetworkHealth();
+
+            scannerHealthPromise.success(function(response) {
+                $scope.health.scanner = generateHealthSvg(STATUS.HEALTHY);
+            });
+
+            scannerHealthPromise.error(function(response) {
+                $scope.health.scanner = generateHealthSvg();
+                $rootScope.addAlert(SEVERITY.CRITICAL, response.data);
             });
         };
 

@@ -57,33 +57,6 @@ app.factory('restService', ['$http', '$q',
                 return dfd.promise;
             },
             /**
-             * Gets the kitchen health from json/health.json.
-             *
-             * TODO: Replace this with a rest call when that gets implemented.
-             * @return {HttpPromise} The http GET request promise.
-             */
-            getHealth: function() {
-                return this.defer($http({
-                    method: 'GET',
-                    url: localUri + 'health' + dataType,
-                    timeout: this.timeout
-                }));
-            },
-            /**
-             * Get the inventory from json/inventory.json. Check for new items and
-             * add an alert if there is anything new.
-             *
-             * TODO: Replace with a real REST call when implemented.
-             * @return {HttpPromise} The http GET request promise.
-             */
-            // getInventory: function() {
-            //     return this.defer($http({
-            //         method: 'GET',
-            //         url: localUri + 'inventory' + dataType,
-            //         timeout: this.timeout
-            //     }));
-            // },
-            /**
              * Gets the latest inventory from json/inventory.json.
              *
              * TODO: Replace this with a rest call when that gets implemented.
@@ -117,8 +90,6 @@ app.factory('restService', ['$http', '$q',
                     timeout: this.timeout
                 }));
             },
-
-            // Soon to be implemented.
             getFridgeHealth: function() {
                 return this.defer($http({
                     method: 'GET',
