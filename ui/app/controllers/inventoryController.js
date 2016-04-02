@@ -170,6 +170,19 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
             return equal;
         };
 
+        $scope.deleteItem = function(item) {
+            logService.debug('inventoryController', 'Deleting barcode ' + item.barcode);
+            var promise = restService.removeFromInventory(barcode);
+
+            promise.success(function() {
+                // TODO
+            });
+
+            promise.error(function() {
+                // TODO
+            });
+        };
+
         $scope.load();
 
         // Register event handlers

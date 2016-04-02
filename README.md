@@ -16,6 +16,8 @@ Add contributor names here
     * Added localization support to the REST api to make it simpler to change languages.
     * Added utility methods for the REST api to keep the file clean.
     * Wrote the "addInventory" REST call.
+    * Turned on refreshing on the UI and made sure that it worked with the "addInventory" REST call, also connected
+    other calls and enabled "deleting" (when the REST call is completed).
 
 * Brian Day
     * Started from scratch on scanner part of project it is now correctly threaded. Using zbarimg directly now
