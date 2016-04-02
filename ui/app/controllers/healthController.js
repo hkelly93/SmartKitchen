@@ -35,7 +35,11 @@ app.controller('healthController', ['$scope', '$rootScope', '$sce', 'refreshData
             var fridgeHealthPromise = restService.getFridgeHealth();
 
             fridgeHealthPromise.success(function(response) {
-                $scope.health.fridge = generateHealthSvg(STATUS.HEALTHY);
+                if (response.data !== STATUS.HEALTHY) {
+                    $rootScope.addAlert(SEVERITY.WARNING, "Fridge health is " + response.data);
+                }
+
+                $scope.health.fridge = generateHealthSvg(response.data);
             });
 
             fridgeHealthPromise.error(function(response) {
@@ -46,7 +50,10 @@ app.controller('healthController', ['$scope', '$rootScope', '$sce', 'refreshData
             var networkHealthPromise = restService.getNetworkHealth();
 
             networkHealthPromise.success(function(response) {
-                $scope.health.network = generateHealthSvg(STATUS.HEALTHY);
+                if (response.data !== STATUS.HEALTHY) {
+                    $rootScope.addAlert(SEVERITY.WARNING, "Network health is " + response.data);
+                }
+                $scope.health.network = generateHealthSvg(response.data);
             });
 
             networkHealthPromise.error(function(response) {
@@ -57,7 +64,10 @@ app.controller('healthController', ['$scope', '$rootScope', '$sce', 'refreshData
             var scannerHealthPromise = restService.getNetworkHealth();
 
             scannerHealthPromise.success(function(response) {
-                $scope.health.scanner = generateHealthSvg(STATUS.HEALTHY);
+                if (response.data !== STATUS.HEALTHY) {
+                    $rootScope.addAlert(SEVERITY.WARNING, "Scanner health is " + response.data);
+                }
+                $scope.health.scanner = generateHealthSvg(response.data);
             });
 
             scannerHealthPromise.error(function(response) {

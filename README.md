@@ -22,6 +22,7 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
     other calls and enabled "deleting" (when the REST call is completed).
     * Connected the three different health status REST calls.
     * Added localized i18n messages and support for: English, French, and Spanish.
+    * Fixed issue with alerts circle not being clickable.
 
 * Brian Day
     * Started from scratch on scanner part of project it is now correctly threaded. Using zbarimg directly now

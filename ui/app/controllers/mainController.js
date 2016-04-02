@@ -8,7 +8,7 @@
  */
 app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', 'refreshData', 'logService', 'messagesService',
     function($scope, $rootScope, $sce, $parse, refreshData, logService, messagesService) {
-        logService.setLevel(logService.LEVEL.DEBUG);
+        logService.setLevel(logService.LEVEL.WARNING);
 
         $scope.alertList = [];
         $scope.alertsVisible = false;

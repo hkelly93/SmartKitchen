@@ -10,7 +10,7 @@
 
         <!-- Declares the AngularJS application and application constants. -->
         <script src="assets/js/smartKitchen.js"></script>
- 
+
         <!-- Load in the AngularJS application controllers. -->
         <script src="controllers/mainController.js"></script>
         <script src="controllers/navController.js"></script>
@@ -26,7 +26,7 @@
     </head>
     <body ng-app="smartKitchen" ng-controller="mainController">
         <header>
-            <span ng-bind-html="htmlMessages('SMART_KITCHEN')">
+            <span class="logo" ng-bind-html="htmlMessages('SMART_KITCHEN')">
             </span>
             <nav id="top" ng-controller="navController">
                 <span ng-click="showAlerts()" ng-bind-html="alerts" class="alerts"></span>
