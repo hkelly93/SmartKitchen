@@ -1,3 +1,4 @@
+/*jshint esversion: 6 */
 /**
  * Main controller for the application. Contains loading/unloading functions
  * and refreshing functions.
@@ -5,13 +6,15 @@
  * @param  {function} AngularJS services
  * @return {null}
  */
-app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', 'refreshData', 'logService',
-    function($scope, $rootScope, $sce, $parse, refreshData, logService) {
+app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', 'refreshData', 'logService', 'messagesService',
+    function($scope, $rootScope, $sce, $parse, refreshData, logService, messagesService) {
         logService.setLevel(logService.LEVEL.DEBUG);
 
         $scope.alertList = [];
         $scope.alertsVisible = false;
         $scope.latestRefresh = refreshData.getLatestRefresh().toLocaleString().replace(", ", " ");
+        $scope.messages = messagesService.get;
+        $scope.htmlMessages = messagesService.getHtml;
 
         /**
          * Gets the running alerts from a REST call to open json/alerts.json. Also
@@ -25,16 +28,16 @@ app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', 'ref
         $rootScope.addAlert = function(alertSeverity, alertMessage) {
             switch (alertSeverity) {
                 case 0:
-                    alertMessage = "[INFO] " + alertMessage;
+                    alertMessage = "[" + $scope.messages('INFO') + "] " + alertMessage;
                     break;
                 case 1:
-                    alertMessage = "[WARNING] " + alertMessage;
+                    alertMessage = "[" + $scope.messages('WARNING') + "] " + alertMessage;
                     break;
                 case 2:
-                    alertMessage = "[CRITICAL] " + alertMessage;
+                    alertMessage = "[" + $scope.messages('CRITICAL') + "] " + alertMessage;
                     break;
                 default:
-                    alertMessage = "[UNKNOWN] " + alertMessage;
+                    alertMessage = "[" + $scope.messages('UNKNOWN') + "] " + alertMessage;
                     break;
             }
 

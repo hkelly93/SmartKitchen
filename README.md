@@ -21,6 +21,7 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
     * Turned on refreshing on the UI and made sure that it worked with the "addInventory" REST call, also connected
     other calls and enabled "deleting" (when the REST call is completed).
     * Connected the three different health status REST calls.
+    * Added localized i18n messages and support for: English, French, and Spanish.
 
 * Brian Day
     * Started from scratch on scanner part of project it is now correctly threaded. Using zbarimg directly now

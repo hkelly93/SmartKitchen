@@ -10,7 +10,7 @@
 
         <!-- Declares the AngularJS application and application constants. -->
         <script src="assets/js/smartKitchen.js"></script>
-
+ 
         <!-- Load in the AngularJS application controllers. -->
         <script src="controllers/mainController.js"></script>
         <script src="controllers/navController.js"></script>
@@ -22,24 +22,24 @@
         <script src="services/refreshDataService.js"></script>
         <script src="services/cacheService.js"></script>
         <script src="services/restService.js"></script>
+        <script src="services/messagesService.js"></script>
     </head>
     <body ng-app="smartKitchen" ng-controller="mainController">
         <header>
-            <span>
-                <strong>Smart</strong>Kitchen
+            <span ng-bind-html="htmlMessages('SMART_KITCHEN')">
             </span>
             <nav id="top" ng-controller="navController">
                 <span ng-click="showAlerts()" ng-bind-html="alerts" class="alerts"></span>
                 <ul>
                     <li>
-                        <a href="#">Inventory</a>
+                        <a href="#">{{messages('INVENTORY')}}</a>
                         <span class="small">{{inventory}}</span>
                     </li>
                     <li>
-                        <a href="#">Help</a>
+                        <a href="#">{{messages('HELP')}}</a>
                     </li>
                     <li>
-                        <a href="#">About</a>
+                        <a href="#">{{messages('ABOUT')}}</a>
                     </li>
                 </ul>
             </nav>
@@ -54,33 +54,31 @@
                 </ul>
             </div>
             <div id="slogan">
-                The future of
-                <br/>kichens begins
-                <br/>here.
-                <div class="large-button">
+                <span ng-bind-html="htmlMessages('SLOGAN')"></span>
+                <!--<div class="large-button">
                     Read More
-                </div>
+                </div>-->
             </div>
         </header>
         <div id="content">
             <div id="health" class="panel" ng-controller="healthController">
                 <div class="header">
-                    <span>Kitchen Health</span>
+                    <span>{{messages('KITCHEN_HEALTH')}}</span>
                 </div>
                 <table>
                     <tr>
-                        <td>Fridge:</td>
+                        <td>{{messages('FRIDGE')}}:</td>
                         <td ng-bind-html="health.fridge">{{health.fridge}}</td>
-                        <td>Network:</td>
+                        <td>{{messages('NETWORK')}}:</td>
                         <td ng-bind-html="health.network">{{health.network}}</td>
-                        <td>Scanner:</td>
+                        <td>{{messages('SCANNER')}}:</td>
                         <td ng-bind-html="health.scanner">{{health.scanner}}</td>
                     </tr>
                 </table>
             </div>
             <div id="latest-additions" class="panel" ng-controller="inventoryController">
                 <div class="header">
-                    <span>Latest Inventory</span>
+                    <span>{{messages('LATEST_INVENTORY')}}</span>
                 </div>
                 <table>
                     <tr ng-repeat="new in latest" ng-animate="'animate'">
@@ -89,15 +87,15 @@
                         </td>
                         <td>
                             <span>
-                                <strong>Name</strong>:
+                                <strong>{{messages('NAME')}}</strong>:
                                 {{new.name}}<br/>
-                                <strong>Expiration Date</strong>:
+                                <strong>{{messages('EXPIRATION_DATE')}}</strong>:
                                 {{new.expires}}
                             </span>
                         </td>
                         <td>
-                            <div class="button">EDIT</div>
-                            <div class="button delete" ng-click="deleteItem(new)">DELETE</div>
+                            <div class="button">{{messages('EDIT')}}</div>
+                            <div class="button delete" ng-click="deleteItem(new)">{{messages('DELETE')}}</div>
                         </td>
                     </tr>
                 </table>
@@ -106,7 +104,7 @@
         <div id="inventory">
             <div class="panel" ng-controller="inventoryController">
                 <div class="header">
-                    <span>Inventory</span>
+                    <span>{{messages('INVENTORY')}}</span>
                 </div>
                 <table>
                     <tr ng-repeat="section in (newInventory.length/3 | array)" ng-animate="'animate'">
