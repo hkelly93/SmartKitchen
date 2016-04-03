@@ -16,7 +16,7 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
 
         $scope.latest = [];
         $scope.inventory = [];
-        $scope.cache = cache.getCache("inventoryController-inventory");
+        $scope.cache = {}; //cache.getCache("inventoryController-inventory");
 
         /**
          * Load the data from the controller into the view.
@@ -48,6 +48,14 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
             promise.success(function(response) {
                 $scope.newList = [];
 
+                // Get all of the expiration dates.
+                for (var index = 0; index < response.data.length; index++) {
+                    var barcode = response.data[index].barcode;
+                    var expiration = response.data[index].expirationdate;
+
+                    expirationDates[barcode] = expiration;
+                }
+
                 // Get the last three items.
                 var maxLength = (response.data.length < 3) ? response.data.length : response.data.length - 4,
                     i = response.data.length - 1,
@@ -57,10 +65,6 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
 
                 for (i; i > maxLength; i--) {
                     elBarcode = response.data[i].barcode;
-                    expiresDate = response.data[i].expirationdate;
-
-                    // This is necessary for the REST call below.
-                    expirationDates[elBarcode] = expiresDate;
 
                     // Search in the cache first.
                     if (elBarcode in $scope.cache) {
@@ -100,7 +104,7 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                         };
 
                     $scope.cache[barcode] = item;
-                    $scope.newInventory.push(product);
+                    $scope.inventory.push(item);
 
                     $rootScope.addAlert(0, product + " was added to the inventory.");
                 }
@@ -123,7 +127,7 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                         // Search in the cache first.
                         if (barcode in $scope.cache) {
                             var entity = $scope.cache[barcode];
-                            $scope.newInventory.push(entity);
+                            $scope.inventory.push(entity);
                             logService.debug('inventoryController', 'Found ' + barcode + ' in cache.');
                         } else {
                             logService.debug('inventoryController', 'REST call for barcode ' + barcode);
@@ -133,11 +137,6 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                         }
                     }
                 }
-                $scope.$watch('newInventory', function(n) {
-                    if (n.length === response.data.length - 1) {
-                        $scope.inventory = $scope.newInventory;
-                    }
-                });
             });
 
             promise.error(function(response) {});
@@ -190,7 +189,7 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
             $scope.load();
         });
 
-        var saveCache = function(){
+        var saveCache = function() {
             cache.setCache("inventoryController-inventory", $scope.cache);
         };
 

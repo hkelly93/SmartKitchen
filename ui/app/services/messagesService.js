@@ -29,7 +29,8 @@ app.factory('messagesService', function($sce) {
             INFO: 'INFO',
             WARNING: 'WARNING',
             CRITICAL: 'CRITICAL',
-            UNKNOWN: 'UNKNOWN'
+            UNKNOWN: 'UNKNOWN',
+            EDIT_INVENTORY_ITEM: 'Edit Item'
         },
         // Spanish translations
         es: {
@@ -51,7 +52,8 @@ app.factory('messagesService', function($sce) {
             INFO: 'INFORMACION',
             WARNING: 'ADVERTENCIA',
             CRITICAL: 'CRITICO',
-            UNKNOWN: 'DESCONOCIDO'
+            UNKNOWN: 'DESCONOCIDO',
+            EDIT_INVENTORY_ITEM: 'Editar Elemento'
         },
         // French translations
         fr: {
@@ -74,6 +76,7 @@ app.factory('messagesService', function($sce) {
             WARNING: 'ATTENTION',
             CRITICAL: 'CRUCIAL',
             UNKNOWN: 'INCONNU',
+            EDIT_INVENTORY_ITEM: "Modifier L'article"
         }
     };
 

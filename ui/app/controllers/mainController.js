@@ -12,6 +12,8 @@ app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', 'ref
 
         $scope.alertList = [];
         $scope.alertsVisible = false;
+        $scope.showPopup = false;
+        $scope.popupObject = {};
         $scope.latestRefresh = refreshData.getLatestRefresh().toLocaleString().replace(", ", " ");
         $scope.messages = messagesService.get;
         $scope.htmlMessages = messagesService.getHtml;
@@ -136,6 +138,11 @@ app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', 'ref
             } else {
                 createAlertSvg();
             }
+        };
+
+        $scope.togglePopup = function(item) {
+            $scope.popupObject = (item === undefined) ? {} : item;
+            $scope.showPopup = !$scope.showPopup;
         };
     }
 ]);

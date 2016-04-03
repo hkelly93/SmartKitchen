@@ -240,22 +240,71 @@ nav ul li a {
     display: inline-block;
     float: right;
 }
+#inventory table {
+    width: 100%;
+}
+#inventory table td {
+    width: 50%;
+}
 /*
     Footer styling.
  */
 footer {
     width: 100%;
+    height: 25px;
     font-size: 8pt;
     text-align: center;
 }
-footer ul li {
-    list-style-type: none;
-    display: inline-block;
+#popup .glass {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.80);
+    width: 100%;
+    height: auto;
+    min-height: 100%;
+}
+#popup .popup {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    margin-top: -10%;
+    margin-left: -275px;
+    width: 400px;
+    height: 200px;
+    background-color: #e7e7e7;
+    border: 2px solid #bebebe;
+    border-radius: 4px;
+    padding: 10px;
+}
+#popup .x {
+    float: right;
+    clear: both;
     margin-right: 10px;
+    margin-top: -25px;
+    font-weight: bold;
+    display: inline-block;
 }
-footer ul li a {
-    color: #323232;
+#popup .x:hover {
+    color: #95a5a6;
+    cursor: pointer;
 }
-footer ul li a:hover {
-    color: #91204D;
+#popup .header {
+    display: inline-block;
+    width: 98%;
+    height: 15px;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: #a7a7a7;
+    font-size: 9pt;
+    margin-left: 5px;
+    margin-top: 5px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #bebebe;
+    float: left;
+    clear: both;
+}
+#popup table {
+    width: 100%;
+    text-align: left;
 }

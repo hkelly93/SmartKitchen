@@ -94,7 +94,7 @@
                             </span>
                         </td>
                         <td>
-                            <div class="button">{{messages('EDIT')}}</div>
+                            <div class="button" ng-click="togglePopup(new)">{{messages('EDIT')}}</div>
                             <div class="button delete" ng-click="deleteItem(new)">{{messages('DELETE')}}</div>
                         </td>
                     </tr>
@@ -107,22 +107,65 @@
                     <span>{{messages('INVENTORY')}}</span>
                 </div>
                 <table>
-                    <tr ng-repeat="section in (newInventory.length/3 | array)" ng-animate="'animate'">
-                        <td ng-repeat="item in newInventory.slice(3*$index, 3*$index + 3)">
-                            <img ng-src="{{item.image}}" alt="" />
+                    <tr ng-repeat="section in (inventory.length/2 | array)" ng-animate="'animate'">
+                        <td ng-repeat="item in inventory.slice(2*$index, 2*$index + 2)">
+                            <table>
+                                <tr>
+                                    <td style="width: 20%">
+                                        <img ng-src="{{item.image}}" alt=""/>
+                                    </td>
+                                    <td style="width: 40%">
+                                        <span>
+                                            <strong>{{messages('NAME')}}</strong>:
+                                            {{item.name}}<br/>
+                                            <strong>{{messages('EXPIRATION_DATE')}}</strong>:
+                                            {{item.expires}}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="button" ng-click="togglePopup(item)">{{messages('EDIT')}}</div>
+                                        <div class="button delete" ng-click="deleteItem(item)">{{messages('DELETE')}}</div>
+                                    </td>
+                                </tr>
+                            </table>
                         </td>
                     </tr>
                 </table>
             </div>
         </div>
-        <!--<footer>
-            <ul>
-                <li>
-                    Lastest Refresh:
-                    {{latestRefresh}}
-                </li>
-            </ul>
+        <div id="popup" ng-show="showPopup" class="fade">
+            <div class="glass">
+                <div class="popup">
+                    <div class="header">
+                    {{messages('EDIT_INVENTORY_ITEM')}}
+                    </div>
+                    <div class="x" ng-click="togglePopup()">
+                        x
+                    </div>
+                    <table>
+                        <tr>
+                            <td>
+                                <img ng-src="{{popupObject.image}}" alt=""/>
+                            </td>
+                            <td>
+                                <span>
+                                    <strong>{{messages('NAME')}}</strong>:
+                                    {{popupObject.name}}<br/>
+                                    <strong>{{messages('EXPIRATION_DATE')}}</strong>:
+                                    {{popupObject.expires}}
+                                </span>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="button" ng-click="togglePopup()">
+                        Submit
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer>
+            Lastest Refresh: {{latestRefresh}}<br />
             Copyright &copy; 2016 SmartKitchen. All Rights Reserved.
-        </footer>-->
+        </footer>
     </body>
 </html>

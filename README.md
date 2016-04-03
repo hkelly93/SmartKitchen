@@ -23,6 +23,8 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
     * Connected the three different health status REST calls.
     * Added localized i18n messages and support for: English, French, and Spanish.
     * Fixed issue with alerts circle not being clickable.
+    * Added a popup for editing the inventory items (not fully implemented) and began working on the styling for the main
+    inventory container.
 
 * Brian Day
     * Started from scratch on scanner part of project it is now correctly threaded. Using zbarimg directly now
