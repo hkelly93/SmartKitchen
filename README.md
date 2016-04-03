@@ -25,6 +25,8 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
     * Fixed issue with alerts circle not being clickable.
     * Added a popup for editing the inventory items (not fully implemented) and began working on the styling for the main
     inventory container.
+    * Added a default "expiration date" when an item is added to the inventory so that it isn't blank by default. Also fixed
+    a reload issue where there were duplicates and ng-repeat did not like it.
 
 * Brian Day
     * Started from scratch on scanner part of project it is now correctly threaded. Using zbarimg directly now

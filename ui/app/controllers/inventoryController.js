@@ -16,7 +16,7 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
 
         $scope.latest = [];
         $scope.inventory = [];
-        $scope.cache = {}; //cache.getCache("inventoryController-inventory");
+        $scope.cache = cache.getCache("inventoryController-inventory");
 
         /**
          * Load the data from the controller into the view.
@@ -91,7 +91,7 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
             promise = restService.getInventory();
 
             promise.success(function(response) {
-                $scope.newInventory = [];
+                $scope.inventory = [];
 
                 function createProduct(response) {
                     var barcode = response.data.code,

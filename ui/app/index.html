@@ -45,7 +45,7 @@
             </nav>
             <div id="alerts" ng-show="alertsVisible" class="fade">
                 <ul>
-                    <li ng-repeat="alert in alertList | orderBy: '-severity'">
+                    <li ng-repeat="alert in alertList track by $index | orderBy: '-severity'">
                         <div class="alert-delete" ng-click="removeAlert(alert)">
                             x
                         </div>
@@ -81,7 +81,7 @@
                     <span>{{messages('LATEST_INVENTORY')}}</span>
                 </div>
                 <table>
-                    <tr ng-repeat="new in latest" ng-animate="'animate'">
+                    <tr ng-repeat="new in latest track by $index" ng-animate="'animate'">
                         <td>
                             <img ng-src="{{new.image}}" alt=""/>
                         </td>
@@ -107,8 +107,8 @@
                     <span>{{messages('INVENTORY')}}</span>
                 </div>
                 <table>
-                    <tr ng-repeat="section in (inventory.length/2 | array)" ng-animate="'animate'">
-                        <td ng-repeat="item in inventory.slice(2*$index, 2*$index + 2)">
+                    <tr ng-repeat="section in (inventory.length/2 | array) track by $index" ng-animate="'animate'">
+                        <td ng-repeat="item in inventory.slice(2*$index, 2*$index + 2) track by $index">
                             <table>
                                 <tr>
                                     <td style="width: 20%">

@@ -81,6 +81,7 @@ def addInventory(barcode):
     """
     inventory = ""
     addedDate = datetime.datetime.today().strftime("%m/%d/%Y %H:%M:%S")
+    expirationDate = datetime.datetime.today().strftime("%m/%d/%Y")
 
     try:
         with open('json/inventory.json', 'r') as json_file:
@@ -95,14 +96,16 @@ def addInventory(barcode):
         if not inventory.endswith("\n"):
             inventory += "\n"
 
-        inventory += RestUtils.generateInventoryEntry(barcode, addedDate)
+        inventory += RestUtils.generateInventoryEntry(
+            barcode, addedDate, expirationDate)
     else:  # If the inventory is empty
         inventory = "[{"
 
         if not inventory.endswith("\n"):
             inventory += "\n"
 
-        inventory += RestUtils.generateInventoryEntry(barcode, addedDate)
+        inventory += RestUtils.generateInventoryEntry(
+            barcode, addedDate, expirationDate)
 
     try:
         with open('json/inventory.json', 'w') as json_file:

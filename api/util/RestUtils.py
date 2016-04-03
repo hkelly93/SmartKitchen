@@ -7,7 +7,7 @@ class RestUtils:
     """
 
     @staticmethod
-    def generateInventoryEntry(barcode, addedDate):
+    def generateInventoryEntry(barcode, addedDate, expirationDate):
         """
         Generates a JSON entry for the inventory.
         """
@@ -15,7 +15,7 @@ class RestUtils:
 
         if (barcode != "" and addedDate != ""):
             entry = "    \"barcode\": \"" + barcode + "\",\n"
-            entry += "    \"expirationdate\": \"\",\n"
+            entry += "    \"expirationdate\": \"" + expirationDate + "\",\n"
             entry += "    \"added\": \"" + addedDate + "\"\n}]"
 
             return entry
