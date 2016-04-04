@@ -82,7 +82,7 @@ app.controller('healthController', ['$scope', '$rootScope', '$sce', 'refreshData
          * @return {String} The svg element to add to the page
          */
         function generateHealthSvg(severity) {
-            const dangerColor = '#e74c3c',
+            var dangerColor = '#e74c3c',
                 warningColor = '#f1c40f',
                 healthyColor = '#2ecc71';
 

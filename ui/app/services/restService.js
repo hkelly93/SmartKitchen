@@ -9,7 +9,7 @@ app.factory('restService', ['$http', '$q',
     function($http, $q) {
         'use strict';
 
-        const localUri = 'assets/json/', // URI for local RESTful API.
+        var localUri = 'assets/json/', // URI for local RESTful API.
             localRestUri = 'http://localhost:5000/',
             openFoodFactsUri = 'http://world.openfoodfacts.org/api/v0/product/', // URI for OFF RESTful api.
             dataType = '.json', // Datatype to get data back in.
