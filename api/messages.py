@@ -7,4 +7,4 @@ class Messages:
     """
     @staticmethod
     def inventoryNotFound():
-        return "Error finding the inventory. Please make sure that the network status is healthy."
+        return "Error finding the inventory. Please make sure that the network status is healthy(REST api)."
