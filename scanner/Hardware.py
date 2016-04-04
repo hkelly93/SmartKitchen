@@ -10,6 +10,7 @@ class LED(object):
     should set these up to use PWM
     """
     def __init__(self, pin=7):
+
         GPIO.setmode(GPIO.BOARD)  # physical pin numbers
 
         # pin values most likely will be changed
@@ -28,8 +29,9 @@ class LED(object):
         GPIO.cleanup()
 
 class RGB_LED(LED):
+    # TODO allow colors to dim to get better color range
     def __init__(self, pin_r=11, pin_g=13, pin_b=15):
-        super(RGB_LED,self).__init__(pin_r)
+        super(RGB_LED, self).__init__(pin_r)
 
         # pin values most likely will be changed
         self.red = self.pin
