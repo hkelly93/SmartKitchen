@@ -15,7 +15,7 @@ if os.uname()[4][:3] == 'arm':
         pi = False
         pass
 
-DEBUG = True
+DEBUG = False
 
 
 class Scanner(object):
@@ -29,7 +29,10 @@ class Scanner(object):
         self.eco_event = threading.Event()  # False means both threads should be on
         self.eco_event.clear()
 
-        self.server_url = 'http://127.0.0.1:5000/'
+        self.server_url = 'http://localhost:5000/'
+
+        if pi:
+            self.led = RGB_LED()
 
         self.start()
 
@@ -74,27 +77,26 @@ class Scanner(object):
             self.shutdown()
 
             print "threads successfully closed"
-    def timer():
-        """
-        create a timer to shut down threads when not used for a long time
-        after x seconds set the run_event flag to False
 
-        """
-        if DEBUG:
-            print 'TIMER TRIGGERED'
-        run_event.clear()
-        eco_event.set()
-        shutdown()
+    # def timer(self):
+    #     """
+    #     create a timer to shut down threads when not used for a long time
+    #     after x seconds set the run_event flag to False
+    #
+    #     """
+    #     if DEBUG:
+    #         print 'TIMER TRIGGERED'
+    #     self.run_event.clear()
+    #     self.eco_event.set()
+    #     self.shutdown()
 
     def post_to_server(self, uri, data):
-        # post = 'http://127.0.0.1:5000/' + 'addInventory/' + barcode + '/'
-        # base = 'http://127.0.0.1:5000/'
         r = requests.post(self.server_url + uri, data=data)
 
         if DEBUG:
             status = r.status_code
             print r.url
-            # check response for 200 HTTP ok, 400 bad request, 500 api issue
+            # TODO check response for 200 HTTP ok, 400 bad request, 500 api issue
             if status == 200:
                 print 'all good'
                 return True
@@ -108,12 +110,10 @@ class Scanner(object):
         grabs output barcode data
         set event if barcode found
         """
+        #p = subprocess.Popen(['/usr/bin/zbarcam', '--nodisplay', '/dev/video0'], stdout=subprocess.PIPE)  # run barcode scanner software
         p = subprocess.Popen(['/usr/bin/zbarcam', '/dev/video0'], stdout=subprocess.PIPE)  # run barcode scanner software
-
-        #p = os.popen('/usr/bin/zbarcam', 'r')  # run barcode scanner software
-
         while self.run_event.is_set():
-            time.sleep(.1)  # slight pause is needed to allow other threads to show
+            time.sleep(1)  # slight pause is needed to allow other threads to show
             if DEBUG:
                 print'scanner waiting on status event to scan again'
 
@@ -122,17 +122,12 @@ class Scanner(object):
                 if DEBUG:
                     print 'Got barcode:', code
                 barcode = code.split(':')[1].rstrip()  # strips out type of barcode and the trailing char
-                #barcode = barcode.rstrip()
-                #print "|" + barcode + "|"
 
                 post = 'addInventory/' + barcode + '/'
                 self.post_to_server(post, barcode)  # send barcode to server
 
                 self.status_event.clear()  # valid barcode trigger green light
                 # this should cause the scanner to stop till light has been shown
-
-        print "DO I EVER GET HERE!!!"
-        #p.terminate()
 
     def show_status(self):
         """
@@ -141,28 +136,31 @@ class Scanner(object):
         triggers green light only if barcode is found in scan thread
         TODO triggers red light if scanner thread is no up in running
         """
-        # TODO yellow light is turned on here
+        if pi:
+            self.led.on([1, 1, 1])# TODO yellow light
+
         while self.run_event.is_set():  # not run_event.is_set:
             # print "status update here"
             if not self.status_event.is_set():  # if barcode is received then return a green
-                print 'green light whould stay on for 3 secs here'
+                if DEBUG:
+                    print 'green light whould stay on for 3 secs here'
+                if pi:
+                    self.led.on([0, 1, 0])
                 time.sleep(3)
                 self.status_event.set()
-                # TODO set light back to yellow here
+                if pi:
+                    self.led.on([1, 1, 1]) # TODO should be yellow
+
             elif DEBUG:
                 # waiting on a barcode
                 print 'yellow light'
 
             # TODO put another if statement to make red light flash if scanner thread is not active
             time.sleep(2)  # dont need to update the lights too often
-
         '''
-        # TODO this doesnt die correctly if the parent thread is killed
-        if not run_event.is_set():  # scanner must be down
-            # TODO should try and setup something to try and restart scanner thread
+        if not self.run_event.is_set():  # scanner must be down
             while True:
-                print 'RED LIGHT flashes'
-                time.sleep(.5)
+                print 'RED LIGHT '
         '''
 
     def post_status(self):
@@ -180,15 +178,17 @@ class Scanner(object):
             status = 'warning'
         else:
             status = 'critical'
+            self.kill_zbar()  # only main thread, make sure kill zbar
+            if pi:
+                self.led.on([1,0,0])
             # TODO critical status should also show if this code was not running
+            self.run_event.clear()
 
         post = 'setScannerHealth/' + status + '/'
         self.post_to_server(post, status)
 
-    def shutdown(self):
-        self.run_event.clear()  # this really should be enough stop threads from running?
-
-        # kill zbarcam
+    @staticmethod
+    def kill_zbar():
         PROCNAME = 'zbarcam'
 
         for proc in psutil.process_iter():
@@ -200,6 +200,15 @@ class Scanner(object):
             except:
 
                 pass
+
+    def shutdown(self):
+        self.run_event.clear()  # this really should be enough stop threads from running?
+
+        if pi:  # shut off led
+            self.led.cleanup()
+
+        self.kill_zbar()
+
 
         # cleanup threads
         self.t1.join()

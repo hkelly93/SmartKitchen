@@ -1,7 +1,10 @@
-import json
-import os.path
+#from __future__ import print_function
 
-from flask import Flask, jsonify, make_response, render_template
+import os.path
+#import sys
+
+import json
+from flask import Flask, jsonify, make_response
 from flask.ext.cors import CORS
 import datetime
 
@@ -15,6 +18,7 @@ app.config['SECRET_KEY'] = 'UfrWq8uk7bRvKewY9VwKX7FN'
 app.config['CORS_HEADERS'] = 'Content-Type'
 CORS(app)
 
+app.config['DEBUG'] = True
 
 @app.route('/getFridgeHealth/', methods=['GET'])
 def getFridgeHealth():
@@ -69,15 +73,26 @@ def getScannerHealth():
     '''
 
 
-@app.route('/getInventory/')
+@app.route('/getInventory/', methods=['GET'])
 def getInventory():
-    print 'get inventory'
-    with open('json/inventory.json') as json_file:
-        inventory = json.load(json_file)
-        return json.dumps(inventory)
+    print'get inventory'
+    try:
+        with open('json/inventory.json', 'r') as json_file:
+            inventory = json.loads(json_file.read())  # this will throw correct errors
+            return json.dumps(inventory)
+    except IOError:
+        print 'error'
+        return Messages.inventoryNotFound()
 
 
-# added methods=['POST'] to not get a 405 error
+# TODO can make all calls like this and save on get/set in url
+@app.route('/inventory/<string:barcode>', methods=['DELETE'])
+def inventory():
+    print'delete inventory'
+    # search through database and find item to delete
+
+
+
 @app.route('/addInventory/<string:barcode>/', methods=['POST'])
 def addInventory(barcode):
     """
@@ -86,15 +101,19 @@ def addInventory(barcode):
     inventory = ""
     addedDate = datetime.datetime.today().strftime("%m/%d/%Y %H:%M:%S")
     expirationDate = datetime.datetime.today().strftime("%m/%d/%Y")
-
+    print "in add inventory"
     try:
         with open('json/inventory.json', 'r') as json_file:
             inventory = json_file.read()  # Get the current inventory.
+            #inventory = json.loads(json_file.read())
+            #print inventory
     except IOError:
+        print 'cant open file'
         return Messages.inventoryNotFound()
 
-    if (inventory != ""):  # If the current inventory is not empty
+    if inventory != '':  # If the current inventory is not empty
         # Begin adding a new entry.
+        #print 'inventory not empty!'
         inventory = inventory.replace("}]", "}, {")
 
         if not inventory.endswith("\n"):
@@ -113,7 +132,9 @@ def addInventory(barcode):
 
     try:
         with open('json/inventory.json', 'w') as json_file:
+            #print 'trying to write to file'
             json_file.write(inventory)
+            #json.dump(data, json_file)
     except IOError:
         return Messages.inventoryNotFound()
 
