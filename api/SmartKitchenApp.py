@@ -1,7 +1,5 @@
-#from __future__ import print_function
-
-import os.path
-#import sys
+from os import path, sys
+import psutil # check to see if process is running
 
 import json
 from flask import Flask, jsonify, make_response
@@ -22,20 +20,20 @@ app.config['DEBUG'] = True
 
 @app.route('/getFridgeHealth/', methods=['GET'])
 def getFridgeHealth():
-    if os.path.isfile('json/health.json'):
+    if path.isfile('json/health.json'):
         FridgeHealth = 'healthy'
         return FridgeHealth
     else:
         FridgeNotHealth = 'not healthy'
         return FridgeNotHealth
-
+    '''
     fridgeHealth = "healthy"
     return fridgeHealth
-
+    '''
 
 @app.route('/getNetworkHealth/', methods=['GET'])
 def getNetworkHealth():
-    if os.path.isfile('json/health.json'):
+    if path.isfile('json/health.json'):
         NetworkHealth = 'healthy'
         return NetworkHealth
     else:
@@ -45,32 +43,41 @@ def getNetworkHealth():
 
 @app.route('/setScannerHealth/<string:status>/', methods=['POST'])
 def setScannerHealth(status):
-    health = {}
+    # health = {}
+    PROCNAME = 'barcode_scanner'
+    running = False
+    for proc in psutil.process_iter():
+        # check whether the process name matches
+        try:
+            if proc.name == PROCNAME:
+                running = True
+        except :
+            print 'some sort of error???'
+            pass
 
-    with open('json/health.json', 'r') as json_file:
-        health = json.load(json_file, encoding='utf-8')
-    with open('json/health.json', 'w') as json_file:
-        health['scanner'] = status
-        json.dump(health, json_file)
+    try:
+        with open('json/health.json', 'r') as json_file:
+            health = json.load(json_file, encoding='utf-8')
+        with open('json/health.json', 'w') as json_file:
+            if running:
+                health['scanner'] = status
+            else:
+                health['scanner'] = 'critical'
+            json.dump(health, json_file)
+    except (OSError, IOError) as e:
+        pass
 
     return ''
 
 
 @app.route('/getScannerHealth/')
 def getScannerHealth():
+    # should check and see if process is running
+    # critical if not found
+    
     with open('json/health.json', 'r') as json_file:
         health = json.load(json_file, encoding='utf-8')
         return health['scanner']
-
-    '''
-    # TODO should this really be a file????!!! or should the scanner POST to this?
-    if os.path.isfile('SmartKitchen/scanner.json'):
-        ScannerkHealth ='healthy'
-        return ScannerHealth
-    else:
-        ScannerNotHealth = 'not healthy'
-        return ScannerNotHealth
-    '''
 
 
 @app.route('/getInventory/', methods=['GET'])

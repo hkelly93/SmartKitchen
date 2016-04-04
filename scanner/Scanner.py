@@ -5,6 +5,15 @@ import threading
 import requests
 import time
 
+try:
+    from setproctitle import setproctitle
+except ImportError:
+    print 'cannot find module setproctitle'
+
+setproctitle('barcode_scanner')
+
+DEBUG = True
+pi = False
 # see if  this is running on pi or other os
 if os.uname()[4][:3] == 'arm':
     try:
@@ -14,8 +23,6 @@ if os.uname()[4][:3] == 'arm':
     except ImportError:
         pi = False
         pass
-
-DEBUG = False
 
 
 class Scanner(object):
@@ -29,7 +36,7 @@ class Scanner(object):
         self.eco_event = threading.Event()  # False means both threads should be on
         self.eco_event.clear()
 
-        self.server_url = 'http://localhost:5000/'
+        self.server_url = 'http://10.253.85.225:5000/'#'http://localhost:5000/'
 
         if pi:
             self.led = RGB_LED()
@@ -112,6 +119,7 @@ class Scanner(object):
         """
         #p = subprocess.Popen(['/usr/bin/zbarcam', '--nodisplay', '/dev/video0'], stdout=subprocess.PIPE)  # run barcode scanner software
         p = subprocess.Popen(['/usr/bin/zbarcam', '/dev/video0'], stdout=subprocess.PIPE)  # run barcode scanner software
+        # could use psutil.Popen instead
         while self.run_event.is_set():
             time.sleep(1)  # slight pause is needed to allow other threads to show
             if DEBUG:

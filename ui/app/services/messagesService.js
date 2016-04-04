@@ -15,7 +15,7 @@ app.factory('messagesService', function($sce) {
             INVENTORY: 'Inventory',
             HELP: 'Help',
             ABOUT: 'About',
-            SLOGAN: 'The future of<br/>kichens begins<br/>here.',
+            SLOGAN: 'The future of<br/>kitchens begins<br/>here.',
             READ_MORE: 'Read More',
             KITCHEN_HEALTH: 'Kitchen Health',
             FRIDGE: 'Fridge',
