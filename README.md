@@ -6,6 +6,12 @@ and open the application at the grocery store to know if you need milk or not.
 # Contributors
 Harrison Kelly, Brian Day, AjayKumar Sarikonda
 
+# Progress (Week 4/04)
+
+* Harrison Kelly
+    * Fixed an issue of CORS not allowing us to make a rest call from :8000 to :5000.
+    * Fixed an issue of Safari not liking the use of "const" and wouldn't display the page.
+    
 # Progress (Week 3/28)
 
 * Harrison Kelly
