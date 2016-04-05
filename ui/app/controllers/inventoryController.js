@@ -86,7 +86,9 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                 }, true);
             });
 
-            promise.error(function() {});
+            promise.error(function(response) {
+                $rootScope.addAlert(SEVERITY.WARNING, "Something went wrong and the latest inventory could not be found.");
+            });
 
             promise = restService.getInventory();
 
@@ -110,7 +112,7 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                 }
 
                 function inventoryError(response) {
-                    $rootScope.addAlert(SEVERITY.WARNING, "Something went wrong and the latest inventory could not be found.");
+                    $rootScope.addAlert(SEVERITY.WARNING, "Something went wrong and the inventory could not be found.");
                 }
 
                 var item,
@@ -139,7 +141,9 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                 }
             });
 
-            promise.error(function(response) {});
+            promise.error(function(response) {
+                $rootScope.addAlert(SEVERITY.CRITICAL, "Something went wrong and the inventory could not be found.");
+            });
         };
 
         /**

@@ -32,7 +32,7 @@ app.controller('navController', ['$scope', '$rootScope', 'refreshData', 'restSer
 
             promise.error(function(response) {
                 $scope.inventory = '(0)';
-                $rootScope.addAlert(SEVERITY.CRITICAL, "Something went wrong and the inventory could not be found");
+                $rootScope.addAlert(SEVERITY.CRITICAL, "Something went wrong and the inventory could not be found.");
             });
         };
 
