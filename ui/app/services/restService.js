@@ -59,7 +59,6 @@ app.factory('restService', ['$http', '$q',
             /**
              * Gets the latest inventory from json/inventory.json.
              *
-             * TODO: Replace this with a rest call when that gets implemented.
              * @return {HttpPromise} The http GET request promise.
              */
             getLatest: function() {
@@ -69,6 +68,11 @@ app.factory('restService', ['$http', '$q',
                     timeout: this.timeout
                 }));
             },
+            /**
+             * Gets the full inventory from json/inventory.json.
+             *
+             * @return {HttpPromise} The http GET request promise.
+             */
             getInventory: function() {
                 return this.defer($http({
                     method: 'GET',
@@ -90,6 +94,10 @@ app.factory('restService', ['$http', '$q',
                     timeout: this.timeout
                 }));
             },
+            /**
+             * Returns the fridge health.
+             * @return {HttpPromise} The http GET request promise.
+             */
             getFridgeHealth: function() {
                 return this.defer($http({
                     method: 'GET',
@@ -97,6 +105,10 @@ app.factory('restService', ['$http', '$q',
                     timeout: this.timeout
                 }));
             },
+            /**
+             * Returns the network health.
+             * @return {HttpPromise} The http GET request promise.
+             */
             getNetworkHealth: function() {
                 return this.defer($http({
                     method: 'GET',
@@ -104,6 +116,10 @@ app.factory('restService', ['$http', '$q',
                     timeout: this.timeout
                 }));
             },
+            /**
+             * Returns the scanner health.
+             * @return {HttpPromise} The http GET request promise.
+             */
             getScannerHealth: function() {
                 return this.defer($http({
                     method: 'GET',
@@ -111,6 +127,11 @@ app.factory('restService', ['$http', '$q',
                     timeout: this.timeout
                 }));
             },
+            /**
+             * Remove an item from the inventory.
+             * @param  {Object} item      The item to delete.
+             * @return {HttpPromise}      The http DELETE request promise.
+             */
             removeFromInventory: function(item) {
                 return this.defer($http({
                     method: 'DELETE',
@@ -118,6 +139,11 @@ app.factory('restService', ['$http', '$q',
                     timeout: this.timeout
                 }));
             },
+            /**
+             * Set the expiration date of an item.
+             * @param  {Object} item      The object to set the expiration date on.
+             * @return {HttpPromise}      The http POST request promise.
+             */
             setExpirationDate: function(item) {
                 var itemData = $.param({
                     json: JSON.stringify({

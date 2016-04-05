@@ -43,3 +43,4 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
     * Fixed an issue of CORS not allowing us to make a rest call from :8000 to :5000.
     * Fixed an issue of Safari not liking the use of "const" and wouldn't display the page.
     * Fixed an issue where the inventory controller was being loaded multiple times.
+    * Added missing function comments.
