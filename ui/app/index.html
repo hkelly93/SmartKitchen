@@ -60,77 +60,79 @@
                 </div>-->
             </div>
         </header>
-        <div id="content">
-            <div id="health" class="panel" ng-controller="healthController">
-                <div class="header">
-                    <span>{{messages('KITCHEN_HEALTH')}}</span>
+        <div ng-controller="inventoryController">
+            <div id="content">
+                <div id="health" class="panel" ng-controller="healthController">
+                    <div class="header">
+                        <span>{{messages('KITCHEN_HEALTH')}}</span>
+                    </div>
+                    <table>
+                        <tr>
+                            <td>{{messages('FRIDGE')}}:</td>
+                            <td ng-bind-html="health.fridge">{{health.fridge}}</td>
+                            <td>{{messages('NETWORK')}}:</td>
+                            <td ng-bind-html="health.network">{{health.network}}</td>
+                            <td>{{messages('SCANNER')}}:</td>
+                            <td ng-bind-html="health.scanner">{{health.scanner}}</td>
+                        </tr>
+                    </table>
                 </div>
-                <table>
-                    <tr>
-                        <td>{{messages('FRIDGE')}}:</td>
-                        <td ng-bind-html="health.fridge">{{health.fridge}}</td>
-                        <td>{{messages('NETWORK')}}:</td>
-                        <td ng-bind-html="health.network">{{health.network}}</td>
-                        <td>{{messages('SCANNER')}}:</td>
-                        <td ng-bind-html="health.scanner">{{health.scanner}}</td>
-                    </tr>
-                </table>
+                <div id="latest-additions" class="panel">
+                    <div class="header">
+                        <span>{{messages('LATEST_INVENTORY')}}</span>
+                    </div>
+                    <table>
+                        <tr ng-repeat="new in latest track by $index" ng-animate="'animate'">
+                            <td>
+                                <img ng-src="{{new.image}}" alt=""/>
+                            </td>
+                            <td>
+                                <span>
+                                    <strong>{{messages('NAME')}}</strong>:
+                                    {{new.name}}<br/>
+                                    <strong>{{messages('EXPIRATION_DATE')}}</strong>:
+                                    {{new.expires}}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="button" ng-click="togglePopup(new)">{{messages('EDIT')}}</div>
+                                <div class="button delete" ng-click="deleteItem(new)">{{messages('DELETE')}}</div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
             </div>
-            <div id="latest-additions" class="panel" ng-controller="inventoryController">
-                <div class="header">
-                    <span>{{messages('LATEST_INVENTORY')}}</span>
+            <div id="inventory">
+                <div class="panel">
+                    <div class="header">
+                        <span>{{messages('INVENTORY')}}</span>
+                    </div>
+                    <table>
+                        <tr ng-repeat="section in (inventory.length/2 | array) track by $index" ng-animate="'animate'">
+                            <td ng-repeat="item in inventory.slice(2*$index, 2*$index + 2) track by $index">
+                                <table>
+                                    <tr>
+                                        <td style="width: 20%">
+                                            <img ng-src="{{item.image}}" alt=""/>
+                                        </td>
+                                        <td style="width: 40%">
+                                            <span>
+                                                <strong>{{messages('NAME')}}</strong>:
+                                                {{item.name}}<br/>
+                                                <strong>{{messages('EXPIRATION_DATE')}}</strong>:
+                                                {{item.expires}}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="button" ng-click="togglePopup(item)">{{messages('EDIT')}}</div>
+                                            <div class="button delete" ng-click="deleteItem(item)">{{messages('DELETE')}}</div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
                 </div>
-                <table>
-                    <tr ng-repeat="new in latest track by $index" ng-animate="'animate'">
-                        <td>
-                            <img ng-src="{{new.image}}" alt=""/>
-                        </td>
-                        <td>
-                            <span>
-                                <strong>{{messages('NAME')}}</strong>:
-                                {{new.name}}<br/>
-                                <strong>{{messages('EXPIRATION_DATE')}}</strong>:
-                                {{new.expires}}
-                            </span>
-                        </td>
-                        <td>
-                            <div class="button" ng-click="togglePopup(new)">{{messages('EDIT')}}</div>
-                            <div class="button delete" ng-click="deleteItem(new)">{{messages('DELETE')}}</div>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-        <div id="inventory">
-            <div class="panel" ng-controller="inventoryController">
-                <div class="header">
-                    <span>{{messages('INVENTORY')}}</span>
-                </div>
-                <table>
-                    <tr ng-repeat="section in (inventory.length/2 | array) track by $index" ng-animate="'animate'">
-                        <td ng-repeat="item in inventory.slice(2*$index, 2*$index + 2) track by $index">
-                            <table>
-                                <tr>
-                                    <td style="width: 20%">
-                                        <img ng-src="{{item.image}}" alt=""/>
-                                    </td>
-                                    <td style="width: 40%">
-                                        <span>
-                                            <strong>{{messages('NAME')}}</strong>:
-                                            {{item.name}}<br/>
-                                            <strong>{{messages('EXPIRATION_DATE')}}</strong>:
-                                            {{item.expires}}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <div class="button" ng-click="togglePopup(item)">{{messages('EDIT')}}</div>
-                                        <div class="button delete" ng-click="deleteItem(item)">{{messages('DELETE')}}</div>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>
             </div>
         </div>
         <div id="popup" ng-show="showPopup" class="fade">
