@@ -69,6 +69,10 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                     // Search in the cache first.
                     if (elBarcode in $scope.cache) {
                         item = $scope.cache[elBarcode];
+
+                        // Set the expiration date just in case it is different
+                        item.expirationdate = response.data[i].expirationdate;
+
                         $scope.newList.push(item);
                     } else {
                         logService.debug('inventoryController', 'REST call for barcode ' + elBarcode);
@@ -129,6 +133,10 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                         // Search in the cache first.
                         if (barcode in $scope.cache) {
                             var entity = $scope.cache[barcode];
+
+                            // Set the expiration date just in case it is different
+                            entity.expirationdate = response.data[item].expirationdate;
+
                             $scope.inventory.push(entity);
                             logService.debug('inventoryController', 'Found ' + barcode + ' in cache.');
                         } else {

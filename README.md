@@ -44,3 +44,4 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
     * Fixed an issue of Safari not liking the use of "const" and wouldn't display the page.
     * Fixed an issue where the inventory controller was being loaded multiple times.
     * Added missing function comments and alerts.
+    * Updated cached items with possibly new expiration dates.
