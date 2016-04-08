@@ -154,12 +154,12 @@
                                     <strong>{{messages('NAME')}}</strong>:
                                     {{popupObject.name}}<br/>
                                     <strong>{{messages('EXPIRATION_DATE')}}</strong>:
-                                    {{popupObject.expires}}
+                                    <input type="date" ng-change="dateChange()" ng-model="popupObject.expiresDateVal" />
                                 </span>
                             </td>
                         </tr>
                     </table>
-                    <div class="button" ng-click="togglePopup()">
+                    <div class="button" ng-click="togglePopup(popupObject, true)">
                         Submit
                     </div>
                 </div>

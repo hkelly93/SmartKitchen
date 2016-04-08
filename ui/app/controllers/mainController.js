@@ -6,8 +6,8 @@
  * @param  {function} AngularJS services
  * @return {null}
  */
-app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', 'refreshData', 'logService', 'messagesService',
-    function($scope, $rootScope, $sce, $parse, refreshData, logService, messagesService) {
+app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', 'refreshData', 'logService', 'messagesService', 'restService', 'SEVERITY',
+    function($scope, $rootScope, $sce, $parse, refreshData, logService, messagesService, restService, SEVERITY) {
         logService.setLevel(logService.LEVEL.DEBUG);
 
         $scope.alertList = [];
@@ -17,6 +17,7 @@ app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', 'ref
         $scope.latestRefresh = refreshData.getLatestRefresh().toLocaleString().replace(", ", " ");
         $scope.messages = messagesService.get;
         $scope.htmlMessages = messagesService.getHtml;
+        $scope.popupDateChange = false;
 
         /**
          * Gets the running alerts from a REST call to open json/alerts.json. Also
@@ -140,9 +141,29 @@ app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', 'ref
             }
         };
 
-        $scope.togglePopup = function(item) {
-            $scope.popupObject = (item === undefined) ? {} : item;
+        $scope.togglePopup = function(item, submit) {
+            if (submit !== undefined) {
+                // Verify that there was a change.
+                if ($scope.popupDateChange) {
+                    var promise = restService.setExpirationDate(item);
+
+                    promise.success(function(response) {
+                        // Refresh the inventory.
+                        $rootScope.$emit('refreshInventory', {});
+                    });
+
+                    promise.error(function(response) {
+                        $rootScope.addAlert(SEVERITY.WARNING, 'Could not update the expiration date for ' + item.name);
+                    });
+                }
+            }
+
+            $scope.popupObject = (item === undefined) ? {} : angular.copy(item);
             $scope.showPopup = !$scope.showPopup;
+        };
+
+        $scope.dateChange = function() {
+            $scope.popupDateChange = !$scope.popupDateChange;
         };
     }
 ]);

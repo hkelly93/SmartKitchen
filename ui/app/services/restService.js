@@ -145,16 +145,10 @@ app.factory('restService', ['$http', '$q',
              * @return {HttpPromise}      The http POST request promise.
              */
             setExpirationDate: function(item) {
-                var itemData = $.param({
-                    json: JSON.stringify({
-                        barcode: item.barcode,
-                        expirationdate: item.expirationdate
-                    })
-                });
                 return this.defer($http({
                     method: 'PUT',
                     url: localRestUri + 'setExpirationDate/' + item.barcode + '/' + item.expirationdate + '/',
-                    date: itemDate,
+                    data: 'barcode=' + this.barcode + '&expirationDate=' + item.expirationdate,
                     timeout: this.timeout
                 }));
             },

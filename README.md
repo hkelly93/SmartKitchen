@@ -45,3 +45,5 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
     * Fixed an issue where the inventory controller was being loaded multiple times.
     * Added missing function comments and alerts.
     * Updated cached items with possibly new expiration dates.
+    * Connected the "edit" button with a popup that allows users to change the expiration date. The REST call is connected, just
+    waiting for it to be written.
