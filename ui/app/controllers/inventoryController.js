@@ -194,7 +194,7 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
             });
 
             promise.error(function() {
-                // TODO
+                $rootScope.addAlert(SEVERITY.CRITICAL, 'Could not delete ' + item.name + '.');
             });
         };
 
