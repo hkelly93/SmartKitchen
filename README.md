@@ -47,3 +47,4 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
     * Updated cached items with possibly new expiration dates.
     * Connected the "edit" button with a popup that allows users to change the expiration date. The REST call is connected, just
     waiting for it to be written.
+    * Fixed the latest refresh date to show the actual refresh date/time.

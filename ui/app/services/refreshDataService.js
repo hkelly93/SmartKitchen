@@ -41,13 +41,6 @@ app.factory('refreshData', ['$rootScope', '$interval', 'logService',
                 this.removeRefreshing(controllerName);
             },
             /**
-             * Returns the latest refresh date.
-             * @return {Date} The latest refresh date.
-             */
-            getLatestRefresh: function() {
-                return latestRefresh;
-            },
-            /**
              * Refreshes the controller's data if it is not already refreshing.
              * @param  {String} controller The name of the controller to refresh.
              * @param  {String} log        A log message from the controller.
@@ -74,11 +67,6 @@ app.factory('refreshData', ['$rootScope', '$interval', 'logService',
                         return refreshingControllers.indexOf(controllerName) > -1;
                     };
 
-                    var showDate = function() {
-                        var date = new Date();
-                        latestRefresh = date.toLocaleString().replace(",", "");
-                    };
-
                     if (!refresh) return;
 
                     var event = '',
@@ -103,10 +91,11 @@ app.factory('refreshData', ['$rootScope', '$interval', 'logService',
 
                     logService.info('refreshDataService', log);
                     $rootScope.$emit(event, {});
+                    $rootScope.$emit('refreshDateUpdate', {
+                        'date': new Date()
+                    });
 
                     removeRefreshing(controller);
-
-                    showDate();
                 }, refreshRate * 1000);
 
                 // Cleanup

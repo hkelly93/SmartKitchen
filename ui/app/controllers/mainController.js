@@ -14,7 +14,7 @@ app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', 'ref
         $scope.alertsVisible = false;
         $scope.showPopup = false;
         $scope.popupObject = {};
-        $scope.latestRefresh = refreshData.getLatestRefresh().toLocaleString().replace(", ", " ");
+        $scope.latestRefresh = new Date().toLocaleString().replace(",", "");
         $scope.messages = messagesService.get;
         $scope.htmlMessages = messagesService.getHtml;
         $scope.popupDateChange = false;
@@ -165,5 +165,11 @@ app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', 'ref
         $scope.dateChange = function() {
             $scope.popupDateChange = !$scope.popupDateChange;
         };
+
+        // Register event handlers
+        $rootScope.$on("refreshDateUpdate", function(event, message) {
+            var date = message.date;
+            $scope.latestRefresh = date.toLocaleString().replace(",", "");
+        });
     }
 ]);
