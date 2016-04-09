@@ -48,3 +48,4 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
     * Connected the "edit" button with a popup that allows users to change the expiration date. The REST call is connected, just
     waiting for it to be written.
     * Fixed the latest refresh date to show the actual refresh date/time.
+    * Changed the size of the banner so that it doesn't take up as much space.
