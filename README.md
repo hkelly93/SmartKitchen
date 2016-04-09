@@ -49,3 +49,4 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
     waiting for it to be written.
     * Fixed the latest refresh date to show the actual refresh date/time.
     * Changed the size of the banner so that it doesn't take up as much space.
+    * Added a missing alert message when a REST call failed.
