@@ -3,6 +3,8 @@ import subprocess
 import psutil
 import threading
 import requests
+import json
+
 import time
 
 try:
@@ -60,7 +62,8 @@ class Scanner(object):
                 print 'main thread running'
                 time.sleep(10)  # send status to rest api but not too often
                 self.post_status()
-
+                g = requests.get(self.server_url + 'getInventory/')
+                print json.loads(g.json())
                 # power saver mode on? no, then restart threads that are down
                 '''
                 if not eco_event.is_set():  # all threads should be running
@@ -99,6 +102,20 @@ class Scanner(object):
 
     def post_to_server(self, uri, data):
         r = requests.post(self.server_url + uri, data=data)
+
+        if DEBUG:
+            status = r.status_code
+            print r.url
+            # TODO check response for 200 HTTP ok, 400 bad request, 500 api issue
+            if status == 200:
+                print 'all good'
+                return True
+            else:
+                print status
+                return False
+
+    def get_from_server(self, uri):
+        r = requests.get(self.server_url + uri)
 
         if DEBUG:
             status = r.status_code
