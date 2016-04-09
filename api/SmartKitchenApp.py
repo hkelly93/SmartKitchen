@@ -1,13 +1,15 @@
 from os import path, sys
 import psutil # check to see if process is running
-
+from filelock import FileLock
 import json
 from flask import Flask, jsonify, make_response
 from flask.ext.cors import CORS
 import datetime
-
+from flask import request
 from util.RestUtils import RestUtils
 from messages import Messages
+
+import logging
 
 response_data = {}
 
@@ -18,31 +20,34 @@ CORS(app)
 
 app.config['DEBUG'] = True
 
-@app.route('/getFridgeHealth/', methods=['GET'])
-def getFridgeHealth():
-    if path.isfile('json/health.json'):
-        FridgeHealth = 'healthy'
-        return FridgeHealth
-    else:
-        FridgeNotHealth = 'not healthy'
-        return FridgeNotHealth
-    '''
-    fridgeHealth = "healthy"
-    return fridgeHealth
-    '''
-
-@app.route('/getNetworkHealth/', methods=['GET'])
-def getNetworkHealth():
-    if path.isfile('json/health.json'):
-        NetworkHealth = 'healthy'
-        return NetworkHealth
-    else:
-        NetworkNotHealth = 'not healthy'
-        return NetworkNotHealth
+# logging
+file_handler = logging.FileHandler('app.log')
+app.logger.addHandler(file_handler)
+app.logger.setLevel(logging.INFO)
 
 
-@app.route('/setScannerHealth/<string:status>/', methods=['POST'])
-def setScannerHealth(status):
+@app.route('/fridgeHealth/', methods=['GET', 'POST'])
+def fridgeHealth():
+    if request.method == 'GET':
+        fridgeHealth = 'healthy'
+        return fridgeHealth
+    if request.method == 'POST':
+        fridgeHealth = request.data
+        return fridgeHealth
+
+
+@app.route('/networkHealth/', methods=['GET', 'POST'])
+def networkHealth():
+    if request.method == 'GET':
+        networkHealth = 'healthy'
+        return networkHealth
+    if request.method == 'POST':
+        networkHealth = request.data
+        return networkHealth
+
+
+@app.route('/scannerHealth/<string:status>/', methods=['GET', 'POST'])
+def scannerHealth(status):
     # health = {}
     PROCNAME = 'barcode_scanner'
     running = False
@@ -91,14 +96,14 @@ def getInventory():
         print 'error'
         return Messages.inventoryNotFound()
 
-
+'''
 # TODO can make all calls like this and save on get/set in url
 @app.route('/inventory/<string:barcode>', methods=['DELETE'])
 def inventory():
     print'delete inventory'
     # search through database and find item to delete
 
-
+'''
 
 @app.route('/addInventory/<string:barcode>/', methods=['POST'])
 def addInventory(barcode):
@@ -108,45 +113,49 @@ def addInventory(barcode):
     inventory = ""
     addedDate = datetime.datetime.today().strftime("%m/%d/%Y %H:%M:%S")
     expirationDate = datetime.datetime.today().strftime("%m/%d/%Y")
-    print "in add inventory"
+    #print "in add inventory"
     try:
-        with open('json/inventory.json', 'r') as json_file:
-            inventory = json_file.read()  # Get the current inventory.
-            #inventory = json.loads(json_file.read())
-            #print inventory
-    except IOError:
-        print 'cant open file'
-        return Messages.inventoryNotFound()
+        with FileLock('json/inventory.json'):
+            try:
+                with open('json/inventory.json', 'r') as json_file:
+                    inventory = json_file.read()  # Get the current inventory.
+                    #inventory = json.loads(json_file.read())
+                    #print inventory
+            except IOError:
+                #print 'cant open file'
+                return Messages.inventoryNotFound()
 
-    if inventory != '':  # If the current inventory is not empty
-        # Begin adding a new entry.
-        #print 'inventory not empty!'
-        inventory = inventory.replace("}]", "}, {")
+            if inventory != '':  # If the current inventory is not empty
+                # Begin adding a new entry.
+                #print 'inventory not empty!'
+                inventory = inventory.replace("}]", "}, {")
 
-        if not inventory.endswith("\n"):
-            inventory += "\n"
+                if not inventory.endswith("\n"):
+                    inventory += "\n"
 
-        inventory += RestUtils.generateInventoryEntry(
-            barcode, addedDate, expirationDate)
-    else:  # If the inventory is empty
-        inventory = "[{"
+                inventory += RestUtils.generateInventoryEntry(
+                    barcode, addedDate, expirationDate)
+            else:  # If the inventory is empty
+                inventory = "[{"
 
-        if not inventory.endswith("\n"):
-            inventory += "\n"
+                if not inventory.endswith("\n"):
+                    inventory += "\n"
 
-        inventory += RestUtils.generateInventoryEntry(
-            barcode, addedDate, expirationDate)
+                inventory += RestUtils.generateInventoryEntry(
+                    barcode, addedDate, expirationDate)
 
-    try:
-        with open('json/inventory.json', 'w') as json_file:
-            #print 'trying to write to file'
-            json_file.write(inventory)
-            #json.dump(data, json_file)
-    except IOError:
-        return Messages.inventoryNotFound()
+            try:
+                with open('json/inventory.json', 'w') as json_file:
+                    #print 'trying to write to file'
+                    json_file.write(inventory)
+                    #json.dump(data, json_file)
+            except IOError:
+                return Messages.inventoryNotFound()
 
-    return inventory
+            return inventory
 
+    except Exception as e:
+        return e
 
 @app.route('/setExpirationDate/<string:date>/')
 def setExpirationDate(date):
