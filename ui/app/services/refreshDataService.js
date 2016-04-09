@@ -18,6 +18,12 @@ app.factory('refreshData', ['$rootScope', '$interval', 'logService',
              */
             loadController: function(controllerName) {
                 logService.debug('refreshDataService', 'Loading ' + controllerName + '.');
+
+                if (loadedControllers.indexOf(controllerName) > -1) {
+                    logService.warning('refreshDataService', controllerName + " was already loaded and will not be loaded again.");
+                    return;
+                }
+
                 loadedControllers.push(controllerName);
             },
             /**

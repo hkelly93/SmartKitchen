@@ -32,6 +32,7 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                         name: product.product_name,
                         image: product.image_front_thumb_url,
                         expires: expirationDates[barcode],
+                        expiresDateVal: toDate(expirationDates[barcode]),
                         barcode: barcode
                     };
 
@@ -69,6 +70,11 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                     // Search in the cache first.
                     if (elBarcode in $scope.cache) {
                         item = $scope.cache[elBarcode];
+
+                        // Set the expiration date just in case it is different
+                        item.expirationdate = response.data[i].expirationdate;
+                        item.expiresDateVal = toDate(response.data[i].expirationdate);
+
                         $scope.newList.push(item);
                     } else {
                         logService.debug('inventoryController', 'REST call for barcode ' + elBarcode);
@@ -86,7 +92,9 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                 }, true);
             });
 
-            promise.error(function() {});
+            promise.error(function(response) {
+                $rootScope.addAlert(SEVERITY.WARNING, "Something went wrong and the latest inventory could not be found.");
+            });
 
             promise = restService.getInventory();
 
@@ -100,6 +108,7 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                             name: response.data.product.product_name,
                             image: response.data.product.image_front_thumb_url,
                             expires: expirationDates[barcode],
+                            expiresDateVal: toDate(expirationDates[barcode]),
                             barcode: barcode
                         };
 
@@ -110,7 +119,7 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                 }
 
                 function inventoryError(response) {
-                    $rootScope.addAlert(SEVERITY.WARNING, "Something went wrong and the latest inventory could not be found.");
+                    $rootScope.addAlert(SEVERITY.WARNING, "Something went wrong and the inventory could not be found.");
                 }
 
                 var item,
@@ -127,6 +136,11 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                         // Search in the cache first.
                         if (barcode in $scope.cache) {
                             var entity = $scope.cache[barcode];
+
+                            // Set the expiration date just in case it is different
+                            entity.expirationdate = response.data[item].expirationdate;
+                            entity.expiresDateVal = toDate(response.data[item].expirationdate);
+
                             $scope.inventory.push(entity);
                             logService.debug('inventoryController', 'Found ' + barcode + ' in cache.');
                         } else {
@@ -139,7 +153,9 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                 }
             });
 
-            promise.error(function(response) {});
+            promise.error(function(response) {
+                $rootScope.addAlert(SEVERITY.CRITICAL, "Something went wrong and the inventory could not be found.");
+            });
         };
 
         /**
@@ -182,6 +198,40 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
             });
         };
 
+        /**
+         * Converts date from mm/dd/yyyy format to a different string format.
+         * @param  {String} date   The date to convert
+         * @return {String}        The String representation of "date".
+         */
+        var toDate = function(date) {
+            var dateParts = date.split("/");
+
+            if (dateParts.length != 3) {
+                logService.warning('inventoryController', 'Invalid date, ' + date + ' found.');
+                return '';
+            }
+
+            if (date.length != 10) {
+                logService.warning('inventoryController', 'Invalid date, ' + date + ' found.');
+                return '';
+            }
+
+            // The subtraction by one for the month is due to the fact that JavaScript starts months at zero.
+            var dateObj = new Date(dateParts[2], dateParts[0] - 1, dateParts[1]),
+                year = dateObj.getFullYear().toString(),
+                month = (dateObj.getMonth() + 1).toString(),
+                day = dateObj.getDate().toString();
+
+            if (month.length === 1) {
+                month = '0' + month;
+            }
+
+            if (day.length === 1) {
+                day = '0' + day;
+            }
+            return dateObj;
+        };
+
         $scope.load();
 
         // Register event handlers
@@ -200,5 +250,4 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
             saveCache();
             refreshDataService.unloadController('inventoryController');
         });
-    }
-]);
+}]);

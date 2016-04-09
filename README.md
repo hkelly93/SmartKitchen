@@ -6,12 +6,6 @@ and open the application at the grocery store to know if you need milk or not.
 # Contributors
 Harrison Kelly, Brian Day, AjayKumar Sarikonda
 
-# Progress (Week 4/04)
-
-* Harrison Kelly
-    * Fixed an issue of CORS not allowing us to make a rest call from :8000 to :5000.
-    * Fixed an issue of Safari not liking the use of "const" and wouldn't display the page.
-    
 # Progress (Week 3/28)
 
 * Harrison Kelly
@@ -42,3 +36,14 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
 
 * Ajay
     * Working on addInventory and setExpiration methods in REST API where i am getting more errors
+
+# Progress (Week 4/04)
+
+* Harrison Kelly
+    * Fixed an issue of CORS not allowing us to make a rest call from :8000 to :5000.
+    * Fixed an issue of Safari not liking the use of "const" and wouldn't display the page.
+    * Fixed an issue where the inventory controller was being loaded multiple times.
+    * Added missing function comments and alerts.
+    * Updated cached items with possibly new expiration dates.
+    * Connected the "edit" button with a popup that allows users to change the expiration date. The REST call is connected, just
+    waiting for it to be written.
