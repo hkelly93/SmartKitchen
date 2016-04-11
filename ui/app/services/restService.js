@@ -101,7 +101,7 @@ app.factory('restService', ['$http', '$q',
             getFridgeHealth: function() {
                 return this.defer($http({
                     method: 'GET',
-                    url: localRestUri + 'getFridgeHealth/',
+                    url: localRestUri + 'fridgeHealth/',
                     timeout: this.timeout
                 }));
             },
@@ -112,7 +112,7 @@ app.factory('restService', ['$http', '$q',
             getNetworkHealth: function() {
                 return this.defer($http({
                     method: 'GET',
-                    url: localRestUri + 'getNetworkHealth/',
+                    url: localRestUri + 'networkHealth/',
                     timeout: this.timeout
                 }));
             },
@@ -123,7 +123,7 @@ app.factory('restService', ['$http', '$q',
             getScannerHealth: function() {
                 return this.defer($http({
                     method: 'GET',
-                    url: localRestUri + 'getScannerHealth/',
+                    url: localRestUri + 'scannerHealth/',
                     timeout: this.timeout
                 }));
             },

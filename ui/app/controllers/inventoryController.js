@@ -187,14 +187,14 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
 
         $scope.deleteItem = function(item) {
             logService.debug('inventoryController', 'Deleting barcode ' + item.barcode);
-            var promise = restService.removeFromInventory(barcode);
+            var promise = restService.removeFromInventory(item.barcode);
 
             promise.success(function() {
                 // TODO
             });
 
             promise.error(function() {
-                // TODO
+                $rootScope.addAlert(SEVERITY.CRITICAL, 'Could not delete ' + item.name + '.');
             });
         };
 

@@ -47,6 +47,9 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
     * Updated cached items with possibly new expiration dates.
     * Connected the "edit" button with a popup that allows users to change the expiration date. The REST call is connected, just
     waiting for it to be written.
+    * Fixed the latest refresh date to show the actual refresh date/time.
+    * Changed the size of the banner so that it doesn't take up as much space.
+    * Added a missing alert message when a REST call failed.
 
 * Brian Day
     * rewrote all api calls to make more concise
