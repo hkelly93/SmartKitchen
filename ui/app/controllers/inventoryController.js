@@ -187,7 +187,7 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
 
         $scope.deleteItem = function(item) {
             logService.debug('inventoryController', 'Deleting barcode ' + item.barcode);
-            var promise = restService.removeFromInventory(item.barcode);
+            var promise = restService.removeFromInventory(item);
 
             promise.success(function() {
                 // TODO

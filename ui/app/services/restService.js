@@ -64,7 +64,7 @@ app.factory('restService', ['$http', '$q',
             getLatest: function() {
                 return this.defer($http({
                     method: 'GET',
-                    url: localRestUri + 'getInventory/',
+                    url: localRestUri + 'inventory/',
                     timeout: this.timeout
                 }));
             },
@@ -76,7 +76,7 @@ app.factory('restService', ['$http', '$q',
             getInventory: function() {
                 return this.defer($http({
                     method: 'GET',
-                    url: localRestUri + 'getInventory/',
+                    url: localRestUri + 'inventory/',
                     timeout: this.timeout
                 }));
             },
@@ -101,7 +101,7 @@ app.factory('restService', ['$http', '$q',
             getFridgeHealth: function() {
                 return this.defer($http({
                     method: 'GET',
-                    url: localRestUri + 'getFridgeHealth/',
+                    url: localRestUri + 'health/fridge/',
                     timeout: this.timeout
                 }));
             },
@@ -112,7 +112,7 @@ app.factory('restService', ['$http', '$q',
             getNetworkHealth: function() {
                 return this.defer($http({
                     method: 'GET',
-                    url: localRestUri + 'getNetworkHealth/',
+                    url: localRestUri + 'health/network/',
                     timeout: this.timeout
                 }));
             },
@@ -123,7 +123,7 @@ app.factory('restService', ['$http', '$q',
             getScannerHealth: function() {
                 return this.defer($http({
                     method: 'GET',
-                    url: localRestUri + 'getScannerHealth/',
+                    url: localRestUri + 'health/scanner/',
                     timeout: this.timeout
                 }));
             },
@@ -135,7 +135,7 @@ app.factory('restService', ['$http', '$q',
             removeFromInventory: function(item) {
                 return this.defer($http({
                     method: 'DELETE',
-                    url: localRestUri + 'deleteFromInventory/' + item.barcode + '/',
+                    url: localRestUri + 'inventory/' + item.barcode + '/',
                     timeout: this.timeout
                 }));
             },
@@ -145,10 +145,14 @@ app.factory('restService', ['$http', '$q',
              * @return {HttpPromise}      The http POST request promise.
              */
             setExpirationDate: function(item) {
+                var start = moment(new Date()),
+                    end = moment(item.expiresDateVal),
+                    diff = end.diff(start, 'days');
+
                 return this.defer($http({
                     method: 'PUT',
-                    url: localRestUri + 'setExpirationDate/' + item.barcode + '/' + item.expirationdate + '/',
-                    data: 'barcode=' + this.barcode + '&expirationDate=' + item.expirationdate,
+                    url: localRestUri + 'expiration/' + item.barcode + '/',
+                    data: 'barcode=' + this.barcode + '&expire=' + diff,
                     timeout: this.timeout
                 }));
             },

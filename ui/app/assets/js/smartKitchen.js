@@ -26,7 +26,8 @@
     app.constant('STATUS', {
         HEALTHY: 'healthy',
         WARNING: 'warning',
-        CRITICAL: 'critical'
+        CRITICAL: 'critical',
+        WEAK: 'weak'
     });
 
 })();

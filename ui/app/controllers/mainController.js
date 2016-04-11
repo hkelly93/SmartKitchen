@@ -8,7 +8,7 @@
  */
 app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', 'refreshData', 'logService', 'messagesService', 'restService', 'SEVERITY',
     function($scope, $rootScope, $sce, $parse, refreshData, logService, messagesService, restService, SEVERITY) {
-        logService.setLevel(logService.LEVEL.DEBUG);
+        logService.setLevel(logService.LEVEL.WARNING);
 
         $scope.alertList = [];
         $scope.alertsVisible = false;
@@ -146,7 +146,6 @@ app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', 'ref
                 // Verify that there was a change.
                 if ($scope.popupDateChange) {
                     var promise = restService.setExpirationDate(item);
-
                     promise.success(function(response) {
                         // Refresh the inventory.
                         $rootScope.$emit('refreshInventory', {});

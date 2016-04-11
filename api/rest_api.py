@@ -2,7 +2,7 @@ import datetime
 import json
 
 from flask import Flask, jsonify, request
-
+from flask.ext.cors import CORS
 
 from util.RestUtils import RestUtils
 from messages import Messages
@@ -12,9 +12,12 @@ from messages import Messages
 app = Flask(__name__)
 
 app.config['DEBUG'] = True
+app.config['SECRET_KEY'] = 'UfrWq8uk7bRvKewY9VwKX7FN'
+app.config['CORS_HEADERS'] = 'Content-Type'
+CORS(app)
 
 
-@app.route('/health/<string:part>', methods=['GET', 'POST'])
+@app.route('/health/<string:part>/', methods=['GET', 'POST'])
 def health(part):
     try:
         with open('json/health.json', 'r') as json_file:
@@ -140,7 +143,7 @@ def inventory(barcode):
         return ''  # should this really return the whole dict?
 
 
-@app.route('/expiration/<string:barcode>')
+@app.route('/expiration/<string:barcode>/', methods=['PUT'])
 def expiration_date(barcode, days_till_expire=None):
     """
     need to find the correct item to change

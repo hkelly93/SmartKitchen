@@ -93,6 +93,7 @@ app.controller('healthController', ['$scope', '$rootScope', '$sce', 'refreshData
                     color = healthyColor;
                     break;
                 case STATUS.WARNING:
+                case STATUS.WEAK:
                     color = warningColor;
                     break;
                 case STATUS.CRITICAL:
