@@ -156,29 +156,26 @@ app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', 'ref
 
         $scope.togglePopup = function(item, submit) {
             if (submit !== undefined) {
-                // Verify that there was a change.
-                if ($scope.popupDateChange) {
-                    $rootScope.toggleBusy(true);
-                    var promise = restService.setExpirationDate(item);
-                    promise.success(function(response) {
-                        // Refresh the inventory.
-                        $rootScope.$emit('refreshInventory', {});
-                        $rootScope.toggleBusy(false);
-                    });
+                $rootScope.toggleBusy(true);
+                var promise = restService.setExpirationDate(item);
+                promise.success(function(response) {
+                    // Refresh the inventory.
+                    $rootScope.$emit('refreshInventory', {});
+                    $rootScope.toggleBusy(false);
 
-                    promise.error(function(response) {
-                        $rootScope.toggleBusy(false);
-                        $rootScope.addAlert(SEVERITY.WARNING, 'Could not update the expiration date for ' + item.name);
-                    });
-                }
+                    $scope.popupObject = {};
+                });
+
+                promise.error(function(response) {
+                    $rootScope.toggleBusy(false);
+                    $rootScope.addAlert(SEVERITY.WARNING, 'Could not update the expiration date for ' + item.name);
+
+                    $scope.popupObject = {};
+                });
             }
 
             $scope.popupObject = (item === undefined) ? {} : angular.copy(item);
             $scope.showPopup = !$scope.showPopup;
-        };
-
-        $scope.dateChange = function() {
-            $scope.popupDateChange = !$scope.popupDateChange;
         };
 
         // Register event handlers

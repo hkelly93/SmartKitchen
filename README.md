@@ -61,3 +61,4 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
 * Harrison Kelly
     * Updated the UI to use the new version of the REST api and fixed the delete REST call.
     * Added a busy indicator.
+    * Fixed the setExpirationDate popup in the UI and added a minimum date (of 'today').

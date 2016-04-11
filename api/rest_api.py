@@ -64,7 +64,7 @@ def inventory(barcode):
     POST will add to inventory
         will increment quantity of pre existing items
     :param barcode: string representation of barcode
-    :param days_till_expire: defaults to None which will set it 30 days from today's date
+    :param days_till_expire: defaults to None which will set it 30 days from todays date
     :return:
 
     :usage: http://localhost:5000/inventory/1111?expire=30

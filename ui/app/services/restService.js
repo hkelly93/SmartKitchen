@@ -147,11 +147,12 @@ app.factory('restService', ['$http', '$q',
             setExpirationDate: function(item) {
                 var start = moment(new Date()),
                     end = moment(item.expiresDateVal),
-                    diff = end.diff(start, 'days');
+                    diff = end.diff(start, 'days') + 1;
 
+                console.log(diff);
                 return this.defer($http({
                     method: 'POST',
-                    url: localRestUri + 'expiration/' + item.barcode + '/',
+                    url: localRestUri + 'expiration/' + item.barcode + '/?expires=' + diff,
                     data: 'barcode=' + this.barcode + '&expires=' + diff,
                     timeout: this.timeout
                 }));

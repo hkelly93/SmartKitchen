@@ -156,7 +156,7 @@
                                     <strong>{{messages('NAME')}}</strong>:
                                     {{popupObject.name}}<br/>
                                     <strong>{{messages('EXPIRATION_DATE')}}</strong>:
-                                    <input type="date" ng-change="dateChange()" ng-model="popupObject.expiresDateVal" />
+                                    <input id="popupDate" type="date" ng-model="popupObject.expiresDateVal" />
                                 </span>
                             </td>
                         </tr>
@@ -174,5 +174,10 @@
             Lastest Refresh: {{latestRefresh}}<br />
             Copyright &copy; 2016 SmartKitchen. All Rights Reserved.
         </footer>
+
+        <script>
+            var today = new Date().toISOString().split('T')[0];
+            document.getElementById("popupDate").setAttribute('min', today);
+        </script>
     </body>
 </html>

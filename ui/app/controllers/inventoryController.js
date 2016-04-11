@@ -82,7 +82,7 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                         item = $scope.cache[elBarcode];
 
                         // Set the expiration date just in case it is different
-                        item.expirationdate = response.data[i].expirationdate;
+                        item.expires = response.data[i].expirationdate;
                         item.expiresDateVal = toDate(response.data[i].expirationdate);
 
                         $scope.newList.push(item);
@@ -163,7 +163,7 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                             var entity = $scope.cache[barcode];
 
                             // Set the expiration date just in case it is different
-                            entity.expirationdate = response.data[item].expirationdate;
+                            entity.expires = response.data[item].expirationdate;
                             entity.expiresDateVal = toDate(response.data[item].expirationdate);
 
                             $scope.inventory.push(entity);
