@@ -47,3 +47,8 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
     * Updated cached items with possibly new expiration dates.
     * Connected the "edit" button with a popup that allows users to change the expiration date. The REST call is connected, just
     waiting for it to be written.
+
+* Brian Day
+    * rewrote all api calls to make more concise
+    * completed delete item and set expiration functionality
+    * working on a way to allow hardware to go into a low power mode
