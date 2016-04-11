@@ -18,6 +18,7 @@ app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', 'ref
         $scope.messages = messagesService.get;
         $scope.htmlMessages = messagesService.getHtml;
         $scope.popupDateChange = false;
+        $rootScope.busy = 0;
 
         /**
          * Gets the running alerts from a REST call to open json/alerts.json. Also
@@ -145,13 +146,16 @@ app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', 'ref
             if (submit !== undefined) {
                 // Verify that there was a change.
                 if ($scope.popupDateChange) {
+                    $rootScope.busy += 1;
                     var promise = restService.setExpirationDate(item);
                     promise.success(function(response) {
                         // Refresh the inventory.
                         $rootScope.$emit('refreshInventory', {});
+                        $rootScope.busy -= 1;
                     });
 
                     promise.error(function(response) {
+                        $rootScope.busy -= 1;
                         $rootScope.addAlert(SEVERITY.WARNING, 'Could not update the expiration date for ' + item.name);
                     });
                 }
