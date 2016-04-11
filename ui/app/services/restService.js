@@ -135,7 +135,7 @@ app.factory('restService', ['$http', '$q',
             removeFromInventory: function(item) {
                 return this.defer($http({
                     method: 'DELETE',
-                    url: localRestUri + 'inventory/' + item.barcode ,
+                    url: localRestUri + 'inventory/' + item.barcode,
                     timeout: this.timeout
                 }));
             },
@@ -147,12 +147,13 @@ app.factory('restService', ['$http', '$q',
             setExpirationDate: function(item) {
                 var start = moment(new Date()),
                     end = moment(item.expiresDateVal),
-                    diff = end.diff(start, 'days');
+                    diff = end.diff(start, 'days') + 1;
 
+                console.log(diff);
                 return this.defer($http({
-                    method: 'PUT',
-                    url: localRestUri + 'setExpirationDate/' + item.barcode + '/' + item.expirationdate + '/',
-                    data: 'barcode=' + this.barcode + '&expirationDate=' + item.expirationdate,
+                    method: 'POST',
+                    url: localRestUri + 'expiration/' + item.barcode + '/?expires=' + diff,
+                    data: 'barcode=' + this.barcode + '&expires=' + diff,
                     timeout: this.timeout
                 }));
             },

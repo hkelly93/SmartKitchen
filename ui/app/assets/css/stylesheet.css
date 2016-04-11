@@ -236,6 +236,7 @@ nav ul li a {
 }
 #inventory {
     margin-right: 5px;
+    margin-bottom: 5px;
     width: 66.6%;
     display: inline-block;
     float: right;

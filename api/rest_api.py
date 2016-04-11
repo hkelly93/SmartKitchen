@@ -10,8 +10,7 @@ from flask.ext.cors import CORS
 
 app = Flask(__name__)
 
-app.config['DEBUG'] = False
-
+app.config['DEBUG'] = True
 app.config['SECRET_KEY'] = 'UfrWq8uk7bRvKewY9VwKX7FN'
 app.config['CORS_HEADERS'] = 'Content-Type'
 CORS(app)
@@ -27,6 +26,7 @@ def health(part):
                 status = request.args.get('status', type=str)
                 data[part] = status
 
+                print status
                 with open('json/health.json', 'w') as json_file:
                     json_file.write(json.dumps(data))
 
@@ -66,7 +66,7 @@ def inventory(barcode):  # TODO change to uuid not barcode
     POST will add to inventory
         will increment quantity of pre existing items
     :param barcode: string representation of barcode
-    :param days_till_expire: defaults to None which will set it 30 days from today's date
+    :param days_till_expire: defaults to None which will set it 30 days from todays date
     :return:
 
     :usage: http://localhost:5000/inventory/1111?expire=30
