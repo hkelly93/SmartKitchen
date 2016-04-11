@@ -6,8 +6,7 @@ from flask import Flask, jsonify, request
 
 from util.RestUtils import RestUtils
 from messages import Messages
-
-#response_data = {}
+from flask.ext.cors import CORS
 
 app = Flask(__name__)
 
@@ -143,7 +142,7 @@ def inventory(barcode):
         return ''  # should this really return the whole dict?
 
 
-@app.route('/expiration/<string:barcode>')
+@app.route('/expiration/<string:barcode>', methods=['GET', 'POST'])
 def expiration_date(barcode, days_till_expire=None):
     """
     need to find the correct item to change
@@ -153,26 +152,39 @@ def expiration_date(barcode, days_till_expire=None):
     :param expires: string representation of date of expiration
     :return:
     """
-    expire_date = request.args.get('expires', type=str)
-    #date = RestUtils.set_expiration(expire_date)
+    if request.method == 'GET':
+        try:
+            with open('json/inventory.json', 'r') as json_file:
+                data = json.load(json_file, encoding='utf-8')  # Get the current inventory.
+                json_file.close()
 
-    try:
-        with open('json/inventory.json', 'r') as json_file:
-            data = json.load(json_file, encoding='utf-8')  # Get the current inventory.
-            json_file.close()
+                index = RestUtils.find_elem(data, 'barcode', barcode)
 
-            index = RestUtils.find_elem(data, 'barcode', barcode)
+                if index is not None:
+                    return data[index]['expirationdate']
 
-            if index is not None:
-                data[index]['expiration'] = unicode(expire_date)
-                with open('json/inventory.json', 'w+') as json_file:
-                    json_file.write(json.dumps(data))
-                    json_file.close()
-            else:
-                print "nothing to update"
+        except (IOError, KeyError):
+            return ''
+    if request.method == 'POST':
+        try:
+            expire_date = request.args.get('expires', type=int)
+            date = RestUtils.set_expiration(expire_date)
+            with open('json/inventory.json', 'r') as json_file:
+                data = json.load(json_file, encoding='utf-8')  # Get the current inventory.
+                json_file.close()
 
-    except IOError:
-        pass
+                index = RestUtils.find_elem(data, 'barcode', barcode)
+
+                if index is not None:
+                    data[index]['expirationdate'] = unicode(date)
+                    with open('json/inventory.json', 'w+') as json_file:
+                        json_file.write(json.dumps(data))
+                        json_file.close()
+                else:
+                    print "nothing to update"
+
+        except (IOError, KeyError):
+            pass
 
     return ''
 
