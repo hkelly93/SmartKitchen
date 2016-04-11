@@ -1,5 +1,1 @@
-{
-  "scanner": "critical",
-  "fridge": "healthy",
-  "network": "weak"
-}
+{"scanner": null, "fridge": "healthy", "network": "healthy"}
