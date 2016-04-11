@@ -55,7 +55,7 @@ def get_inventory():
         return Messages.inventoryNotFound()
 
 
-@app.route('/inventory/<string:barcode>', methods=['DELETE', 'GET', 'POST'])
+@app.route('/inventory/<string:barcode>/', methods=['DELETE', 'GET', 'POST'])
 def inventory(barcode):
     """
     DELETE will remove first item with given barcode from inventory

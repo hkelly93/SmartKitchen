@@ -59,4 +59,4 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
 # Progress (Week (4/11)
 
 * Harrison Kelly
-    * Updated the UI to use the new version of the REST api.
+    * Updated the UI to use the new version of the REST api and fixed the delete REST call.
