@@ -6,6 +6,8 @@ import os.path
 import json
 
 from flask import Flask, jsonify, make_response, Response
+from flask.ext.cors import CORS
+
 #from flask_json import json_response
 import datetime
 
@@ -17,6 +19,9 @@ response_data = {}
 app = Flask(__name__)
 
 app.config['DEBUG'] = True
+app.config['SECRET_KEY'] = 'UfrWq8uk7bRvKewY9VwKX7FN'
+app.config['CORS_HEADERS'] = 'Content-Type'
+CORS(app)
 
 @app.route('/getFridgeHealth/', methods=['GET'])
 def getFridgeHealth():

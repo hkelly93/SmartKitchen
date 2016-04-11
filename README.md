@@ -55,3 +55,8 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
     * rewrote all api calls to make more concise
     * completed delete item and set expiration functionality
     * working on a way to allow hardware to go into a low power mode
+
+# Progress (Week (4/11)
+
+* Harrison Kelly
+    * Updated the UI to use the new version of the REST api and fixed the delete REST call.

@@ -3,22 +3,21 @@ import json
 
 from flask import Flask, jsonify, request
 
-from flask.ext.cors import CORS
 
 from util.RestUtils import RestUtils
 from messages import Messages
 
-response_data = {}
+#response_data = {}
 
 app = Flask(__name__)
+
+app.config['DEBUG'] = True
 app.config['SECRET_KEY'] = 'UfrWq8uk7bRvKewY9VwKX7FN'
 app.config['CORS_HEADERS'] = 'Content-Type'
 CORS(app)
 
-app.config['DEBUG'] = True
 
-
-@app.route('/health/<string:part>', methods=['GET', 'POST'])
+@app.route('/health/<string:part>/', methods=['GET', 'POST'])
 def health(part):
     try:
         with open('json/health.json', 'r') as json_file:
@@ -57,7 +56,7 @@ def get_inventory():
 
 
 @app.route('/inventory/<string:barcode>', methods=['DELETE', 'GET', 'POST'])
-def item(barcode):
+def inventory(barcode):
     """
     DELETE will remove first item with given barcode from inventory
 
@@ -71,7 +70,6 @@ def item(barcode):
 
     :usage: http://localhost:5000/inventory/1111?expire=30
     """
-    # TODO make this look for expiration date as well for uniqueness
     if request.method == 'DELETE':
         try:
             with open('json/inventory.json', 'r') as json_file:
@@ -146,7 +144,7 @@ def item(barcode):
 
 
 @app.route('/expiration/<string:barcode>')
-def expiration_date(barcode, expire_date=None):
+def expiration_date(barcode, days_till_expire=None):
     """
     need to find the correct item to change
     without an index id this would find the first item with the same barcode in the inventory
