@@ -38,7 +38,7 @@ class Scanner(object):
         self.eco_event = threading.Event()  # False means both threads should be on
         self.eco_event.clear()
 
-        self.server_url = 'http://10.253.85.225:5000/'#'http://localhost:5000/'
+        self.server_url = 'http://localhost:5000/' # 'http://10.253.85.225:5000/'
 
         if pi:
             self.led = RGB_LED()
@@ -62,7 +62,8 @@ class Scanner(object):
                 print 'main thread running'
                 time.sleep(10)  # send status to rest api but not too often
                 self.post_status()
-                g = requests.get(self.server_url + 'getInventory/')
+
+                g = requests.get(self.server_url + 'inventory/')
                 print json.loads(g.json())
                 # power saver mode on? no, then restart threads that are down
                 '''
@@ -100,8 +101,8 @@ class Scanner(object):
     #     self.eco_event.set()
     #     self.shutdown()
 
-    def post_to_server(self, uri, data):
-        r = requests.post(self.server_url + uri, data=data)
+    def post_to_server(self, uri, data, args=''):
+        r = requests.post(self.server_url + uri, data=data,args=args)
 
         if DEBUG:
             status = r.status_code
@@ -162,7 +163,7 @@ class Scanner(object):
         TODO triggers red light if scanner thread is no up in running
         """
         if pi:
-            self.led.on([1, 1, 1])# TODO yellow light
+            self.led.on([1, 1, 1]) # TODO yellow light
 
         while self.run_event.is_set():  # not run_event.is_set:
             # print "status update here"
@@ -174,7 +175,7 @@ class Scanner(object):
                 time.sleep(3)
                 self.status_event.set()
                 if pi:
-                    self.led.on([1, 1, 1]) # TODO should be yellow
+                    self.led.on([1, 1, 1])  # TODO should be yellow
 
             elif DEBUG:
                 # waiting on a barcode
@@ -209,7 +210,7 @@ class Scanner(object):
             # TODO critical status should also show if this code was not running
             self.run_event.clear()
 
-        post = 'setScannerHealth/' + status + '/'
+        post = 'health?status=' + status
         self.post_to_server(post, status)
 
     @staticmethod
