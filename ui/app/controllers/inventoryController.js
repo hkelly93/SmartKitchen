@@ -16,13 +16,19 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
 
         $scope.latest = [];
         $scope.inventory = [];
-        $scope.cache = cache.getCache("inventoryController-inventory");
+        $scope.cache = {}; //cache.getCache("inventoryController-inventory");
 
         /**
          * Load the data from the controller into the view.
          * @return {null}
          */
         $scope.load = function() {
+            // http://stackoverflow.com/a/32108184
+            if (Object.keys($scope.cache).length === 0 && JSON.stringify($scope.cache) === JSON.stringify({})) { // init
+                console.log('init');
+                $rootScope.busy += 1;
+            }
+
             var expirationDates = {};
 
             function createItem(response) {
@@ -156,6 +162,10 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
             promise.error(function(response) {
                 $rootScope.addAlert(SEVERITY.CRITICAL, "Something went wrong and the inventory could not be found.");
             });
+
+            if (Object.keys($scope.cache).length === 0 && JSON.stringify($scope.cache) === JSON.stringify({})) {
+                $rootScope.busy -= 1;
+            }
         };
 
         /**
@@ -187,13 +197,17 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
 
         $scope.deleteItem = function(item) {
             logService.debug('inventoryController', 'Deleting barcode ' + item.barcode);
+
+            $rootScope.busy += 1;
             var promise = restService.removeFromInventory(item);
 
             promise.success(function() {
-                // TODO
+                $scope.load();
+                $rootScope.busy -= 1;
             });
 
             promise.error(function() {
+                $rootScope.busy -= 1;
                 $rootScope.addAlert(SEVERITY.CRITICAL, 'Could not delete ' + item.name + '.');
             });
         };

@@ -255,7 +255,7 @@ footer {
     font-size: 8pt;
     text-align: center;
 }
-#popup .glass {
+#popup .glass, #busy .glass {
     position: fixed;
     top: 0;
     left: 0;
@@ -307,4 +307,14 @@ footer {
 #popup table {
     width: 100%;
     text-align: left;
+}
+#busy {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+}
+#busy img {
+    position: fixed;
+    left: calc(50% - 48px);
+    top: calc(50% - 48px);
 }

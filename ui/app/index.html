@@ -9,7 +9,7 @@
         <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.js"></script>
 
         <script src="assets/js/moment.js"></script>
-        
+
         <!-- Declares the AngularJS application and application constants. -->
         <script src="assets/js/smartKitchen.js"></script>
 
@@ -166,6 +166,9 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div id="busy" ng-show="busy" class="fade">
+            <div class="glass"><img src="assets/img/loader.gif" /></div>
         </div>
         <footer>
             Lastest Refresh: {{latestRefresh}}<br />
