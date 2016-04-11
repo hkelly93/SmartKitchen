@@ -16,17 +16,17 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
 
         $scope.latest = [];
         $scope.inventory = [];
-        $scope.cache = {}; //cache.getCache("inventoryController-inventory");
+        $scope.cache = cache.getCache("inventoryController-inventory");
 
         /**
          * Load the data from the controller into the view.
          * @return {null}
          */
-        $scope.load = function() {
-            // http://stackoverflow.com/a/32108184
-            if (Object.keys($scope.cache).length === 0 && JSON.stringify($scope.cache) === JSON.stringify({})) { // init
-                console.log('init');
-                $rootScope.busy += 1;
+        $scope.load = function(firstLoad) {
+            var showBusy = false;
+            if (firstLoad) { // init
+                $rootScope.toggleBusy(true);
+                showBusy = true;
             }
 
             var expirationDates = {};
@@ -51,6 +51,10 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
             }
 
             var promise = restService.getLatest();
+
+            if (showBusy) {
+                $rootScope.toggleBusy(true);
+            }
 
             promise.success(function(response) {
                 $scope.newList = [];
@@ -94,20 +98,34 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                 $scope.$watch('newList', function(n) {
                     if (n.length === 3) {
                         $scope.latest = $scope.newList;
+
+                        if (showBusy) {
+                            $rootScope.toggleBusy(false);
+                        }
                     }
                 }, true);
             });
 
             promise.error(function(response) {
                 $rootScope.addAlert(SEVERITY.WARNING, "Something went wrong and the latest inventory could not be found.");
+
+                if (showBusy) {
+                    $rootScope.toggleBusy(false);
+                }
             });
 
             promise = restService.getInventory();
+
+            if (showBusy) {
+                $rootScope.toggleBusy(true);
+            }
 
             promise.success(function(response) {
                 $scope.inventory = [];
 
                 function createProduct(response) {
+                    $rootScope.toggleBusy(true);
+
                     var barcode = response.data.code,
                         product = response.data.product.product_name,
                         item = {
@@ -126,6 +144,7 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
 
                 function inventoryError(response) {
                     $rootScope.addAlert(SEVERITY.WARNING, "Something went wrong and the inventory could not be found.");
+                    $rootScope.toggleBusy(false);
                 }
 
                 var item,
@@ -157,14 +176,22 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                         }
                     }
                 }
+
+                if (showBusy) {
+                    $rootScope.toggleBusy(false);
+                }
             });
 
             promise.error(function(response) {
                 $rootScope.addAlert(SEVERITY.CRITICAL, "Something went wrong and the inventory could not be found.");
+
+                if (showBusy) {
+                    $rootScope.toggleBusy(false);
+                }
             });
 
-            if (Object.keys($scope.cache).length === 0 && JSON.stringify($scope.cache) === JSON.stringify({})) {
-                $rootScope.busy -= 1;
+            if (firstLoad) {
+                $rootScope.toggleBusy(false);
             }
         };
 
@@ -198,16 +225,15 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
         $scope.deleteItem = function(item) {
             logService.debug('inventoryController', 'Deleting barcode ' + item.barcode);
 
-            $rootScope.busy += 1;
             var promise = restService.removeFromInventory(item);
 
             promise.success(function() {
-                $scope.load();
-                $rootScope.busy -= 1;
+                $scope.load(true);
+                $rootScope.toggleBusy(false);
             });
 
             promise.error(function() {
-                $rootScope.busy -= 1;
+                $rootScope.toggleBusy(false);
                 $rootScope.addAlert(SEVERITY.CRITICAL, 'Could not delete ' + item.name + '.');
             });
         };
@@ -246,7 +272,7 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
             return dateObj;
         };
 
-        $scope.load();
+        $scope.load(true);
 
         // Register event handlers
         $rootScope.$on("refreshInventory", function() {

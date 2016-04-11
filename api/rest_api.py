@@ -142,7 +142,7 @@ def inventory(barcode):
         return ''  # should this really return the whole dict?
 
 
-@app.route('/expiration/<string:barcode>', methods=['GET', 'POST'])
+@app.route('/expiration/<string:barcode>/', methods=['GET', 'POST'])
 def expiration_date(barcode, days_till_expire=None):
     """
     need to find the correct item to change
