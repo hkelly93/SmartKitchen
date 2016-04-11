@@ -35,7 +35,7 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
     * Scanner more flushed out, processes and threads die correctly when exited
 
 * Ajay
-    * Working on addInventory and setExpiration methods in REST API where i am getting more errors
+    * Got api calls from Harrison and started working on the api and wrote all calls except addinventory and setexpiration date.
 
 # Progress (Week 4/04)
 
@@ -55,6 +55,9 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
     * rewrote all api calls to make more concise
     * completed delete item and set expiration functionality
     * working on a way to allow hardware to go into a low power mode
+*Ajay goud
+    * Wrote code for addinventory but i got a small problem with reading json file. so, I took help from Harrison and completed addinventory method and send the code to Harrison.
+    * Brian and I wrote code for the setexpiration date as my code is little complicated we are using Brian's code for setexpiration date.
 
 # Progress (Week (4/11)
 
