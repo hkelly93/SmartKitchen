@@ -57,7 +57,9 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
     * working on a way to allow hardware to go into a low power mode
 
 *Ajay goud
+    
     * Wrote code for addinventory but i got a small problem with reading json file. so, I took help from Harrison and completed addinventory method and send the code to Harrison.
+    
     * Brian and I wrote code for the setexpiration date as my code is little complicated we are using Brian's code for setexpiration date.
 
 # Progress (Week (4/11)
