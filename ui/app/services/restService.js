@@ -64,7 +64,7 @@ app.factory('restService', ['$http', '$q',
             getLatest: function() {
                 return this.defer($http({
                     method: 'GET',
-                    url: localRestUri + 'getInventory/',
+                    url: localRestUri + 'inventory/',
                     timeout: this.timeout
                 }));
             },
@@ -76,7 +76,7 @@ app.factory('restService', ['$http', '$q',
             getInventory: function() {
                 return this.defer($http({
                     method: 'GET',
-                    url: localRestUri + 'getInventory/',
+                    url: localRestUri + 'inventory/',
                     timeout: this.timeout
                 }));
             },
@@ -101,7 +101,7 @@ app.factory('restService', ['$http', '$q',
             getFridgeHealth: function() {
                 return this.defer($http({
                     method: 'GET',
-                    url: localRestUri + 'fridgeHealth/',
+                    url: localRestUri + 'health/fridge',
                     timeout: this.timeout
                 }));
             },
@@ -112,7 +112,7 @@ app.factory('restService', ['$http', '$q',
             getNetworkHealth: function() {
                 return this.defer($http({
                     method: 'GET',
-                    url: localRestUri + 'networkHealth/',
+                    url: localRestUri + 'health/network',
                     timeout: this.timeout
                 }));
             },
@@ -123,7 +123,7 @@ app.factory('restService', ['$http', '$q',
             getScannerHealth: function() {
                 return this.defer($http({
                     method: 'GET',
-                    url: localRestUri + 'scannerHealth/',
+                    url: localRestUri + 'health/scanner',
                     timeout: this.timeout
                 }));
             },
@@ -135,7 +135,7 @@ app.factory('restService', ['$http', '$q',
             removeFromInventory: function(item) {
                 return this.defer($http({
                     method: 'DELETE',
-                    url: localRestUri + 'deleteFromInventory/' + item.barcode + '/',
+                    url: localRestUri + 'inventory/' + item.barcode ,
                     timeout: this.timeout
                 }));
             },
@@ -146,9 +146,9 @@ app.factory('restService', ['$http', '$q',
              */
             setExpirationDate: function(item) {
                 return this.defer($http({
-                    method: 'PUT',
-                    url: localRestUri + 'setExpirationDate/' + item.barcode + '/' + item.expirationdate + '/',
-                    data: 'barcode=' + this.barcode + '&expirationDate=' + item.expirationdate,
+                    method: 'POST',
+                    url: localRestUri + 'expiration/' + item.barcode + '?expires=' + item.expirationdate ,
+                    data: 'barcode=' + this.barcode + 'expires=' + item.expirationdate,
                     timeout: this.timeout
                 }));
             },

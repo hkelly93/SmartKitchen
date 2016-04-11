@@ -38,7 +38,7 @@ class Scanner(object):
         self.eco_event = threading.Event()  # False means both threads should be on
         self.eco_event.clear()
 
-        self.server_url = 'http://localhost:5000/' # 'http://10.253.85.225:5000/'
+        self.server_url = 'http://localhost:5000/'  # 'http://10.253.85.225:5000/'
 
         if pi:
             self.led = RGB_LED()
@@ -62,25 +62,6 @@ class Scanner(object):
                 print 'main thread running'
                 time.sleep(10)  # send status to rest api but not too often
                 self.post_status()
-
-                g = requests.get(self.server_url + 'inventory/')
-                print json.loads(g.json())
-                # power saver mode on? no, then restart threads that are down
-                '''
-                if not eco_event.is_set():  # all threads should be running
-                    # check what threads are not running and recreate them
-                    if not t1.is_alive():
-                        print "status thread dead, restarting"
-                        t1 = threading.Thread(target=show_status, name='show_status')  # , args=(i,))
-                        t1.start()
-                    if not t2.is_alive():
-                        print "scanner thread is dead, restarting"
-                        t2 = threading.Thread(target=scan, name='scanner')
-                        t2.start()
-
-                    t = threading.Timer(10, timer)  # timer object for setting eco mode
-                    t.start()
-                    '''
                 # TODO find a way to shut down scanner thread only but leave others active for power saving
 
         except KeyboardInterrupt:
@@ -89,30 +70,19 @@ class Scanner(object):
 
             print "threads successfully closed"
 
-    # def timer(self):
-    #     """
-    #     create a timer to shut down threads when not used for a long time
-    #     after x seconds set the run_event flag to False
-    #
-    #     """
-    #     if DEBUG:
-    #         print 'TIMER TRIGGERED'
-    #     self.run_event.clear()
-    #     self.eco_event.set()
-    #     self.shutdown()
-
-    def post_to_server(self, uri, data, args=''):
-        r = requests.post(self.server_url + uri, data=data,args=args)
+    def post_to_server(self, uri, data):  #, args=''):
+        #datatosend = {'data': data, 'args': args}
+        r = requests.post(self.server_url + uri, data=data)
 
         if DEBUG:
             status = r.status_code
             print r.url
             # TODO check response for 200 HTTP ok, 400 bad request, 500 api issue
             if status == 200:
-                print 'all good'
+                #print 'all good'
                 return True
             else:
-                print status
+                #print status
                 return False
 
     def get_from_server(self, uri):
@@ -138,6 +108,7 @@ class Scanner(object):
         #p = subprocess.Popen(['/usr/bin/zbarcam', '--nodisplay', '/dev/video0'], stdout=subprocess.PIPE)  # run barcode scanner software
         p = subprocess.Popen(['/usr/bin/zbarcam', '/dev/video0'], stdout=subprocess.PIPE)  # run barcode scanner software
         # could use psutil.Popen instead
+
         while self.run_event.is_set():
             time.sleep(1)  # slight pause is needed to allow other threads to show
             if DEBUG:
@@ -149,7 +120,7 @@ class Scanner(object):
                     print 'Got barcode:', code
                 barcode = code.split(':')[1].rstrip()  # strips out type of barcode and the trailing char
 
-                post = 'addInventory/' + barcode + '/'
+                post = 'inventory/' + barcode
                 self.post_to_server(post, barcode)  # send barcode to server
 
                 self.status_event.clear()  # valid barcode trigger green light
@@ -163,18 +134,18 @@ class Scanner(object):
         TODO triggers red light if scanner thread is no up in running
         """
         if pi:
-            self.led.on([1, 1, 1]) # TODO yellow light
+            self.led.on([1, 1, 1])  # TODO yellow light
 
         while self.run_event.is_set():  # not run_event.is_set:
             # print "status update here"
             if not self.status_event.is_set():  # if barcode is received then return a green
                 if DEBUG:
-                    print 'green light whould stay on for 3 secs here'
+                    print 'green light would stay on for 3 secs here'
                 if pi:
                     self.led.on([0, 1, 0])
                 time.sleep(3)
                 self.status_event.set()
-                if pi:
+                if pi: # turn light back to yellow
                     self.led.on([1, 1, 1])  # TODO should be yellow
 
             elif DEBUG:
@@ -194,8 +165,7 @@ class Scanner(object):
         check status of program and return it to the rest api
         """
         if DEBUG:
-            print 'post_status'
-            print threading.active_count()  # will return 3 if all good
+            print 'post_status' + str(threading.active_count())
 
         count = threading.active_count()
         if count == 3:
@@ -210,7 +180,7 @@ class Scanner(object):
             # TODO critical status should also show if this code was not running
             self.run_event.clear()
 
-        post = 'health?status=' + status
+        post = 'health/scanner?' + status
         self.post_to_server(post, status)
 
     @staticmethod

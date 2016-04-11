@@ -3,13 +3,17 @@ import json
 
 from flask import Flask, jsonify, request
 
+from flask.ext.cors import CORS
 
 from util.RestUtils import RestUtils
 from messages import Messages
 
-#response_data = {}
+response_data = {}
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'UfrWq8uk7bRvKewY9VwKX7FN'
+app.config['CORS_HEADERS'] = 'Content-Type'
+CORS(app)
 
 app.config['DEBUG'] = True
 
@@ -53,7 +57,7 @@ def get_inventory():
 
 
 @app.route('/inventory/<string:barcode>', methods=['DELETE', 'GET', 'POST'])
-def inventory(barcode):
+def item(barcode):
     """
     DELETE will remove first item with given barcode from inventory
 
@@ -67,6 +71,7 @@ def inventory(barcode):
 
     :usage: http://localhost:5000/inventory/1111?expire=30
     """
+    # TODO make this look for expiration date as well for uniqueness
     if request.method == 'DELETE':
         try:
             with open('json/inventory.json', 'r') as json_file:
@@ -102,10 +107,10 @@ def inventory(barcode):
             Messages.inventoryNotFound()
 
     if request.method == 'POST':
-        days_till_expire = request.args.get('expire', type=int)
+        expiration = request.args.get('expire', type=int)
 
         added_date = datetime.datetime.today().strftime("%m/%d/%Y %H:%M:%S")
-        expire_date = RestUtils.set_expiration(days_till_expire)
+        expire_date = RestUtils.set_expiration(expiration)
 
         # TODO add some sort of filelock
         try:
@@ -141,17 +146,17 @@ def inventory(barcode):
 
 
 @app.route('/expiration/<string:barcode>')
-def expiration_date(barcode, days_till_expire=None):
+def expiration_date(barcode, expire_date=None):
     """
     need to find the correct item to change
     without an index id this would find the first item with the same barcode in the inventory
     which may not be the desired effect
     :param barcode: string representation
-    :param days: how many days till expiration
+    :param expires: string representation of date of expiration
     :return:
     """
-    days_till_expire = request.args.get('expire', type=int)
-    date = RestUtils.set_expiration(days_till_expire)
+    expire_date = request.args.get('expires', type=str)
+    #date = RestUtils.set_expiration(expire_date)
 
     try:
         with open('json/inventory.json', 'r') as json_file:
@@ -161,7 +166,7 @@ def expiration_date(barcode, days_till_expire=None):
             index = RestUtils.find_elem(data, 'barcode', barcode)
 
             if index is not None:
-                data[index]['expiration'] = unicode(date)
+                data[index]['expiration'] = unicode(expire_date)
                 with open('json/inventory.json', 'w+') as json_file:
                     json_file.write(json.dumps(data))
                     json_file.close()
