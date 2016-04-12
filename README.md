@@ -6,6 +6,22 @@ and open the application at the grocery store to know if you need milk or not.
 # Contributors
 Harrison Kelly, Brian Day, AjayKumar Sarikonda
 
+# TODO's
+
+* Harrison Kelly
+    * check for no barcode found on openfoodfacts
+    * combine inventory calls
+    * adding of items not found on openfoodfacts?
+    
+* Brian Day
+    * button up hardware layout
+    * more exception handling in api
+    * Power saving feature
+        * motion sensor
+* Ajay 
+    * uuid for each item 
+    * locking inventory file to make thread safe
+    
 # Progress (Week 3/28)
 
 * Harrison Kelly
