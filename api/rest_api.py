@@ -21,21 +21,21 @@ def health(part):
     try:
         with open('json/health.json', 'r') as json_file:
             data = json.load(json_file, encoding='utf-8')
+            #json_file.close()
 
-            if request.method == 'POST':
-                status = request.args.get('status', type=str)
-                data[part] = status
+        if request.method == 'POST':
+            status = request.args.get('status', type=str)
+            data[part] = status
 
-                print status
-                with open('json/health.json', 'w') as json_file:
-                    json_file.write(json.dumps(data))
+            print status
+            with open('json/health.json', 'w') as json_file:
+                json_file.write(json.dumps(data))
+                json_file.close()
+                return 'status set'
 
-                    return 'status set'
+        if request.method == 'GET':
+            return data[part]
 
-            if request.method == 'GET':
-                return data[part]
-
-            json_file.close()
 
     except IOError:
         return Messages.inventoryNotFound()
