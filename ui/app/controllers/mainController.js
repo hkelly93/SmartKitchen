@@ -61,7 +61,7 @@ app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', '$ti
                         $rootScope.busy = 0;
                     }
                 }
-            }, 4000)
+            }, 4000);
         };
 
         /**
