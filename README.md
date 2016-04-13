@@ -10,18 +10,17 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
 
 * Harrison Kelly
     * check for no barcode found on openfoodfacts
-    * combine inventory calls
     * adding of items not found on openfoodfacts?
-    
+
 * Brian Day
     * button up hardware layout
     * more exception handling in api
     * Power saving feature
         * motion sensor
-* Ajay 
-    * uuid for each item 
+* Ajay
+    * uuid for each item
     * locking inventory file to make thread safe
-    
+
 # Progress (Week 3/28)
 
 * Harrison Kelly
@@ -71,13 +70,14 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
     * rewrote all api calls to make more concise
     * completed delete item and set expiration functionality
     * working on a way to allow hardware to go into a low power mode
+
 # Progress (Week (4/11)
 
 * Harrison Kelly
     * Updated the UI to use the new version of the REST api and fixed the delete REST call.
     * Added a busy indicator.
     * Fixed an issue with editing expiration
-    
+    * Combined the latest inventory and inventory methods and added refresh spinners for the panels.
+
 * Brian Day
     * Fixed
-    
