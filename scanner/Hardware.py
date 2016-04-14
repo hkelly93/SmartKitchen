@@ -4,6 +4,29 @@ import time
 
 TEST = False
 
+'''
+Freq = 100 #Hz
+
+ #setup all the colours
+ RED = GPIO.PWM(red, Freq) #Pin, frequency
+ RED.start(0) #Initial duty cycle of 0, so off
+ GREEN = GPIO.PWM(green, Freq)
+ GREEN.start(0)
+ BLUE = GPIO.PWM(blue, Freq)
+ BLUE.start(0)
+
+ def colour(R, G, B, on_time):
+   #colour brightness range is 0-100
+   RED.ChangeDutyCycle(R)
+   GREEN.ChangeDutyCycle(G)
+   BLUE.ChangeDutyCycle(B)
+   time.sleep(on_time)
+
+   #turn everything off
+   RED.ChangeDutyCycle(0)
+   GREEN.ChangeDutyCycle(0)
+   BLUE.ChangeDutyCycle(0)
+'''
 
 class LED(object):
     """

@@ -16,7 +16,7 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 CORS(app)
 
 
-@app.route('/health/<string:part>', methods=['GET', 'POST'])
+@app.route('/health/<string:part>/', methods=['GET', 'POST'])
 def health(part):
     try:
         # TODO need to check if scanner is actually on, file is not enough
@@ -45,8 +45,6 @@ def health(part):
                             json_file.write(json.dumps(data))
 
                 return data[part]
-
-            json_file.close()
 
     except IOError:
         return Messages.inventoryNotFound()

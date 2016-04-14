@@ -6,8 +6,8 @@
  * @param  {function} AngularJS services
  * @return {null}
  */
-app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', 'refreshData', 'logService', 'messagesService', 'restService', 'SEVERITY',
-    function($scope, $rootScope, $sce, $parse, refreshData, logService, messagesService, restService, SEVERITY) {
+app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', '$timeout', 'refreshData', 'logService', 'messagesService', 'restService', 'SEVERITY',
+    function($scope, $rootScope, $sce, $parse, $timeout, refreshData, logService, messagesService, restService, SEVERITY) {
         logService.setLevel(logService.LEVEL.WARNING);
 
         $scope.alertList = [];
@@ -19,17 +19,49 @@ app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', 'ref
         $scope.htmlMessages = messagesService.getHtml;
         $scope.popupDateChange = false;
 
-        $rootScope.busy = 0;
-        $rootScope.toggleBusy = function(enable) {
+        $rootScope.inventoryLoading = 0;
+        $rootScope.toggleInventoryBusy = function(enable) {
             if (enable) {
-                $rootScope.busy += 1;
+                $rootScope.inventoryLoading += 1;
             } else {
-                $rootScope.busy -= 1;
-
-                if ($rootScope.busy < 0) {
-                    $rootScope.busy = 0;
+                if ($rootScope.inventoryLoading <= 1) {
+                    $timeout(function() {
+                        $rootScope.inventoryLoading = 0;
+                    }, 2000);
+                } else {
+                    $rootScope.inventoryLoading -= 1;
                 }
             }
+        };
+
+        $rootScope.healthLoading = 0;
+        $rootScope.toggleHealthLoading = function(enable) {
+            if (enable) {
+                $rootScope.healthLoading += 1;
+            } else {
+                if ($rootScope.healthLoading <= 1) {
+                    $timeout(function() {
+                        $rootScope.healthLoading = 0;
+                    }, 2000);
+                } else {
+                    $rootScope.healthLoading -= 1;
+                }
+            }
+        };
+
+        $rootScope.busy = 0;
+        $rootScope.toggleBusy = function(enable) {
+            $timeout(function() {
+                if (enable) {
+                    $rootScope.busy += 1;
+                } else {
+                    $rootScope.busy -= 1;
+
+                    if ($rootScope.busy < 0) {
+                        $rootScope.busy = 0;
+                    }
+                }
+            }, 4000);
         };
 
         /**

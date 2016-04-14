@@ -32,6 +32,8 @@ app.controller('healthController', ['$scope', '$rootScope', '$sce', 'refreshData
          * @return {null}
          */
         $scope.load = function() {
+            $rootScope.toggleHealthLoading(true);
+
             var fridgeHealthPromise = restService.getFridgeHealth();
 
             fridgeHealthPromise.success(function(response) {
@@ -40,13 +42,16 @@ app.controller('healthController', ['$scope', '$rootScope', '$sce', 'refreshData
                 }
 
                 $scope.health.fridge = generateHealthSvg(response.data);
+                $rootScope.toggleHealthLoading(false);
             });
 
             fridgeHealthPromise.error(function(response) {
                 $scope.health.fridge = generateHealthSvg();
                 $rootScope.addAlert(SEVERITY.CRITICAL, response.data);
+                $rootScope.toggleHealthLoading(false);
             });
 
+            $rootScope.toggleHealthLoading(true);
             var networkHealthPromise = restService.getNetworkHealth();
 
             networkHealthPromise.success(function(response) {
@@ -54,25 +59,30 @@ app.controller('healthController', ['$scope', '$rootScope', '$sce', 'refreshData
                     $rootScope.addAlert(SEVERITY.WARNING, "Network health is " + response.data);
                 }
                 $scope.health.network = generateHealthSvg(response.data);
+                $rootScope.toggleHealthLoading(false);
             });
 
             networkHealthPromise.error(function(response) {
                 $scope.health.network = generateHealthSvg();
                 $rootScope.addAlert(SEVERITY.CRITICAL, response.data);
+                $rootScope.toggleHealthLoading(false);
             });
 
-            var scannerHealthPromise = restService.getScannerHealth();
+            $rootScope.toggleHealthLoading(true);
+            var scannerHealthPromise = restService.getNetworkHealth();
 
             scannerHealthPromise.success(function(response) {
                 if (response.data !== STATUS.HEALTHY) {
                     $rootScope.addAlert(SEVERITY.WARNING, "Scanner health is " + response.data);
                 }
                 $scope.health.scanner = generateHealthSvg(response.data);
+                $rootScope.toggleHealthLoading(false);
             });
 
             scannerHealthPromise.error(function(response) {
                 $scope.health.scanner = generateHealthSvg();
                 $rootScope.addAlert(SEVERITY.CRITICAL, response.data);
+                $rootScope.toggleHealthLoading(false);
             });
         };
 
