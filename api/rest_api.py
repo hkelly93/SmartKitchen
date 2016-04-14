@@ -16,23 +16,34 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 CORS(app)
 
 
-@app.route('/health/<string:part>/', methods=['GET', 'POST'])
+@app.route('/health/<string:part>', methods=['GET', 'POST'])
 def health(part):
     try:
+        # TODO need to check if scanner is actually on, file is not enough
         with open('json/health.json', 'r') as json_file:
             data = json.load(json_file, encoding='utf-8')
 
+            status = request.args.get('status', type=str)
+
             if request.method == 'POST':
-                status = request.args.get('status', type=str)
+                #status = request.args.get('status', type=str)
                 data[part] = status
 
                 print status
                 with open('json/health.json', 'w') as json_file:
                     json_file.write(json.dumps(data))
 
-                    return 'status set'
+                    return ''
 
             if request.method == 'GET':
+                if part == 'scanner':  # check if process is running
+                    running = RestUtils.find_process('barcode_scanner', False)
+                    print running
+                    if not running:
+                        data[part] = 'critical'
+                        with open('json/health.json', 'w') as json_file:
+                            json_file.write(json.dumps(data))
+
                 return data[part]
 
             json_file.close()
@@ -191,4 +202,4 @@ def expiration_date(barcode):
     return ''
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True)

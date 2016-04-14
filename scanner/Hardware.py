@@ -28,29 +28,50 @@ class LED(object):
         # this must be called or lights will stay on after code is executed
         GPIO.cleanup()
 
+
 class RGB_LED(LED):
     # TODO allow colors to dim to get better color range
     def __init__(self, pin_r=11, pin_g=13, pin_b=15):
         super(RGB_LED, self).__init__(pin_r)
 
         # pin values most likely will be changed
-        self.red = self.pin
-        self.green = pin_g
-        self.blue = pin_b
-        self.colors = [self.red, self.green, self.blue]
+
+        self.colors = [pin_r, pin_g, pin_b]
 
         # setup the pins to output
         for pin in self.colors:
+            #print pin
             GPIO.setup(pin, GPIO.OUT)
-            # GPIO.output(pin, 0)
 
-    def on(self, color): #, color=[1, 1, 1]):
-        for i, pin in enumerate(self.colors):
-             GPIO.output(pin, color[i])
+        self.freq = 100  # Hz
+
+        self.RED = GPIO.PWM(self.colors[0], self.freq)
+        self.GREEN = GPIO.PWM(self.colors[1], self.freq)
+        self.BLUE = GPIO.PWM(self.colors[2], self.freq)
+
+        self.RED.start(0)
+        self.GREEN.start(0)
+        self.BLUE.start(0)
+
+    def color(self, (R, G, B), on_time=1):
+        #print 'set color'
+        # colour brightness range is 0-100
+        self.RED.ChangeDutyCycle(R)
+        self.GREEN.ChangeDutyCycle(G)
+        self.BLUE.ChangeDutyCycle(B)
+        time.sleep(on_time)
+
+        self.RED.ChangeDutyCycle(0)
+        self.GREEN.ChangeDutyCycle(0)
+        self.BLUE.ChangeDutyCycle(0)
 
     def off(self):
-        for pin in self.colors:
-             GPIO.output(pin, 0)
+
+        self.RED.stop()
+        self.GREEN.stop()
+        self.BLUE.stop()
+
+        self.cleanup()
 
 
 class Buzzer(object):
@@ -59,16 +80,7 @@ class Buzzer(object):
 
 if TEST:
     led = RGB_LED()
-    led.ON([0,1,0])
-
-    time.sleep(3)
-    led.OFF()
-
-    time.sleep(2)
-    led.ON([1,0,0])
-    time.sleep(3)
-    led.OFF()
-
-    led.cleanup()
+    led.color(100, 20, 0, 10)
+    led.off()
 
 

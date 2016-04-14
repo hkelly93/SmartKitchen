@@ -10,7 +10,7 @@ app.factory('restService', ['$http', '$q',
         'use strict';
 
         var localUri = 'assets/json/', // URI for local RESTful API.
-            localRestUri = 'http://localhost:5000/',
+            localRestUri = 'http://localhost:5000/',  //http://raspberrypi.local:5000/',
             openFoodFactsUri = 'http://world.openfoodfacts.org/api/v0/product/', // URI for OFF RESTful api.
             dataType = '.json', // Datatype to get data back in.
             timeout = 30 * 1000; // Timeout in milliseconds.
@@ -152,7 +152,7 @@ app.factory('restService', ['$http', '$q',
                 console.log(diff);
                 return this.defer($http({
                     method: 'POST',
-                    url: localRestUri + 'expiration/' + item.barcode + '/?expires=' + diff,
+                    url: localRestUri + 'expiration/' + item.barcode + '?expires=' + diff,
                     data: 'barcode=' + this.barcode + '&expires=' + diff,
                     timeout: this.timeout
                 }));

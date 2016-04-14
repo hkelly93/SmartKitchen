@@ -6,6 +6,23 @@ and open the application at the grocery store to know if you need milk or not.
 # Contributors
 Harrison Kelly, Brian Day, AjayKumar Sarikonda
 
+# TODO's
+
+* Harrison Kelly
+    * check for no barcode found on openfoodfacts
+    * combine inventory calls
+    * adding of items not found on openfoodfacts?
+
+* Brian Day
+    * button up hardware layout
+    * more exception handling in api
+    * remove sleeps in code and put in more robust way of pauses threads
+    * Power saving feature
+        * motion sensor - on order 4/12
+* Ajay
+    * uuid for each item
+    * locking inventory file to make thread safe
+
 # Progress (Week 3/28)
 
 * Harrison Kelly
@@ -63,5 +80,9 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
     * Fixed an issue with editing expiration
     
 * Brian Day
-    * Fixed
+    * Fixed issue with scannerhealth looking at network health
+    * Fixed minor issue in restServices, setexpiration had trailing / in rest call
+    * Fixed minor issue in healthcontroller, healthstatus was being used to display scannerstatus
+    * working on power-save feature
+
     

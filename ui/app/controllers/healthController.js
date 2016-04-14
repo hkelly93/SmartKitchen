@@ -61,7 +61,7 @@ app.controller('healthController', ['$scope', '$rootScope', '$sce', 'refreshData
                 $rootScope.addAlert(SEVERITY.CRITICAL, response.data);
             });
 
-            var scannerHealthPromise = restService.getNetworkHealth();
+            var scannerHealthPromise = restService.getScannerHealth();
 
             scannerHealthPromise.success(function(response) {
                 if (response.data !== STATUS.HEALTHY) {
