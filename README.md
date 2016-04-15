@@ -50,7 +50,7 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
     * Scanner more flushed out, processes and threads die correctly when exited
 
 * Ajay
-    * Got api calls from Harrison and started working on the api and wrote all calls except addinventory and setexpiration date.
+    * Got api calls from Harrison and started working on the api and wrote getInventory.
 
 # Progress (Week 4/04)
 
