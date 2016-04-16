@@ -12,20 +12,19 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
 
         $scope.latest = [];
         $scope.inventory = [];
-        $scope.expirationDates = {};
         $scope.cache = cache.getCache("inventoryController-inventory");
 
         function createItem(response) {
             $rootScope.toggleBusy(false);
-
             var barcode = response.data.code,
                 product = response.data.product.product_name,
                 item = {
                     name: response.data.product.product_name,
                     image: response.data.product.image_front_thumb_url,
-                    expires: $scope.expirationDates[barcode],
-                    expiresDateVal: toDate($scope.expirationDates[barcode]),
-                    barcode: barcode
+                    expires: response.data.args.expirationdate,
+                    expiresDateVal: toDate(response.data.args.expirationdate),
+                    barcode: barcode,
+                    uuid: response.data.args.uuid
                 };
 
             $scope.cache[barcode] = item;
@@ -68,21 +67,22 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                 var index = response.data.length - 1,
                     maxForLatest = (response.data.length < 3) ? response.data.length : response.data.length - 4,
                     itemExists = false,
-                    barcode;
+                    barcode,
+                    uuid,
+                    expirationDate;
 
                 for (index; index > 0; index--) {
                     barcode = response.data[index].barcode;
-
-                    // Update the expirationDates object.
-                    $scope.expirationDates[barcode] = response.data[index].expirationdate;
+                    uuid = response.data[index].uuid;
+                    expirationDate = response.data[index].expirationdate;
 
                     // Search in the cache first.
                     if (barcode in $scope.cache) {
                         var entity = $scope.cache[barcode];
 
                         // Set the expiration date just in case it is different
-                        entity.expires = response.data[index].expirationdate;
-                        entity.expiresDateVal = toDate(response.data[index].expirationdate);
+                        entity.expires = expirationDate;
+                        entity.expiresDateVal = toDate(expirationDate);
 
                         $scope.inventory.push(entity);
 
@@ -102,7 +102,7 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                         }
 
                         $rootScope.toggleInventoryBusy(true);
-                        var promise = restService.searchBarcode(barcode);
+                        var promise = restService.searchBarcode(barcode, uuid, expirationDate);
                         promise.success(createItem);
                         promise.error(inventoryError);
                     }

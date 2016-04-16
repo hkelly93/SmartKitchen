@@ -10,7 +10,7 @@ app.factory('restService', ['$http', '$q',
         'use strict';
 
         var localUri = 'assets/json/', // URI for local RESTful API.
-            localRestUri = 'http://localhost:5000/',  //http://raspberrypi.local:5000/',
+            localRestUri = 'http://localhost:5000/', //http://raspberrypi.local:5000/',
             openFoodFactsUri = 'http://world.openfoodfacts.org/api/v0/product/', // URI for OFF RESTful api.
             dataType = '.json', // Datatype to get data back in.
             timeout = 30 * 1000; // Timeout in milliseconds.
@@ -45,10 +45,15 @@ app.factory('restService', ['$http', '$q',
              * @param  {http} request Request to promise.
              * @return {HttpPromise}      Promise of HTTP request.
              */
-            defer: function(request) {
+            defer: function(request, args) {
                 var dfd = deferrer.defer();
 
                 request.then(function(res) {
+                    try {
+                        res.data.args = args;
+                    } catch (err) {
+
+                    }
                     return dfd.resolve(res);
                 }, function(err) {
                     return dfd.reject(err);
@@ -87,12 +92,15 @@ app.factory('restService', ['$http', '$q',
              * @param  {function} failure The function to execute on failure
              * @return {HttpPromise} The http GET request promise.
              */
-            searchBarcode: function(barcode) {
+            searchBarcode: function(barcode, uuid, expirationDate) {
                 return this.defer($http({
                     method: 'GET',
                     url: openFoodFactsUri + barcode + dataType,
                     timeout: this.timeout
-                }));
+                }), {
+                    'uuid': uuid,
+                    'expirateiondate': expirationDate
+                });
             },
             /**
              * Returns the fridge health.
@@ -158,5 +166,4 @@ app.factory('restService', ['$http', '$q',
                 }));
             },
         };
-    }
-]);
+}]);
