@@ -18,7 +18,6 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
     * Power saving feature
         * motion sensor
 * Ajay
-    * uuid for each item
     * locking inventory file to make thread safe
 
 # Progress (Week 3/28)
@@ -78,11 +77,10 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
     * Added a busy indicator.
     * Fixed an issue with editing expiration
     * Combined the latest inventory and inventory methods and added refresh spinners for the panels.
+    * Added in UUIDs for each item on the server side.
 
 * Brian Day
     * Fixed issue with scannerhealth looking at network health
     * Fixed minor issue in restServices, setexpiration had trailing / in rest call
     * Fixed minor issue in healthcontroller, healthstatus was being used to display scannerstatus
     * working on power-save feature
-
-    

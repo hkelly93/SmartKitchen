@@ -1,5 +1,6 @@
 import datetime
 import json
+import uuid
 
 from flask import Flask, jsonify, request
 
@@ -138,7 +139,7 @@ def inventory(barcode):  # TODO change to uuid not barcode
                 d = {u'barcode': unicode(barcode),
                      u'added': unicode(added_date),
                      u'expiration': unicode(expire_date),
-                     u'uuid': None}
+                     u'uuid': unicode(uuid.uuid1())}
 
                 data.append(d)
 
