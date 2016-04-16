@@ -66,8 +66,8 @@ def get_inventory():
         return Messages.inventoryNotFound()
 
 
-@app.route('/inventory/<string:barcode>', methods=['DELETE', 'GET', 'POST'])
-def inventory(barcode):  # TODO change to uuid not barcode
+@app.route('/inventory/<string:uuid>', methods=['DELETE', 'GET', 'POST'])
+def inventory(uuid):
     """
     DELETE will remove first item with given barcode from inventory
 
@@ -75,11 +75,11 @@ def inventory(barcode):  # TODO change to uuid not barcode
 
     POST will add to inventory
         will increment quantity of pre existing items
-    :param barcode: string representation of barcode
+    :param uuid: string representation of uuid
     :param days_till_expire: defaults to None which will set it 30 days from todays date
     :return:
 
-    :usage: http://localhost:5000/inventory/1111?expire=30
+    :usage: http://localhost:5000/inventory/1e4658dc-03d5-11e6-b402-7831c1d2d04e?expire=30
     """
     if request.method == 'DELETE':
         # TODO can make it delete more accurately by added expiration date to try and make more unique
@@ -88,7 +88,7 @@ def inventory(barcode):  # TODO change to uuid not barcode
                 data = json.load(json_file, encoding='utf-8')  # Get the current inventory.
                 json_file.close()
 
-            index = RestUtils.find_elem(data, 'barcode', barcode)  # TODO need to search by uuid
+            index = RestUtils.find_elem(data, 'uuid', uuid)
 
             if index is not None:
                 del data[index]
@@ -108,7 +108,7 @@ def inventory(barcode):  # TODO change to uuid not barcode
             with open('json/inventory.json', 'r') as json_file:
                 data = json.load(json_file, encoding='utf-8')
                 json_file.close()
-                index = RestUtils.find_elem(data, 'barcode', barcode)  # TODO need to change to uuid
+                index = RestUtils.find_elem(data, 'uuid', uuid)
                 if index is not None:
                     return jsonify(data[index])
                 else:
@@ -128,7 +128,7 @@ def inventory(barcode):  # TODO change to uuid not barcode
                 data = json.load(json_file, encoding='utf-8')
                 json_file.close()
 
-                index = RestUtils.find_elem(data, u"barcode", barcode)  # returns index if already exists
+                index = RestUtils.find_elem(data, u"uuid", uuid)  # returns index if already exists
 
             # there already exists this barcode in the inventory
             if index is not None:
@@ -155,8 +155,8 @@ def inventory(barcode):  # TODO change to uuid not barcode
         return ''  # should this really return the whole dict?
 
 
-@app.route('/expiration/<string:barcode>', methods=['GET', 'POST'])
-def expiration_date(barcode):
+@app.route('/expiration/<string:uuid>', methods=['GET', 'POST'])
+def expiration_date(uuid):
     """
     need to find the correct item to change
     without an index id this would find the first item with the same barcode in the inventory
@@ -170,7 +170,7 @@ def expiration_date(barcode):
                 data = json.load(json_file, encoding='utf-8')  # Get the current inventory.
                 json_file.close()
 
-                index = RestUtils.find_elem(data, 'barcode', barcode)
+                index = RestUtils.find_elem(data, 'uuid', uuid)
 
                 if index is not None:
                     return data[index]['expirationdate']
@@ -185,7 +185,7 @@ def expiration_date(barcode):
                 data = json.load(json_file, encoding='utf-8')  # Get the current inventory.
                 json_file.close()
 
-                index = RestUtils.find_elem(data, 'barcode', barcode)
+                index = RestUtils.find_elem(data, 'uuid', uuid)
 
                 if index is not None:
                     data[index]['expirationdate'] = unicode(date)

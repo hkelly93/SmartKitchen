@@ -143,7 +143,7 @@ app.factory('restService', ['$http', '$q',
             removeFromInventory: function(item) {
                 return this.defer($http({
                     method: 'DELETE',
-                    url: localRestUri + 'inventory/' + item.barcode,
+                    url: localRestUri + 'inventory/' + item.uuid,
                     timeout: this.timeout
                 }));
             },
@@ -160,8 +160,8 @@ app.factory('restService', ['$http', '$q',
                 console.log(diff);
                 return this.defer($http({
                     method: 'POST',
-                    url: localRestUri + 'expiration/' + item.barcode + '?expires=' + diff,
-                    data: 'barcode=' + this.barcode + '&expires=' + diff,
+                    url: localRestUri + 'expiration/' + item.uuid + '?expires=' + diff,
+                    data: 'barcode=' + this.uuid + '&expires=' + diff,
                     timeout: this.timeout
                 }));
             },

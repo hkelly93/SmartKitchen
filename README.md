@@ -79,6 +79,7 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
     * Combined the latest inventory and inventory methods and added refresh spinners for the panels.
     * Added in UUIDs for each item on the server side.
     * Added in UUIDs to the client side, just need to connect them to the REST calls.
+    * Finished modifying all of the REST calls on the server side.
 
 * Brian Day
     * Fixed issue with scannerhealth looking at network health

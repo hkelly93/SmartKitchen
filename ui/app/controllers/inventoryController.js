@@ -83,6 +83,7 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                         // Set the expiration date just in case it is different
                         entity.expires = expirationDate;
                         entity.expiresDateVal = toDate(expirationDate);
+                        entity.uuid = uuid;
 
                         $scope.inventory.push(entity);
 
