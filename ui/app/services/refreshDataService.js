@@ -59,7 +59,13 @@ app.factory('refreshData', ['$rootScope', '$interval', 'logService',
                 var timer = $interval(function () {
                     var setRefreshing = function (controllerName) {
                         refreshingControllers.push(controllerName);
-                    };
+                    },
+                        removeRefreshing = function (controllerName) {
+                        var index = refreshingControllers.indexOf(controllerName);
+                        if (index !== undefined && index > -1) {
+                            refreshingControllers.splice(index, 1);
+                        }
+                    }
 
                     if (!refresh) return;
 
@@ -87,7 +93,7 @@ app.factory('refreshData', ['$rootScope', '$interval', 'logService',
                         'date': new Date()
                     });
 
-                    this.removeRefreshing(controller);
+                    removeRefreshing(controller);
                 }, refreshRate * 1000);
 
                 // Cleanup
