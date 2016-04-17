@@ -80,6 +80,7 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
     * Added in UUIDs for each item on the server side.
     * Added in UUIDs to the client side, just need to connect them to the REST calls.
     * Finished modifying all of the REST calls on the server side.
+    * Cleaned up code.
 
 * Brian Day
     * Fixed issue with scannerhealth looking at network health

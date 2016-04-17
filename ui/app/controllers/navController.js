@@ -16,7 +16,7 @@ app.controller('navController', ['$scope', '$rootScope', 'refreshData', 'restSer
         });
 
         $scope.$on('$destroy', function() {
-            refreshDataService.unloadController('navController');
+            refreshData.unloadController('navController');
         });
 
         /**

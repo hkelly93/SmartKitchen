@@ -6,31 +6,30 @@
  * @return {Object}                Javascript object to perform REST calls.
  */
 app.factory('restService', ['$http', '$q',
-    function($http, $q) {
+    function ($http, $q) {
         'use strict';
 
-        var localUri = 'assets/json/', // URI for local RESTful API.
-            localRestUri = 'http://localhost:5000/', //http://raspberrypi.local:5000/',
+        var localRestUri = 'http://localhost:5000/', //http://raspberrypi.local:5000/',
             openFoodFactsUri = 'http://world.openfoodfacts.org/api/v0/product/', // URI for OFF RESTful api.
             dataType = '.json', // Datatype to get data back in.
             timeout = 30 * 1000; // Timeout in milliseconds.
 
         var deferrer = {
             // http://ericnish.io/blog/add-success-and-error-to-angular-promises/
-            decorate: function(promise) {
-                promise.success = function(callback) {
+            decorate: function (promise) {
+                promise.success = function (callback) {
                     promise.then(callback);
 
                     return promise;
                 };
 
-                promise.error = function(callback) {
+                promise.error = function (callback) {
                     promise.then(null, callback);
 
                     return promise;
                 };
             },
-            defer: function() {
+            defer: function () {
                 var deferred = $q.defer();
 
                 this.decorate(deferred.promise);
@@ -43,19 +42,20 @@ app.factory('restService', ['$http', '$q',
             /**
              * Wrapper for a promise.
              * @param  {http} request Request to promise.
+             * @param  {Object} args additional arguments to pass in the response.
              * @return {HttpPromise}      Promise of HTTP request.
              */
-            defer: function(request, args) {
+            defer: function (request, args) {
                 var dfd = deferrer.defer();
 
-                request.then(function(res) {
+                request.then(function (res) {
                     try {
                         res.data.args = args;
                     } catch (err) {
 
                     }
                     return dfd.resolve(res);
-                }, function(err) {
+                }, function (err) {
                     return dfd.reject(err);
                 });
 
@@ -66,11 +66,11 @@ app.factory('restService', ['$http', '$q',
              *
              * @return {HttpPromise} The http GET request promise.
              */
-            getLatest: function() {
+            getLatest: function () {
                 return this.defer($http({
                     method: 'GET',
                     url: localRestUri + 'inventory/',
-                    timeout: this.timeout
+                    timeout: timeout
                 }));
             },
             /**
@@ -78,25 +78,25 @@ app.factory('restService', ['$http', '$q',
              *
              * @return {HttpPromise} The http GET request promise.
              */
-            getInventory: function() {
+            getInventory: function () {
                 return this.defer($http({
                     method: 'GET',
                     url: localRestUri + 'inventory/',
-                    timeout: this.timeout
+                    timeout: timeout
                 }));
             },
             /**
              * Searches for an entry using the Open Food Fact's RESTful API.
              * @param  {String} barcode The barcode that is being looked up
-             * @param  {function} success The function to execute on success
-             * @param  {function} failure The function to execute on failure
+             * @param  {function} uuid The uuid for the item being searched.
+             * @param  {function} expirationDate The expiration date of the item being searched.
              * @return {HttpPromise} The http GET request promise.
              */
-            searchBarcode: function(barcode, uuid, expirationDate) {
+            searchBarcode: function (barcode, uuid, expirationDate) {
                 return this.defer($http({
                     method: 'GET',
                     url: openFoodFactsUri + barcode + dataType,
-                    timeout: this.timeout
+                    timeout: timeout
                 }), {
                     'uuid': uuid,
                     'expirateiondate': expirationDate
@@ -106,33 +106,33 @@ app.factory('restService', ['$http', '$q',
              * Returns the fridge health.
              * @return {HttpPromise} The http GET request promise.
              */
-            getFridgeHealth: function() {
+            getFridgeHealth: function () {
                 return this.defer($http({
                     method: 'GET',
                     url: localRestUri + 'health/fridge',
-                    timeout: this.timeout
+                    timeout: timeout
                 }));
             },
             /**
              * Returns the network health.
              * @return {HttpPromise} The http GET request promise.
              */
-            getNetworkHealth: function() {
+            getNetworkHealth: function () {
                 return this.defer($http({
                     method: 'GET',
                     url: localRestUri + 'health/network',
-                    timeout: this.timeout
+                    timeout: timeout
                 }));
             },
             /**
              * Returns the scanner health.
              * @return {HttpPromise} The http GET request promise.
              */
-            getScannerHealth: function() {
+            getScannerHealth: function () {
                 return this.defer($http({
                     method: 'GET',
                     url: localRestUri + 'health/scanner',
-                    timeout: this.timeout
+                    timeout: timeout
                 }));
             },
             /**
@@ -140,11 +140,11 @@ app.factory('restService', ['$http', '$q',
              * @param  {Object} item      The item to delete.
              * @return {HttpPromise}      The http DELETE request promise.
              */
-            removeFromInventory: function(item) {
+            removeFromInventory: function (item) {
                 return this.defer($http({
                     method: 'DELETE',
                     url: localRestUri + 'inventory/' + item.uuid,
-                    timeout: this.timeout
+                    timeout: timeout
                 }));
             },
             /**
@@ -152,7 +152,7 @@ app.factory('restService', ['$http', '$q',
              * @param  {Object} item      The object to set the expiration date on.
              * @return {HttpPromise}      The http POST request promise.
              */
-            setExpirationDate: function(item) {
+            setExpirationDate: function (item) {
                 var start = moment(new Date()),
                     end = moment(item.expiresDateVal),
                     diff = end.diff(start, 'days') + 1;
@@ -162,8 +162,8 @@ app.factory('restService', ['$http', '$q',
                     method: 'POST',
                     url: localRestUri + 'expiration/' + item.uuid + '?expires=' + diff,
                     data: 'barcode=' + this.uuid + '&expires=' + diff,
-                    timeout: this.timeout
+                    timeout: timeout
                 }));
-            },
+            }
         };
-}]);
+    }]);

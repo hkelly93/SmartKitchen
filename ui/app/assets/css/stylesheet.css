@@ -1,6 +1,7 @@
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,700);
 @import url(https://fonts.googleapis.com/css?family=Lato:400,100,700);
 @import url(https://fonts.googleapis.com/css?family=Chivo:400,900);
+
 /*
     Body styling.
  */
@@ -10,18 +11,20 @@ body {
     margin: 0;
     padding: 0;
 }
+
 /*
     Header styling including the slogan and the button on the header.
  */
 header {
-    background-image: url("/assets/img/header_sized.png");
+    background-image: url("../img/header_sized.png");
     border-bottom: 5px solid #524656;
     border-top: 5px solid #524656;
     width: 100%;
     height: 350px;
-    font-family: "Lato";
+    font-family: "Lato", Helvetica, sans-serif;
     color: #FFFFFF;
 }
+
 header .logo {
     display: inline-block;
     position: absolute;
@@ -30,34 +33,37 @@ header .logo {
     left: 25px;
     font-size: 15pt;
 }
+
 header #slogan {
     text-align: center;
     color: #e7e7e7;
-    font-family: Chevo;
+    font-family: "Chevo";
     font-size: 40pt;
     width: 100%;
     padding-top: 100px;
 }
+
 header .large-button {
     text-transform: uppercase;
     font-size: 8pt;
     border-radius: 4px;
-    font-family: "Lato";
+    font-family: "Lato", Helvetica, sans-serif;
     text-align: center;
     color: #FFFFFF;
     font-weight: 700;
-    margin: auto;
-    margin-top: 325px;
+    margin: 325px auto auto auto;
     background-color: #e74c3c;
     border-bottom: 3px solid #c0392b;
     width: 115px;
-    padding: 15px 0px;
+    padding: 15px 0;
 }
+
 header .large-button:hover {
     cursor: pointer;
     background-color: #c0392b;
     border-bottom: 3px solid #e74c3c;
 }
+
 /*
     Navigation styling.
  */
@@ -68,10 +74,12 @@ nav {
     text-align: right;
     width: 100%;
 }
+
 nav ul {
     padding: 0;
     margin: 0;
 }
+
 nav ul li {
     padding: 5px;
     border-radius: 6px;
@@ -86,11 +94,13 @@ nav ul li {
     color: #BEBEBE;
     width: 100px;
 }
+
 nav ul li:hover {
     cursor: pointer;
     background-color: #BEBEBE;
     color: #524656;
 }
+
 nav ul li span.small {
     font-size: 8pt;
     position: relative !important;
@@ -98,10 +108,12 @@ nav ul li span.small {
     top: 0 !important;
     color: #FFFFFF;
 }
+
 nav ul li a {
     color: inherit;
     text-decoration: none;
 }
+
 /*
     Alert styling for the SVG location.
  */
@@ -110,9 +122,11 @@ nav ul li a {
     left: 160px;
     top: 13px;
 }
+
 .alerts svg:hover {
     cursor: pointer;
 }
+
 /*
     Alert panel styling including animation transition.
  */
@@ -120,9 +134,11 @@ nav ul li a {
     -webkit-transition: all linear 0.5s;
     transition: all linear 0.5s;
 }
+
 #alerts.ng-hide {
     opacity: 0;
 }
+
 #alerts ul {
     position: absolute;
     width: 25%;
@@ -134,6 +150,7 @@ nav ul li a {
     height: 275px;
     overflow-x: scroll;
 }
+
 #alerts li {
     list-style-type: none;
     color: #323232;
@@ -141,16 +158,19 @@ nav ul li a {
     margin-bottom: 10px;
     background-color: #FFFFFF;
 }
+
 .alert-delete {
     color: #e74c3c;
     margin-right: 5px;
     display: inline-block;
     font-weight: 700;
 }
+
 .alert-delete:hover {
     cursor: pointer;
     color: #c0392b;
 }
+
 /*
     Styling for the dashboard panels.
  */
@@ -164,6 +184,7 @@ nav ul li a {
     border-radius: 6px;
     min-width: 400px;
 }
+
 .panel .header {
     width: 100%;
     height: 15px;
@@ -174,10 +195,12 @@ nav ul li a {
     font-size: 9pt;
     border-bottom: 1px solid #E7E7E7;
 }
+
 .header span {
     position: absolute;
     margin-top: -1px;
 }
+
 #health table {
     width: 100%;
     text-align: center;
@@ -185,19 +208,22 @@ nav ul li a {
     font-size: 9pt;
     font-weight: normal;
 }
+
 #latest-additions table {
     border-collapse: collapse;
 }
+
 #latest-additions table td {
     text-align: center;
-    margin: 0 50%;
+    margin: 0 50% 5px 0;
     width: 33%;
-    margin-bottom: 5px;
     padding: 5px;
 }
+
 #latest-additions table tr:not(:last-child) {
     border-bottom: 1px solid #E7E7E7;
 }
+
 /*
     Button styling.
  */
@@ -205,35 +231,39 @@ nav ul li a {
     text-transform: uppercase;
     font-size: 8pt;
     border-radius: 4px;
-    font-family: "Lato";
+    font-family: "Lato", Helvetica, sans-serif;
     text-align: center;
     color: #FFFFFF;
     font-weight: 700;
-    margin: 0 auto;
-    margin-top: 5px;
+    margin: 5px auto auto auto;
     background-color: #95a5a6;
     border-bottom: 3px solid #7f8c8d;
     width: 75px;
-    padding: 5px 0px;
+    padding: 5px 0;
 }
+
 .button:hover {
     background-color: #7f8c8d;
     border-bottom: 3px solid #95a5a6;
     cursor: pointer;
 }
+
 .delete {
     background-color: #e74c3c;
     border-bottom: 3px solid #c0392b;
 }
+
 .delete:hover {
     background-color: #c0392b;
     border-bottom: 3px solid #e74c3c;
     cursor: pointer;
 }
+
 #content {
     width: 33%;
     float: left;
 }
+
 #inventory {
     margin-right: 5px;
     margin-bottom: 5px;
@@ -241,12 +271,15 @@ nav ul li a {
     display: inline-block;
     float: right;
 }
+
 #inventory table {
     width: 100%;
 }
+
 #inventory table td {
     width: 50%;
 }
+
 /*
     Footer styling.
  */
@@ -256,6 +289,7 @@ footer {
     font-size: 8pt;
     text-align: center;
 }
+
 #popup .glass, #busy .glass {
     position: fixed;
     top: 0;
@@ -265,6 +299,7 @@ footer {
     height: auto;
     min-height: 100%;
 }
+
 #popup .popup {
     position: fixed;
     left: 50%;
@@ -278,6 +313,7 @@ footer {
     border-radius: 4px;
     padding: 10px;
 }
+
 #popup .x {
     float: right;
     clear: both;
@@ -286,10 +322,12 @@ footer {
     font-weight: bold;
     display: inline-block;
 }
+
 #popup .x:hover {
     color: #95a5a6;
     cursor: pointer;
 }
+
 #popup .header {
     display: inline-block;
     width: 98%;
@@ -305,15 +343,18 @@ footer {
     float: left;
     clear: both;
 }
+
 #popup table {
     width: 100%;
     text-align: left;
 }
+
 #busy {
     width: 100%;
     height: 100%;
     position: fixed;
 }
+
 #busy img {
     position: fixed;
     left: calc(50% - 48px);
