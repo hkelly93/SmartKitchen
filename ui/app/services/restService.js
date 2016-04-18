@@ -41,9 +41,9 @@ app.factory('restService', ['$http', '$q',
         return {
             /**
              * Wrapper for a promise.
-             * @param  {http} request Request to promise.
+             * @param  {XMLHttpRequest} request Request to promise.
              * @param  {Object} args additional arguments to pass in the response.
-             * @return {HttpPromise}      Promise of HTTP request.
+             * @return       Promise of HTTP request.
              */
             defer: function (request, args) {
                 var dfd = deferrer.defer();
@@ -62,35 +62,23 @@ app.factory('restService', ['$http', '$q',
                 return dfd.promise;
             },
             /**
-             * Gets the latest inventory from json/inventory.json.
-             *
-             * @return {HttpPromise} The http GET request promise.
-             */
-            getLatest: function () {
-                return this.defer($http({
-                    method: 'GET',
-                    url: localRestUri + 'inventory/',
-                    timeout: timeout
-                }));
-            },
-            /**
              * Gets the full inventory from json/inventory.json.
              *
-             * @return {HttpPromise} The http GET request promise.
+             * @return {deferrer} The http GET request promise.
              */
             getInventory: function () {
                 return this.defer($http({
                     method: 'GET',
                     url: localRestUri + 'inventory/',
                     timeout: timeout
-                }));
+                }), {});
             },
             /**
              * Searches for an entry using the Open Food Fact's RESTful API.
              * @param  {String} barcode The barcode that is being looked up
              * @param  {function} uuid The uuid for the item being searched.
              * @param  {function} expirationDate The expiration date of the item being searched.
-             * @return {HttpPromise} The http GET request promise.
+             * @return {deferrer} The http GET request promise.
              */
             searchBarcode: function (barcode, uuid, expirationDate) {
                 return this.defer($http({
@@ -100,33 +88,33 @@ app.factory('restService', ['$http', '$q',
                 }), {
                     'uuid': uuid,
                     'expirateiondate': expirationDate
-                });
+                }, {});
             },
             /**
              * Returns the fridge health.
-             * @return {HttpPromise} The http GET request promise.
+             * @return {deferrer} The http GET request promise.
              */
             getFridgeHealth: function () {
                 return this.defer($http({
                     method: 'GET',
                     url: localRestUri + 'health/fridge',
                     timeout: timeout
-                }));
+                }), {});
             },
             /**
              * Returns the network health.
-             * @return {HttpPromise} The http GET request promise.
+             * @return {deferrer} The http GET request promise.
              */
             getNetworkHealth: function () {
                 return this.defer($http({
                     method: 'GET',
                     url: localRestUri + 'health/network',
                     timeout: timeout
-                }));
+                }), {});
             },
             /**
              * Returns the scanner health.
-             * @return {HttpPromise} The http GET request promise.
+             * @return {deferrer} The http GET request promise.
              */
             getScannerHealth: function () {
                 return this.defer($http({
@@ -138,19 +126,19 @@ app.factory('restService', ['$http', '$q',
             /**
              * Remove an item from the inventory.
              * @param  {Object} item      The item to delete.
-             * @return {HttpPromise}      The http DELETE request promise.
+             * @return {deferrer}      The http DELETE request promise.
              */
             removeFromInventory: function (item) {
                 return this.defer($http({
                     method: 'DELETE',
                     url: localRestUri + 'inventory/' + item.uuid,
                     timeout: timeout
-                }));
+                }), {});
             },
             /**
              * Set the expiration date of an item.
              * @param  {Object} item      The object to set the expiration date on.
-             * @return {HttpPromise}      The http POST request promise.
+             * @return {deferrer}      The http POST request promise.
              */
             setExpirationDate: function (item) {
                 var start = moment(new Date()),
@@ -161,9 +149,9 @@ app.factory('restService', ['$http', '$q',
                 return this.defer($http({
                     method: 'POST',
                     url: localRestUri + 'expiration/' + item.uuid + '?expires=' + diff,
-                    data: 'barcode=' + this.uuid + '&expires=' + diff,
+                    data: 'barcode=' + item.uuid + '&expires=' + diff,
                     timeout: timeout
-                }));
+                }), {});
             }
         };
     }]);

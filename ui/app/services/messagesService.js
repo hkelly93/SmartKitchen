@@ -7,6 +7,7 @@
  * @return {Object}                   JavaScript object for translating messages
  */
 app.factory('messagesService', function ($sce) {
+    'use strict';
 
     const messages = {
         // English translations

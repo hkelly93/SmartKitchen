@@ -2,6 +2,8 @@
 
 app.factory('refreshData', ['$rootScope', '$interval', 'logService',
     function ($rootScope, $interval, logService) {
+        'use strict';
+
         var loadedControllers = [], // List of controllers currently loaded.
             refreshingControllers = []; // List of controllers that are doing a refresh.
 
@@ -13,14 +15,12 @@ app.factory('refreshData', ['$rootScope', '$interval', 'logService',
              * Load a controller into the application. This allows for a controller to
              * be refreshed automatically by the refreshData service.
              * @param  {String} controllerName The name of the controller that is being loaded.
-             * @return {null}
              */
             loadController: function (controllerName) {
                 logService.debug('refreshDataService', 'Loading ' + controllerName + '.');
 
                 if (loadedControllers.indexOf(controllerName) > -1) {
                     logService.warning('refreshDataService', controllerName + " was already loaded and will not be loaded again.");
-                    return null;
                 }
 
                 loadedControllers.push(controllerName);
@@ -38,7 +38,6 @@ app.factory('refreshData', ['$rootScope', '$interval', 'logService',
             /**
              * Unload a controller from the application to prevent automatic refreshing.
              * @param  {String} controllerName The name of the controller that is being unloaded.
-             * @return {[type]}                [description]
              */
             unloadController: function (controllerName) {
                 logService.debug('refreshDataService', 'Unloading ' + controllerName + '.');
@@ -53,21 +52,22 @@ app.factory('refreshData', ['$rootScope', '$interval', 'logService',
              * Refreshes the controller's data if it is not already refreshing.
              * @param  {String} controller The name of the controller to refresh.
              * @param  {String} log        A log message from the controller.
-             * @return {null}
              */
             refreshData: function (controller, log) {
                 var timer = $interval(function () {
                     var setRefreshing = function (controllerName) {
-                        refreshingControllers.push(controllerName);
-                    },
+                            refreshingControllers.push(controllerName);
+                        },
                         removeRefreshing = function (controllerName) {
-                        var index = refreshingControllers.indexOf(controllerName);
-                        if (index !== undefined && index > -1) {
-                            refreshingControllers.splice(index, 1);
-                        }
-                    }
+                            var index = refreshingControllers.indexOf(controllerName);
+                            if (index !== undefined && index > -1) {
+                                refreshingControllers.splice(index, 1);
+                            }
+                        };
 
-                    if (!refresh) return;
+                    if (!refresh) {
+                        return;
+                    }
 
                     var event = '';
 

@@ -8,6 +8,8 @@
  */
 app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', '$timeout', 'refreshData', 'logService', 'messagesService', 'restService', 'SEVERITY',
     function ($scope, $rootScope, $sce, $parse, $timeout, refreshData, logService, messagesService, restService, SEVERITY) {
+        'use strict';
+
         logService.setLevel(logService.LEVEL.WARNING);
 
         $scope.alertList = [];
@@ -68,8 +70,6 @@ app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', '$ti
          * Gets the running alerts from a REST call to open json/alerts.json. Also
          * sets the alert indicator in the navigation menu with the color of the
          * most severe alert.
-         *
-         * @return {null}
          */
         $rootScope.addAlert = function (alertSeverity, alertMessage) {
             switch (alertSeverity) {
@@ -95,10 +95,10 @@ app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', '$ti
 
             for (var alert in $scope.alertList) {
                 // Check for duplicates.
-                if ($scope.alertList[alert].severity == newAlert.severity && $scope.alertList[alert].message == newAlert.message) {
+                if ($scope.alertList[alert].severity === newAlert.severity && $scope.alertList[alert].message === newAlert.message) {
                     // Update the date and return.
                     $scope.alertList[alert].date = newAlert.date;
-                    return null;
+                    break;
                 }
             }
 
@@ -123,14 +123,15 @@ app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', '$ti
 
         function createAlertSvg() {
             var maxSeverity = 0,
-                color = "";
+                color = "",
+                i = 0;
 
             if ($scope.alertList.length === 0) {
                 $scope.alerts = "";
                 return;
             }
 
-            for (var i = 0; i < $scope.alertList.length; i++) {
+            for (i; i < $scope.alertList.length; i++) {
                 if ($scope.alertList[i].severity > maxSeverity) {
                     maxSeverity = $scope.alertList[i].severity;
                 }
@@ -169,7 +170,7 @@ app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', '$ti
             }
 
             var circle = '<circle cx="10" cy="10" r="10" fill="' + color + '" />';
-            var text = '<text x="' + left + '" y="14" style="font-weight: 700;font-size: 8pt" >' + message + '</text>';
+            var text = '<text x="' + left + '" y="14" style="font-weight: 700;font-size: 8pt;" >' + message + '</text>';
             return '<svg width="25" height="25">' + circle + text + '</svg>';
         }
 

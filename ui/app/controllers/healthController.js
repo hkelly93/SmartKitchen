@@ -29,12 +29,11 @@ app.controller('healthController', ['$scope', '$rootScope', '$sce', 'refreshData
 
         /**
          * Load the data from the controller into the view.
-         * @return {null}
          */
         $scope.load = function () {
-            $rootScope.toggleHealthLoading(true);
-
             var fridgeHealthPromise = restService.getFridgeHealth();
+
+            $rootScope.toggleHealthLoading(true);
 
             fridgeHealthPromise.success(function (response) {
                 if (response.data !== STATUS.HEALTHY) {
@@ -94,9 +93,10 @@ app.controller('healthController', ['$scope', '$rootScope', '$sce', 'refreshData
         function generateHealthSvg(severity) {
             var dangerColor = '#e74c3c',
                 warningColor = '#f1c40f',
-                healthyColor = '#2ecc71';
-
-            var color = '';
+                healthyColor = '#2ecc71',
+                color = '',
+                sev,
+                svg;
 
             switch (severity) {
                 case STATUS.HEALTHY:
@@ -113,8 +113,9 @@ app.controller('healthController', ['$scope', '$rootScope', '$sce', 'refreshData
                     color = "#BEBEBE";
                     break;
             }
-            var sev = '<circle cx="10" cy="10" r="8" fill="' + color + '" />';
-            var svg = '<svg width="20" height="20">' + sev + '</svg>';
+
+            sev = '<circle cx="10" cy="10" r="8" fill="' + color + '" />';
+            svg = '<svg width="20" height="20">' + sev + '</svg>';
             return $sce.trustAsHtml(svg);
         }
 

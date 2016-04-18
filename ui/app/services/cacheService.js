@@ -1,10 +1,11 @@
 app.factory('cache', [function () {
+    'use strict';
+
     return {
         /**
          * Caches an object in local storage.
          * @param  {String} name The name of the object.
          * @param  {Object} obj  The Javascript object to cache.
-         * @return {null}
          */
         setCache: function (name, obj) {
             if (typeof(Storage) !== "undefined") {

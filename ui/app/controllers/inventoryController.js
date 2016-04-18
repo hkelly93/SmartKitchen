@@ -14,19 +14,29 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
         $scope.inventory = [];
         $scope.cache = cache.getCache("inventoryController-inventory");
 
+        /**
+         * Create an item.
+         * @param response                                    Response from Open Food Facts.
+         * @param response.data.code                          The barcode of the item.
+         * @param response.data.product.product_name          The name of the item.
+         * @param response.data.product.image_front_thumb_url The image for the item.
+         * @param response.data.args.expirationdate           Expiration date of the item.
+         * @param response.data.args.uuid                     Uuid for the item.
+         */
         function createItem(response) {
-            $rootScope.toggleBusy(false);
             var barcode = response.data.code,
                 product = response.data.product.product_name,
                 item = {
-                    name: response.data.product.product_name,
+                    name: product,
                     image: response.data.product.image_front_thumb_url,
                     expires: response.data.args.expirationdate,
                     expiresDateVal: toDate(response.data.args.expirationdate),
                     barcode: barcode,
                     uuid: response.data.args.uuid
                 };
-            console.log(item);
+
+            $rootScope.toggleBusy(false);
+
             $scope.cache[barcode] = item;
             $scope.inventory.push(item);
 
@@ -46,12 +56,12 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
 
         /**
          * Load the data from the controller into the view.
-         * @return {null}
          */
         $scope.load = function (firstLoad) {
+            var showBusy = false;
+
             $rootScope.toggleInventoryBusy(true);
 
-            var showBusy = false;
             if (firstLoad) { // init
                 $rootScope.toggleBusy(true);
                 showBusy = true;
@@ -60,15 +70,15 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
             var promise = restService.getInventory();
 
             promise.success(function (response) {
-                $scope.inventory = [];
-                $scope.latest = [];
-                $scope.expirationDates = {};
-
                 var index = response.data.length - 1,
                     maxForLatest = (response.data.length < 3) ? response.data.length : response.data.length - 4,
                     barcode,
                     uuid,
                     expirationDate;
+
+                $scope.inventory = [];
+                $scope.latest = [];
+                $scope.expirationDates = {};
 
                 for (index; index > 0; index--) {
                     barcode = response.data[index].barcode;
