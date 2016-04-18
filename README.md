@@ -86,4 +86,5 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
     * Fixed issue with scannerhealth looking at network health
     * Fixed minor issue in restServices, setexpiration had trailing / in rest call
     * Fixed minor issue in healthcontroller, healthstatus was being used to display scannerstatus
-    * working on power-save feature
+    * Power-save feature turns off device if no use for X amount of time while still remains on enough to get calls from restapi/ui
+    * working on connecting up ui control of turing pi back on and motion sensor to trigger turnon

@@ -24,13 +24,13 @@ def health(part):
         with open('json/health.json', 'r') as json_file:
             data = json.load(json_file, encoding='utf-8')
 
-            status = request.args.get('status', type=str)
+            #status = request.args.get('status', type=str)
 
             if request.method == 'POST':
-                #status = request.args.get('status', type=str)
+                status = request.args.get('status', type=str)
                 data[part] = status
 
-                print status
+                # print status
                 with open('json/health.json', 'w') as json_file:
                     json_file.write(json.dumps(data))
 
@@ -39,13 +39,38 @@ def health(part):
             if request.method == 'GET':
                 if part == 'scanner':  # check if process is running
                     running = RestUtils.find_process('barcode_scanner', False)
-                    print running
+
                     if not running:
                         data[part] = 'critical'
                         with open('json/health.json', 'w') as json_file:
                             json_file.write(json.dumps(data))
 
                 return data[part]
+
+    except IOError:
+        return Messages.inventoryNotFound()
+
+
+@app.route('/restart', methods=['GET', 'POST'])
+def restart():  # this really could be health
+    try:
+        with open('json/health.json', 'r') as json_file:
+
+            data = json.load(json_file, encoding='utf-8')
+
+            if request.method == 'POST':
+                status = request.args.get('status', type=str)
+                #print status
+                if status is None:
+                    status = 'true'
+                #print status
+                data['restart'] = status
+                with open('json/health.json', 'w') as json_file:
+                    json_file.write(json.dumps(data))
+
+                    return 'restart set to %s' % status
+            if request.method == 'GET':
+                return data['restart']
 
     except IOError:
         return Messages.inventoryNotFound()

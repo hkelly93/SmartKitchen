@@ -1,7 +1,5 @@
-import json
 import os
 import datetime
-import psutil
 import subprocess
 
 
@@ -48,12 +46,15 @@ class RestUtils:
         out, err = p.communicate()
 
         for line in out.splitlines():
+            # TODO need to weed out the defunct processes in the list
             if proc_name in line:
-                pid = int(line.split(None, 1)[0])
-                if kill:
-                    os.kill(pid, 9)
-                return True
-
+                if 'defunct'not in line:
+                    pid = int(line.split(None, 1)[0])
+                    if kill:
+                        os.kill(pid, 9)
+                    return True
+            else:
+                print line
         return False
 
 
