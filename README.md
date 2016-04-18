@@ -88,3 +88,10 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
     * Fixed minor issue in healthcontroller, healthstatus was being used to display scannerstatus
     * Power-save feature turns off device if no use for X amount of time while still remains on enough to get calls from restapi/ui
     * working on connecting up ui control of turing pi back on and motion sensor to trigger turnon
+   
+*Ajay goud
+  * changed id of an item from barcode to uuid as we are getting error with barcode
+  * working on uuid to generate a unique for each item
+  * added  file lock to the rest api 
+  * need to fix a bug in filelock as it is releasing the file after certain time. 
+  * working on the file lock.
