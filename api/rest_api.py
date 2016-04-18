@@ -1,5 +1,6 @@
 import datetime
 import json
+import uuid
 
 from flask import Flask, jsonify, request
 
@@ -19,23 +20,57 @@ CORS(app)
 @app.route('/health/<string:part>/', methods=['GET', 'POST'])
 def health(part):
     try:
+        # TODO need to check if scanner is actually on, file is not enough
         with open('json/health.json', 'r') as json_file:
             data = json.load(json_file, encoding='utf-8')
+
+            #status = request.args.get('status', type=str)
 
             if request.method == 'POST':
                 status = request.args.get('status', type=str)
                 data[part] = status
 
-                print status
+                # print status
                 with open('json/health.json', 'w') as json_file:
                     json_file.write(json.dumps(data))
 
-                    return 'status set'
+                    return ''
 
             if request.method == 'GET':
+                if part == 'scanner':  # check if process is running
+                    running = RestUtils.find_process('barcode_scanner', False)
+
+                    if not running:
+                        data[part] = 'critical'
+                        with open('json/health.json', 'w') as json_file:
+                            json_file.write(json.dumps(data))
+
                 return data[part]
 
-            json_file.close()
+    except IOError:
+        return Messages.inventoryNotFound()
+
+
+@app.route('/restart', methods=['GET', 'POST'])
+def restart():  # this really could be health
+    try:
+        with open('json/health.json', 'r') as json_file:
+
+            data = json.load(json_file, encoding='utf-8')
+
+            if request.method == 'POST':
+                status = request.args.get('status', type=str)
+                #print status
+                if status is None:
+                    status = 'true'
+                #print status
+                data['restart'] = status
+                with open('json/health.json', 'w') as json_file:
+                    json_file.write(json.dumps(data))
+
+                    return 'restart set to %s' % status
+            if request.method == 'GET':
+                return data['restart']
 
     except IOError:
         return Messages.inventoryNotFound()
@@ -43,8 +78,10 @@ def health(part):
 
 @app.route('/inventory/', methods=['GET'])
 def get_inventory():
-    print'get inventory'
-
+    """
+    TODO loop through inventory to make sure uuid of every item is unique
+    only send invenotory if all unique
+    """
     try:
         with open('json/inventory.json', 'r') as json_file:
             data = json.load(json_file)  # this will throw correct errors
@@ -54,8 +91,8 @@ def get_inventory():
         return Messages.inventoryNotFound()
 
 
-@app.route('/inventory/<string:barcode>', methods=['DELETE', 'GET', 'POST'])
-def inventory(barcode):
+@app.route('/inventory/<string:uuid>', methods=['DELETE', 'GET', 'POST'])
+def inventory(uuid):
     """
     DELETE will remove first item with given barcode from inventory
 
@@ -63,19 +100,20 @@ def inventory(barcode):
 
     POST will add to inventory
         will increment quantity of pre existing items
-    :param barcode: string representation of barcode
+    :param uuid: string representation of uuid
     :param days_till_expire: defaults to None which will set it 30 days from todays date
     :return:
 
-    :usage: http://localhost:5000/inventory/1111?expire=30
+    :usage: http://localhost:5000/inventory/1e4658dc-03d5-11e6-b402-7831c1d2d04e?expire=30
     """
     if request.method == 'DELETE':
+        # TODO can make it delete more accurately by added expiration date to try and make more unique
         try:
             with open('json/inventory.json', 'r') as json_file:
                 data = json.load(json_file, encoding='utf-8')  # Get the current inventory.
                 json_file.close()
 
-            index = RestUtils.find_elem(data, 'barcode', barcode)
+            index = RestUtils.find_elem(data, 'uuid', uuid)
 
             if index is not None:
                 del data[index]
@@ -95,7 +133,7 @@ def inventory(barcode):
             with open('json/inventory.json', 'r') as json_file:
                 data = json.load(json_file, encoding='utf-8')
                 json_file.close()
-                index = RestUtils.find_elem(data, 'barcode', barcode)  # returns index if already exists
+                index = RestUtils.find_elem(data, 'uuid', uuid)
                 if index is not None:
                     return jsonify(data[index])
                 else:
@@ -115,18 +153,18 @@ def inventory(barcode):
                 data = json.load(json_file, encoding='utf-8')
                 json_file.close()
 
-                index = RestUtils.find_elem(data, u"barcode", barcode)  # returns index if already exists
+                index = RestUtils.find_elem(data, u"uuid", uuid)  # returns index if already exists
 
             # there already exists this barcode in the inventory
             if index is not None:
-                data[index]['qty'] += 1
+                #data[index]['qty'] += 1
                 data[index]["expiration"] = unicode(expire_date)
             else:
                 # this order matters, layout will add in same order in json
                 d = {u'barcode': unicode(barcode),
                      u'added': unicode(added_date),
                      u'expiration': unicode(expire_date),
-                     u'qty': 1}
+                     u'uuid': unicode(uuid.uuid1())}
 
                 data.append(d)
 
@@ -142,14 +180,13 @@ def inventory(barcode):
         return ''  # should this really return the whole dict?
 
 
-@app.route('/expiration/<string:barcode>/', methods=['GET', 'POST'])
-def expiration_date(barcode, days_till_expire=None):
+@app.route('/expiration/<string:uuid>', methods=['GET', 'POST'])
+def expiration_date(uuid):
     """
     need to find the correct item to change
     without an index id this would find the first item with the same barcode in the inventory
     which may not be the desired effect
     :param barcode: string representation
-    :param expires: string representation of date of expiration
     :return:
     """
     if request.method == 'GET':
@@ -158,7 +195,7 @@ def expiration_date(barcode, days_till_expire=None):
                 data = json.load(json_file, encoding='utf-8')  # Get the current inventory.
                 json_file.close()
 
-                index = RestUtils.find_elem(data, 'barcode', barcode)
+                index = RestUtils.find_elem(data, 'uuid', uuid)
 
                 if index is not None:
                     return data[index]['expirationdate']
@@ -173,7 +210,7 @@ def expiration_date(barcode, days_till_expire=None):
                 data = json.load(json_file, encoding='utf-8')  # Get the current inventory.
                 json_file.close()
 
-                index = RestUtils.find_elem(data, 'barcode', barcode)
+                index = RestUtils.find_elem(data, 'uuid', uuid)
 
                 if index is not None:
                     data[index]['expirationdate'] = unicode(date)
@@ -189,4 +226,4 @@ def expiration_date(barcode, days_till_expire=None):
     return ''
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True)

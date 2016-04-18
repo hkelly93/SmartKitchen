@@ -67,6 +67,9 @@
                 <div id="health" class="panel" ng-controller="healthController">
                     <div class="header">
                         <span>{{messages('KITCHEN_HEALTH')}}</span>
+                        <span class="loader" ng-show="healthLoading" style="margin-left: 110px; margin-top: -5px;">
+                            <img src="assets/img/panelLoading.gif" />
+                        </span>
                     </div>
                     <table>
                         <tr>
@@ -82,6 +85,9 @@
                 <div id="latest-additions" class="panel">
                     <div class="header">
                         <span>{{messages('LATEST_INVENTORY')}}</span>
+                        <span class="loader" ng-show="inventoryLoading" style="margin-left: 120px; margin-top: -5px;">
+                            <img src="assets/img/panelLoading.gif" />
+                        </span>
                     </div>
                     <table>
                         <tr ng-repeat="new in latest track by $index" ng-animate="'animate'">
@@ -108,6 +114,9 @@
                 <div class="panel">
                     <div class="header">
                         <span>{{messages('INVENTORY')}}</span>
+                        <span class="loader" ng-show="inventoryLoading" style="margin-left: 75px; margin-top: -5px;">
+                            <img src="assets/img/panelLoading.gif" />
+                        </span>
                     </div>
                     <table>
                         <tr ng-repeat="section in (inventory.length/2 | array) track by $index" ng-animate="'animate'">

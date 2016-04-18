@@ -1,5 +1,6 @@
-import json
+import os
 import datetime
+import subprocess
 
 
 class RestUtils:
@@ -8,22 +9,6 @@ class RestUtils:
 
     Utility functions for the REST api.
     """
-    '''
-    @staticmethod
-    def generateInventoryEntry(barcode, addedDate, expirationDate):
-        """
-        Generates a JSON entry for the inventory.
-        """
-        entry = ""
-
-        if (barcode != "" and addedDate != ""):
-            entry = "    \"barcode\": \"" + barcode + "\",\n"
-            entry += "    \"expirationdate\": \"" + expirationDate + "\",\n"
-            entry += "    \"added\": \"" + addedDate + "\"\n}]"
-
-            return entry
-    '''
-
     @staticmethod
     def find_elem(dic, propName, propValue):
         """
@@ -36,6 +21,7 @@ class RestUtils:
         for i in xrange(len(dic)):
             if dic[i][propName] == propValue:
                 return i
+
         return None
 
     @staticmethod
@@ -52,3 +38,23 @@ class RestUtils:
         date = date.strftime("%m/%d/%Y")
 
         return date
+
+    @staticmethod
+    def find_process(proc_name, kill=False):
+        # only works if rest-api is running on same machine
+        p = subprocess.Popen(['ps', '-A'], stdout=subprocess.PIPE)
+        out, err = p.communicate()
+
+        for line in out.splitlines():
+            # TODO need to weed out the defunct processes in the list
+            if proc_name in line:
+                if 'defunct'not in line:
+                    pid = int(line.split(None, 1)[0])
+                    if kill:
+                        os.kill(pid, 9)
+                    return True
+            else:
+                print line
+        return False
+
+

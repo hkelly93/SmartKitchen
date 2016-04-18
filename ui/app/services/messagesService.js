@@ -6,7 +6,8 @@
  * @param  {Function} function($sce   AngularJS functions
  * @return {Object}                   JavaScript object for translating messages
  */
-app.factory('messagesService', function($sce) {
+app.factory('messagesService', function ($sce) {
+    'use strict';
 
     const messages = {
         // English translations
@@ -82,16 +83,16 @@ app.factory('messagesService', function($sce) {
 
     /**
      * Gets the current locale language of the browser.
-     * @return {[type]} [description]
+     * @return {String} The language.
      */
-    getLocale = function() {
+    var getLocale = function () {
         var nav = window.navigator;
-        return (nav.language === undefined) ? nav.userLanguage.split('-')[0] : nav.language.split('-')[0];
+        return (nav.language == 'undefined') ? nav.userLanguage.split('-')[0] : nav.language.split('-')[0];
 
     };
 
     return {
-        get: function(text) {
+        get: function (text) {
             switch (getLocale()) {
                 case 'en':
                     return messages.en[text];
@@ -103,7 +104,7 @@ app.factory('messagesService', function($sce) {
                     return messages.en[text];
             }
         },
-        getHtml: function(text) {
+        getHtml: function (text) {
             switch (getLocale()) {
                 case 'en':
                     return $sce.trustAsHtml(messages.en[text]);

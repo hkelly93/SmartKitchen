@@ -6,6 +6,20 @@ and open the application at the grocery store to know if you need milk or not.
 # Contributors
 Harrison Kelly, Brian Day, AjayKumar Sarikonda
 
+# TODO's
+
+* Harrison Kelly
+    * check for no barcode found on openfoodfacts
+    * adding of items not found on openfoodfacts?
+
+* Brian Day
+    * button up hardware layout
+    * more exception handling in api
+    * Power saving feature
+        * motion sensor
+* Ajay
+    * locking inventory file to make thread safe
+
 # Progress (Week 3/28)
 
 * Harrison Kelly
@@ -35,7 +49,7 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
     * Scanner more flushed out, processes and threads die correctly when exited
 
 * Ajay
-    * Got api calls from Harrison and started working on the api and wrote all calls except addinventory and setexpiration date.
+    * Got api calls from Harrison and started working on the api and wrote getInventory.
 
 # Progress (Week 4/04)
 
@@ -55,13 +69,22 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
     * rewrote all api calls to make more concise
     * completed delete item and set expiration functionality
     * working on a way to allow hardware to go into a low power mode
-*Ajay goud
-    * Wrote code for addinventory but i got a small problem with reading json file. so, I took help from Harrison and completed addinventory method and send the code to Harrison.
-    * Brian and I wrote code for the setexpiration date as my code is little complicated we are using Brian's code for setexpiration date.
 
 # Progress (Week (4/11)
 
 * Harrison Kelly
     * Updated the UI to use the new version of the REST api and fixed the delete REST call.
     * Added a busy indicator.
-    * Fixed the setExpirationDate popup in the UI and added a minimum date (of 'today').
+    * Fixed an issue with editing expiration
+    * Combined the latest inventory and inventory methods and added refresh spinners for the panels.
+    * Added in UUIDs for each item on the server side.
+    * Added in UUIDs to the client side, just need to connect them to the REST calls.
+    * Finished modifying all of the REST calls on the server side.
+    * Cleaned up code.
+
+* Brian Day
+    * Fixed issue with scannerhealth looking at network health
+    * Fixed minor issue in restServices, setexpiration had trailing / in rest call
+    * Fixed minor issue in healthcontroller, healthstatus was being used to display scannerstatus
+    * Power-save feature turns off device if no use for X amount of time while still remains on enough to get calls from restapi/ui
+    * working on connecting up ui control of turing pi back on and motion sensor to trigger turnon

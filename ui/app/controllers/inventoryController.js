@@ -7,232 +7,150 @@
  * @return {null}
  */
 app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'cache', 'restService', 'logService', 'SEVERITY',
-    function($scope, $rootScope, refreshData, cache, restService, logService, SEVERITY) {
+    function ($scope, $rootScope, refreshData, cache, restService, logService, SEVERITY) {
         'use strict';
-
-        // Add this controller to the loaded controllers.
-        refreshData.loadController('inventoryController');
-        refreshData.refreshData('inventoryController', 'Refreshing inventory data.');
 
         $scope.latest = [];
         $scope.inventory = [];
         $scope.cache = cache.getCache("inventoryController-inventory");
 
         /**
-         * Load the data from the controller into the view.
-         * @return {null}
+         * Create an item.
+         * @param response                                    Response from Open Food Facts.
+         * @param response.data.code                          The barcode of the item.
+         * @param response.data.product.product_name          The name of the item.
+         * @param response.data.product.image_front_thumb_url The image for the item.
+         * @param response.data.args.expirationdate           Expiration date of the item.
+         * @param response.data.args.uuid                     Uuid for the item.
          */
-        $scope.load = function(firstLoad) {
+        function createItem(response) {
+            var barcode = response.data.code,
+                product = response.data.product.product_name,
+                item = {
+                    name: product,
+                    image: response.data.product.image_front_thumb_url,
+                    expires: response.data.args.expirationdate,
+                    expiresDateVal: toDate(response.data.args.expirationdate),
+                    barcode: barcode,
+                    uuid: response.data.args.uuid
+                };
+
+            $rootScope.toggleBusy(false);
+
+            $scope.cache[barcode] = item;
+            $scope.inventory.push(item);
+
+            if ($scope.latest.length < 4) {
+                $scope.latest.push(item);
+            }
+
+            $rootScope.addAlert(0, product + " was added to the inventory.");
+            $rootScope.toggleInventoryBusy(false);
+        }
+
+        function inventoryError(response) {
+            $rootScope.addAlert(SEVERITY.WARNING, "Something went wrong and the inventory could not be found.");
+            $rootScope.toggleBusy(false);
+            $rootScope.toggleInventoryBusy(false);
+        }
+
+        /**
+         * Load the data from the controller into the view.
+         */
+        $scope.load = function (firstLoad) {
             var showBusy = false;
+
+            $rootScope.toggleInventoryBusy(true);
+
             if (firstLoad) { // init
                 $rootScope.toggleBusy(true);
                 showBusy = true;
             }
 
-            var expirationDates = {};
+            var promise = restService.getInventory();
 
-            function createItem(response) {
-                var product = response.data.product,
-                    barcode = response.data.code,
-                    item = {
-                        name: product.product_name,
-                        image: product.image_front_thumb_url,
-                        expires: expirationDates[barcode],
-                        expiresDateVal: toDate(expirationDates[barcode]),
-                        barcode: barcode
-                    };
+            promise.success(function (response) {
+                var index = response.data.length - 1,
+                    maxForLatest = (response.data.length < 3) ? response.data.length : response.data.length - 4,
+                    barcode,
+                    uuid,
+                    expirationDate;
 
-                $scope.newList.push(item);
-                $scope.cache[barcode] = item;
-            }
+                $scope.inventory = [];
+                $scope.latest = [];
+                $scope.expirationDates = {};
 
-            function latestInventoryError(response) {
-                $rootScope.addAlert(SEVERITY.WARNING, "Something went wrong and the latest inventory could not be found.");
-            }
-
-            var promise = restService.getLatest();
-
-            if (showBusy) {
-                $rootScope.toggleBusy(true);
-            }
-
-            promise.success(function(response) {
-                $scope.newList = [];
-
-                // Get all of the expiration dates.
-                for (var index = 0; index < response.data.length; index++) {
-                    var barcode = response.data[index].barcode;
-                    var expiration = response.data[index].expirationdate;
-
-                    expirationDates[barcode] = expiration;
-                }
-
-                // Get the last three items.
-                var maxLength = (response.data.length < 3) ? response.data.length : response.data.length - 4,
-                    i = response.data.length - 1,
-                    elBarcode,
-                    expiresDate,
-                    item;
-
-                for (i; i > maxLength; i--) {
-                    elBarcode = response.data[i].barcode;
+                for (index; index > 0; index--) {
+                    barcode = response.data[index].barcode;
+                    uuid = response.data[index].uuid;
+                    expirationDate = response.data[index].expirationdate;
 
                     // Search in the cache first.
-                    if (elBarcode in $scope.cache) {
-                        item = $scope.cache[elBarcode];
+                    if (barcode in $scope.cache) {
+                        var entity = $scope.cache[barcode];
 
                         // Set the expiration date just in case it is different
-                        item.expires = response.data[i].expirationdate;
-                        item.expiresDateVal = toDate(response.data[i].expirationdate);
+                        entity.expires = expirationDate;
+                        entity.expiresDateVal = toDate(expirationDate);
+                        entity.uuid = uuid;
+                        $scope.inventory.push(entity);
 
-                        $scope.newList.push(item);
+                        if (index > maxForLatest) {
+                            $scope.latest.push(entity);
+                        }
+
+                        logService.debug('inventoryController', 'Found ' + barcode + ' in cache.');
+
                     } else {
-                        logService.debug('inventoryController', 'REST call for barcode ' + elBarcode);
+                        logService.debug('inventoryController', 'REST call for barcode ' + barcode);
 
-                        var promise = restService.searchBarcode(elBarcode);
-                        promise.success(createItem);
-                        promise.error(latestInventoryError);
-                    }
-                }
-
-                $scope.$watch('newList', function(n) {
-                    if (n.length === 3) {
-                        $scope.latest = $scope.newList;
+                        // Search for the barcode.
 
                         if (showBusy) {
-                            $rootScope.toggleBusy(false);
+                            $rootScope.toggleBusy(true);
                         }
-                    }
-                }, true);
-            });
 
-            promise.error(function(response) {
-                $rootScope.addAlert(SEVERITY.WARNING, "Something went wrong and the latest inventory could not be found.");
-
-                if (showBusy) {
-                    $rootScope.toggleBusy(false);
-                }
-            });
-
-            promise = restService.getInventory();
-
-            if (showBusy) {
-                $rootScope.toggleBusy(true);
-            }
-
-            promise.success(function(response) {
-                $scope.inventory = [];
-
-                function createProduct(response) {
-                    $rootScope.toggleBusy(true);
-
-                    var barcode = response.data.code,
-                        product = response.data.product.product_name,
-                        item = {
-                            name: response.data.product.product_name,
-                            image: response.data.product.image_front_thumb_url,
-                            expires: expirationDates[barcode],
-                            expiresDateVal: toDate(expirationDates[barcode]),
-                            barcode: barcode
-                        };
-
-                    $scope.cache[barcode] = item;
-                    $scope.inventory.push(item);
-
-                    $rootScope.addAlert(0, product + " was added to the inventory.");
-                }
-
-                function inventoryError(response) {
-                    $rootScope.addAlert(SEVERITY.WARNING, "Something went wrong and the inventory could not be found.");
-                    $rootScope.toggleBusy(false);
-                }
-
-                var item,
-                    index,
-                    barcode,
-                    product;
-
-                for (item = response.data.length - 1; item > 0; item--) {
-                    index = $scope.inventory.indexOf(response.data[item]);
-
-                    if (index < 0) {
-                        barcode = response.data[item].barcode;
-
-                        // Search in the cache first.
-                        if (barcode in $scope.cache) {
-                            var entity = $scope.cache[barcode];
-
-                            // Set the expiration date just in case it is different
-                            entity.expires = response.data[item].expirationdate;
-                            entity.expiresDateVal = toDate(response.data[item].expirationdate);
-
-                            $scope.inventory.push(entity);
-                            logService.debug('inventoryController', 'Found ' + barcode + ' in cache.');
-                        } else {
-                            logService.debug('inventoryController', 'REST call for barcode ' + barcode);
-                            var promise = restService.searchBarcode(barcode);
-                            promise.success(createProduct);
-                            promise.error(inventoryError);
-                        }
+                        $rootScope.toggleInventoryBusy(true);
+                        var promise = restService.searchBarcode(barcode, uuid, expirationDate);
+                        promise.success(createItem);
+                        promise.error(inventoryError);
                     }
                 }
 
                 if (showBusy) {
                     $rootScope.toggleBusy(false);
                 }
+
+                $rootScope.toggleInventoryBusy(false);
             });
 
-            promise.error(function(response) {
+            promise.error(function (response) {
                 $rootScope.addAlert(SEVERITY.CRITICAL, "Something went wrong and the inventory could not be found.");
 
                 if (showBusy) {
                     $rootScope.toggleBusy(false);
                 }
+                $rootScope.toggleInventoryBusy(false);
             });
 
             if (firstLoad) {
                 $rootScope.toggleBusy(false);
             }
+
+            $rootScope.toggleInventoryBusy(false);
         };
 
-        /**
-         * Returns whether or not the inventory has changed.
-         * @return {boolean} Whether or not the inventory has changed.
-         */
-        $scope.isInventoryEqual = function() {
-            var equal = false;
-
-            if ($scope.newList.length == $scope.latest.length) {
-                for (var item in $scope.newList) {
-                    var element = $scope.newList[item].barcode;
-
-                    var found = false;
-                    for (var otherItem in $scope.latest) {
-                        var otherElement = $scope.latest[otherItem].barcode;
-
-                        if (otherElement == element) {
-                            found = true;
-                            break;
-                        }
-                    }
-                    equal = found;
-                }
-            }
-
-            return equal;
-        };
-
-        $scope.deleteItem = function(item) {
+        $scope.deleteItem = function (item) {
             logService.debug('inventoryController', 'Deleting barcode ' + item.barcode);
 
             var promise = restService.removeFromInventory(item);
 
-            promise.success(function() {
+            promise.success(function () {
                 $scope.load(true);
                 $rootScope.toggleBusy(false);
             });
 
-            promise.error(function() {
+            promise.error(function () {
                 $rootScope.toggleBusy(false);
                 $rootScope.addAlert(SEVERITY.CRITICAL, 'Could not delete ' + item.name + '.');
             });
@@ -241,53 +159,48 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
         /**
          * Converts date from mm/dd/yyyy format to a different string format.
          * @param  {String} date   The date to convert
-         * @return {String}        The String representation of "date".
+         * @return {Date}        The String representation of "date".
          */
-        var toDate = function(date) {
+        var toDate = function (date) {
+            if (date === undefined) {
+                return new Date();
+            }
             var dateParts = date.split("/");
 
             if (dateParts.length != 3) {
                 logService.warning('inventoryController', 'Invalid date, ' + date + ' found.');
-                return '';
+                return new Date();
             }
 
             if (date.length != 10) {
                 logService.warning('inventoryController', 'Invalid date, ' + date + ' found.');
-                return '';
+                return new Date();
             }
 
             // The subtraction by one for the month is due to the fact that JavaScript starts months at zero.
-            var dateObj = new Date(dateParts[2], dateParts[0] - 1, dateParts[1]),
-                year = dateObj.getFullYear().toString(),
-                month = (dateObj.getMonth() + 1).toString(),
-                day = dateObj.getDate().toString();
-
-            if (month.length === 1) {
-                month = '0' + month;
-            }
-
-            if (day.length === 1) {
-                day = '0' + day;
-            }
-            return dateObj;
+            return new Date(dateParts[2], dateParts[0] - 1, dateParts[1]);
         };
 
         $scope.load(true);
 
+        // Add this controller to the loaded controllers.
+        refreshData.loadController('inventoryController');
+        refreshData.refreshData('inventoryController', 'Refreshing inventory data.');
+
         // Register event handlers
-        $rootScope.$on("refreshInventory", function() {
+        $rootScope.$on("refreshInventory", function () {
             $scope.load();
         });
 
-        var saveCache = function() {
+        var saveCache = function () {
             cache.setCache("inventoryController-inventory", $scope.cache);
         };
 
         window.onbeforeunload = saveCache;
 
         // Cleanup
-        $scope.$on("$destroy", function() {
+        $scope.$on("$destroy", function () {
             saveCache();
-            refreshDataService.unloadController('inventoryController');
+            refreshData.unloadController('inventoryController');
         });
-}]);
+    }]);

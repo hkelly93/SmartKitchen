@@ -1,12 +1,13 @@
-app.factory('cache', [function() {
+app.factory('cache', [function () {
+    'use strict';
+
     return {
         /**
          * Caches an object in local storage.
          * @param  {String} name The name of the object.
          * @param  {Object} obj  The Javascript object to cache.
-         * @return {null}
          */
-        setCache: function(name, obj) {
+        setCache: function (name, obj) {
             if (typeof(Storage) !== "undefined") {
                 if (obj !== undefined) {
                     obj.date = +new Date();
@@ -21,7 +22,7 @@ app.factory('cache', [function() {
          * @param  {String} name The name of the object that was stored.
          * @return {Object}      The object that was cached.
          */
-        getCache: function(name) {
+        getCache: function (name) {
             if (typeof(Storage) !== "undefined") {
                 var obj = localStorage.getItem(name);
 

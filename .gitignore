@@ -1,4 +1,6 @@
+/api/json
 .DS_Store
 *.pyc
 /.idea
 *.log
+/api/json
