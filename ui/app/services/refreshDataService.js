@@ -63,9 +63,12 @@ app.factory('refreshData', ['$rootScope', '$interval', 'logService',
                             if (index !== undefined && index > -1) {
                                 refreshingControllers.splice(index, 1);
                             }
-                        };
-
-                    if (!refresh) {
+                        },
+                        isRefreshing = function (controllerName) {
+                            return refreshingControllers.indexOf(controllerName) > -1;
+                        }
+                    
+                    if (!refresh || isRefreshing(controller)) {
                         return;
                     }
 
@@ -92,8 +95,6 @@ app.factory('refreshData', ['$rootScope', '$interval', 'logService',
                     $rootScope.$emit('refreshDateUpdate', {
                         'date': new Date()
                     });
-
-                    removeRefreshing(controller);
                 }, refreshRate * 1000);
 
                 // Cleanup
@@ -102,6 +103,13 @@ app.factory('refreshData', ['$rootScope', '$interval', 'logService',
                         $timeout.cancel(timer);
                     }
                 });
+
+                $rootScope.$on('doneRefreshing', function (event, data) {
+                    var index = refreshingControllers.indexOf(data.controller);
+                    if (index !== undefined && index > -1) {
+                        refreshingControllers.splice(index, 1);
+                    }
+                })
             }
         };
     }

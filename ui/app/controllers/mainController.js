@@ -29,6 +29,8 @@ app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', '$ti
                 if ($rootScope.inventoryLoading <= 1) {
                     $timeout(function () {
                         $rootScope.inventoryLoading = 0;
+                        $rootScope.$emit('doneRefreshing', {controller: 'inventoryController'});
+                        $rootScope.$emit('doneRefreshing', {controller: 'navController'});
                     }, 2000);
                 } else {
                     $rootScope.inventoryLoading -= 1;
@@ -44,6 +46,7 @@ app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', '$ti
                 if ($rootScope.healthLoading <= 1) {
                     $timeout(function () {
                         $rootScope.healthLoading = 0;
+                        $rootScope.$emit('doneRefreshing', {controller: 'healthController'});
                     }, 2000);
                 } else {
                     $rootScope.healthLoading -= 1;
