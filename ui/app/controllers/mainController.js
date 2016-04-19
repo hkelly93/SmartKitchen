@@ -93,6 +93,12 @@ app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', '$ti
                 date: new Date()
             };
 
+            for (var i = 0; i < $scope.alertList.length; i += 1) {
+                if ($scope.alertList[i].message == newAlert.message) {
+                    return;
+                }
+            }
+
             for (var alert in $scope.alertList) {
                 // Check for duplicates.
                 if ($scope.alertList[alert].severity === newAlert.severity && $scope.alertList[alert].message === newAlert.message) {
