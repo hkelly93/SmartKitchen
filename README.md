@@ -100,6 +100,9 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
 
 # Progress (Week 4/18)
 
+* Harrison Kelly
+    * Fixed bug where the scanner health was actually a different health.
+
 * Brian Day
     * installed raspberry pi in final case
     * MAJOR rewrite of scanner code

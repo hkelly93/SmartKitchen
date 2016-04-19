@@ -68,7 +68,7 @@ app.controller('healthController', ['$scope', '$rootScope', '$sce', 'refreshData
             });
 
             $rootScope.toggleHealthLoading(true);
-            var scannerHealthPromise = restService.getNetworkHealth();
+            var scannerHealthPromise = restService.getScannerHealth();
 
             scannerHealthPromise.success(function (response) {
                 if (response.data !== STATUS.HEALTHY) {
