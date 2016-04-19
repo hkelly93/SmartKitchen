@@ -6,7 +6,7 @@ def find_process(proc_name, kill=False):
         out, err = p.communicate()
 
         for line in out.splitlines():
-            if proc_name and 'ttys000' in line:
+            if proc_name and 'defunct' in line:
                 print line
                 pid = int(line.split(None, 1)[0])
                 if kill:

@@ -5,7 +5,7 @@ import subprocess
 
 class RestUtils:
     """
-    @author harrisonkelly,brianday
+    @author harrisonkelly, brianday
 
     Utility functions for the REST api.
     """

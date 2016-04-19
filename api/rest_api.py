@@ -51,7 +51,7 @@ def health(part):
         return Messages.inventoryNotFound()
 
 
-@app.route('/restart', methods=['GET', 'POST'])
+@app.route('/restart/', methods=['GET', 'POST'])
 def restart():  # this really could be health
     try:
         with open('json/health.json', 'r') as json_file:
@@ -60,11 +60,13 @@ def restart():  # this really could be health
 
             if request.method == 'POST':
                 status = request.args.get('status', type=str)
-                #print status
+
                 if status is None:
+                    print 'no status given, defaults to true'
                     status = 'true'
-                #print status
+
                 data['restart'] = status
+
                 with open('json/health.json', 'w') as json_file:
                     json_file.write(json.dumps(data))
 
@@ -107,7 +109,6 @@ def inventory(uuid):
     :usage: http://localhost:5000/inventory/1e4658dc-03d5-11e6-b402-7831c1d2d04e?expire=30
     """
     if request.method == 'DELETE':
-        # TODO can make it delete more accurately by added expiration date to try and make more unique
         try:
             with open('json/inventory.json', 'r') as json_file:
                 data = json.load(json_file, encoding='utf-8')  # Get the current inventory.
@@ -153,27 +154,36 @@ def inventory(uuid):
                 data = json.load(json_file, encoding='utf-8')
                 json_file.close()
 
-                index = RestUtils.find_elem(data, u"uuid", uuid)  # returns index if already exists
-
+                # not needed unless we are worried about grouping items together
+                # index = RestUtils.find_elem(data, u"uuid", uuid)  # returns index if already exists
+            '''
             # there already exists this barcode in the inventory
             if index is not None:
                 #data[index]['qty'] += 1
                 data[index]["expiration"] = unicode(expire_date)
             else:
+
                 # this order matters, layout will add in same order in json
                 d = {u'barcode': unicode(barcode),
                      u'added': unicode(added_date),
                      u'expiration': unicode(expire_date),
                      u'uuid': unicode(uuid.uuid1())}
+            '''
+            barcode = uuid  # TODO have it this way to not break pre-existing method calls from scanner
 
-                data.append(d)
+            d = {u'barcode': unicode(barcode),
+                 u'added': unicode(added_date),
+                 u'expiration': unicode(expire_date),
+                 u'uuid': unicode(uuid.uuid1())}  # generates unique id for help with deleting items
+
+            data.append(d)
 
             # open up file again to write to it
             with open('json/inventory.json', 'w+') as json_file:
                 json_file.write(json.dumps(data, encoding='utf-8'))
                 json_file.close()
 
-        except (IOError,KeyError):
+        except (IOError, KeyError) as e:
             # TODO exception error here
             pass
 

@@ -14,9 +14,13 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
 
 * Brian Day
     * button up hardware layout
-    * more exception handling in api
+        * solder up more permanent solution for status LED
     * Power saving feature
         * motion sensor
+    * extra stuff
+        * make eco_mode led status be a little more soothing
+        * add buzzer to give a audible signal for barcode found
+        * install a light source to help with barcode processing
 * Ajay
     * locking inventory file to make thread safe
 
@@ -70,7 +74,7 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
     * completed delete item and set expiration functionality
     * working on a way to allow hardware to go into a low power mode
 
-# Progress (Week (4/11)
+# Progress (Week 4/11)
 
 * Harrison Kelly
     * Updated the UI to use the new version of the REST api and fixed the delete REST call.
@@ -87,9 +91,22 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
     * Fixed minor issue in restServices, setexpiration had trailing / in rest call
     * Fixed minor issue in healthcontroller, healthstatus was being used to display scannerstatus
     * Power-save feature turns off device if no use for X amount of time while still remains on enough to get calls from restapi/ui
-    * working on connecting up ui control of turing pi back on and motion sensor to trigger turnon
-   
-*Ajay goud
-  * began adding file lock to the rest api 
-  * need to fix a bug in filelock as it is releasing the file after certain time. 
-  * working on the file lock.
+    * working on connecting up ui control of turning pi back on and motion sensor to trigger turnon
+
+* Ajay goud
+    * began adding file lock to the rest api
+    * need to fix a bug in filelock as it is releasing the file after certain time.
+    * working on the file lock.
+
+# Progress (Week 4/18)
+
+* Brian Day
+    * installed raspberry pi in final case
+    * MAJOR rewrite of scanner code
+        * clean up of code
+        * exception handling
+        * better use of multiprocessing
+        * method of how to do an ECO mode
+            * created timer class to allow system
+            * using events to cause threads to suspend
+    * Created and tested api calls for power saving mode

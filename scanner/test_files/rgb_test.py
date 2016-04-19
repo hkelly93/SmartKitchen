@@ -4,10 +4,10 @@ import RPi.GPIO as GPIO
 import math
 
 
-GPIO.setmode(GPIO.BOARD)
-red = 11 #pin numbers to match LED legs
-green = 13
-blue = 15
+GPIO.setmode(GPIO.BCM)
+red = 13 #pin numbers to match LED legs
+green = 5
+blue = 6
 
 GPIO.setup(red, GPIO.OUT) #setup all the pins
 GPIO.setup(green, GPIO.OUT)
@@ -53,7 +53,7 @@ except KeyboardInterrupt:
     pass
 '''
 try:
-    colour(100,30,0,10)
+    colour(0, 100, 0, 10)
 except KeyboardInterrupt:
     pass
 #Stop all the PWM objects

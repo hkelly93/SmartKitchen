@@ -4,40 +4,19 @@ import time
 
 TEST = False
 
-'''
-Freq = 100 #Hz
-
- #setup all the colours
- RED = GPIO.PWM(red, Freq) #Pin, frequency
- RED.start(0) #Initial duty cycle of 0, so off
- GREEN = GPIO.PWM(green, Freq)
- GREEN.start(0)
- BLUE = GPIO.PWM(blue, Freq)
- BLUE.start(0)
-
- def colour(R, G, B, on_time):
-   #colour brightness range is 0-100
-   RED.ChangeDutyCycle(R)
-   GREEN.ChangeDutyCycle(G)
-   BLUE.ChangeDutyCycle(B)
-   time.sleep(on_time)
-
-   #turn everything off
-   RED.ChangeDutyCycle(0)
-   GREEN.ChangeDutyCycle(0)
-   BLUE.ChangeDutyCycle(0)
-'''
 
 class LED(object):
     """
     should set these up to use PWM
     """
-    def __init__(self, pin=7):
-
-        GPIO.setmode(GPIO.BOARD)  # physical pin numbers
+    def __init__(self, pin=13):
+        # TODO change setmode to BOARD in case it changes on each raspberry pi revision
+        GPIO.setmode(GPIO.BCM)  # physical pin numbers
 
         # pin values most likely will be changed
+        self._DEBUG = False
         self.pin = pin
+        # print pin
         GPIO.setup(pin, GPIO.OUT)
 
     def on(self, val):
@@ -53,8 +32,7 @@ class LED(object):
 
 
 class RGB_LED(LED):
-    # TODO allow colors to dim to get better color range
-    def __init__(self, pin_r=11, pin_g=13, pin_b=15):
+    def __init__(self, pin_r=13, pin_g=5, pin_b=6):
         super(RGB_LED, self).__init__(pin_r)
 
         # pin values most likely will be changed
@@ -63,7 +41,8 @@ class RGB_LED(LED):
 
         # setup the pins to output
         for pin in self.colors:
-            #print pin
+            if self._DEBUG:
+                print pin
             GPIO.setup(pin, GPIO.OUT)
 
         self.freq = 100  # Hz
@@ -76,17 +55,21 @@ class RGB_LED(LED):
         self.GREEN.start(0)
         self.BLUE.start(0)
 
-    def color(self, (R, G, B), on_time=1):
-        #print 'set color'
+    def color(self, (R, G, B), on_time=0):
+        if self._DEBUG:
+            print 'set color %s, %s, %s' % (R, G, B)
+
         # colour brightness range is 0-100
         self.RED.ChangeDutyCycle(R)
         self.GREEN.ChangeDutyCycle(G)
         self.BLUE.ChangeDutyCycle(B)
-        time.sleep(on_time)
 
-        self.RED.ChangeDutyCycle(0)
-        self.GREEN.ChangeDutyCycle(0)
-        self.BLUE.ChangeDutyCycle(0)
+        if on_time != 0:
+            time.sleep(on_time)
+
+            self.RED.ChangeDutyCycle(0)
+            self.GREEN.ChangeDutyCycle(0)
+            self.BLUE.ChangeDutyCycle(0)
 
     def off(self):
 
