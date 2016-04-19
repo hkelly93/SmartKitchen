@@ -103,6 +103,7 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
 * Harrison Kelly
     * Fixed bug where the scanner health was actually a different health.
     * Fixed bug where multiple alerts with the same message were being added.
+    * Added a way to restart the scanner.
 
 * Brian Day
     * installed raspberry pi in final case

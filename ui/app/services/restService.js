@@ -145,11 +145,21 @@ app.factory('restService', ['$http', '$q',
                     end = moment(item.expiresDateVal),
                     diff = end.diff(start, 'days') + 1;
 
-                console.log(diff);
                 return this.defer($http({
                     method: 'POST',
                     url: localRestUri + 'expiration/' + item.uuid + '?expires=' + diff,
                     data: 'barcode=' + item.uuid + '&expires=' + diff,
+                    timeout: timeout
+                }), {});
+            },
+            /**
+             * Restart the scanner.
+             * @returns {deferrer} The http POST request promise.
+             */
+            restartScanner: function () {
+                return this.defer($http({
+                    method: 'POST',
+                    url: localRestUri + 'restart/',
                     timeout: timeout
                 }), {});
             }

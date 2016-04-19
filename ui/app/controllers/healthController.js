@@ -27,6 +27,19 @@ app.controller('healthController', ['$scope', '$rootScope', '$sce', 'refreshData
             network: generateHealthSvg(null)
         };
 
+        $scope.showReset = false;
+
+        /**
+         * Restarts the scanner.
+         */
+        $scope.restartScanner = function () {
+            var restartScannerPromise = restService.restartScanner();
+
+            restartScannerPromise.error(function (response) {
+                $rootScope.addAlert(SEVERITY.CRITICAL, "Could not restart the scanner.");
+            });
+        };
+
         /**
          * Load the data from the controller into the view.
          */
@@ -72,8 +85,13 @@ app.controller('healthController', ['$scope', '$rootScope', '$sce', 'refreshData
 
             scannerHealthPromise.success(function (response) {
                 if (response.data !== STATUS.HEALTHY) {
+                    $scope.showReset = true;
                     $rootScope.addAlert(SEVERITY.WARNING, "Scanner health is " + response.data);
                 }
+                else {
+                    $scope.showReset = false;
+                }
+
                 $scope.health.scanner = generateHealthSvg(response.data);
                 $rootScope.toggleHealthLoading(false);
             });
