@@ -1,13 +1,16 @@
-#!/usr/bin/python
+#Controlling a RGB LED with built in PWM.
+#Mostly copied from GPIO PWM example:
+#http://code.google.com/p/raspberry-gpio-python/wiki/PWM
+
 import time
 import RPi.GPIO as GPIO
 import math
 
 
 GPIO.setmode(GPIO.BCM)
-red = 13 #pin numbers to match LED legs
-green = 5
-blue = 6
+red = 12 #pin numbers to match LED legs
+green = 13
+blue = 16
 
 GPIO.setup(red, GPIO.OUT) #setup all the pins
 GPIO.setup(green, GPIO.OUT)
@@ -42,20 +45,21 @@ def PosSinWave(amplitude, angle, frequency):
     #creates a positive sin wave between 0 and amplitude*2
     return amplitude + (amplitude * math.sin(math.radians(angle)*frequency) )
 
-'''
 try:
 
     while 1:
-         for i in range(0, 720, 5):
-            colour( PosSinWave(50, i, 0.5),PosSinWave(50, i, 1),PosSinWave(50, i, 2),0.1 )
+        #colour(0, 0, 100, 10)
+        for i in range(0, 720, 5):
+            '''colour( PosSinWave(50, i, 0.5),
+                PosSinWave(50, i, 1),
+                PosSinWave(50, i, 2),
+                0.1 )
+            '''
+            colour(0, 0, PosSinWave(50, i, 2), .1)
+            # colour(100, 5, 0, .1) # yellowish
+except KeyboardInterrupt:
+    pass
 
-except KeyboardInterrupt:
-    pass
-'''
-try:
-    colour(0, 100, 0, 10)
-except KeyboardInterrupt:
-    pass
 #Stop all the PWM objects
 RED.stop()
 GREEN.stop()

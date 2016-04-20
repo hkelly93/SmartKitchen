@@ -113,6 +113,6 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
         * exception handling
         * better use of multiprocessing
         * method of how to do an ECO mode
-            * created timer class to allow system
+            * created timer class to allow timeout functionality
             * using events to cause threads to suspend
     * Created and tested api calls for power saving mode
