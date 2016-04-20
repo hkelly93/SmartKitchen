@@ -104,7 +104,8 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
     * Fixed bug where the scanner health was actually a different health.
     * Fixed bug where multiple alerts with the same message were being added.
     * Added a way to restart the scanner.
-    * Fixed a bug where refreshData was refreshing the data before the previous refresh(es) came back.
+    * Fixed bug where refreshData was refreshing the data before the previous refresh(es) came back.
+    * Fixed bug where setting the refresh date without changing it would increment the day by one.
 
 * Brian Day
     * installed raspberry pi in final case
