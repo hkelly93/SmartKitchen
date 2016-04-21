@@ -28,8 +28,13 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
             var barcode = response.data.code,
                 product = response.data.product.product_name,
                 uuid = response.data.args.uuid,
-                item = new Item(uuid);
+                item = uuid ? new Item(uuid) : null;
 
+            if (item === null) {
+                logService.warning('inventoryController', 'Could not create an inventory Item because the Item came back without a uuid.');
+                return;
+            }
+            
             item.setName(product);
             item.setImage(response.data.product.image_front_thumb_url);
             item.setExpires(response.data.args.expirationdate);

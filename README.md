@@ -106,6 +106,7 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
         * Fixed bug where multiple alerts with the same message were being added.
         * Fixed bug where refreshData was refreshing the data before the previous refresh(es) came back.
         * Fixed bug where setting the refresh date without changing it would increment the day by one.
+        * Fixed bug where items without a uuid were created.
         * Fixed bug where the barcode was still being cached.
     * Added a way to restart the scanner.
     * Added an Item object instead of using an anonymous JSON object.
