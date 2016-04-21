@@ -1,4 +1,5 @@
-/*jshint esversion: 6 */
+/* jshint esversion: 6 */
+/* global Alert */
 /**
  * Main controller for the application. Contains loading/unloading functions
  * and refreshing functions.
@@ -89,24 +90,20 @@ app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', '$ti
                     alertMessage = "[" + $scope.messages('UNKNOWN') + "] " + alertMessage;
                     break;
             }
-
-            var newAlert = {
-                severity: alertSeverity,
-                message: alertMessage,
-                date: new Date()
-            };
+            
+            var newAlert = new Alert(alertSeverity, alertMessage);
 
             for (var i = 0; i < $scope.alertList.length; i += 1) {
-                if ($scope.alertList[i].message == newAlert.message) {
+                if ($scope.alertList[i].getMessage() == newAlert.getMessage()) {
                     return;
                 }
             }
 
             for (var alert in $scope.alertList) {
                 // Check for duplicates.
-                if ($scope.alertList[alert].severity === newAlert.severity && $scope.alertList[alert].message === newAlert.message) {
+                if ($scope.alertList[alert].getSeverity() === newAlert.getSeverity() && $scope.alertList[alert].getMessage() === newAlert.getMessage()) {
                     // Update the date and return.
-                    $scope.alertList[alert].date = newAlert.date;
+                    $scope.alertList[alert].setDate(newAlert.getDate());
                     break;
                 }
             }
@@ -141,8 +138,8 @@ app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', '$ti
             }
 
             for (i; i < $scope.alertList.length; i++) {
-                if ($scope.alertList[i].severity > maxSeverity) {
-                    maxSeverity = $scope.alertList[i].severity;
+                if ($scope.alertList[i].getSeverity() > maxSeverity) {
+                    maxSeverity = $scope.alertList[i].getSeverity();
                 }
             }
 
@@ -207,7 +204,7 @@ app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', '$ti
 
                 promise.error(function (response) {
                     $rootScope.toggleBusy(false);
-                    $rootScope.addAlert(SEVERITY.WARNING, 'Could not update the expiration date for ' + item.name);
+                    $rootScope.addAlert(SEVERITY.WARNING, 'Could not update the expiration date for ' + item.getName());
 
                     $scope.popupObject = {};
                 });

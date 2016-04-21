@@ -70,7 +70,7 @@ Item.prototype.getExpiresDate = function () {
 
 /**
  * Sets the expires date of the item.
- * @param barcode {Date} The date to set.
+ * @param date {Date} The date to set.
  */
 Item.prototype.setExpiresDate = function (date) {
     this.expiresDate = date;
