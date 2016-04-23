@@ -20,7 +20,6 @@ CORS(app)
 @app.route('/health/<string:part>/', methods=['GET', 'POST'])
 def health(part):
     try:
-        # TODO need to check if scanner is actually on, file is not enough
         with open('json/health.json', 'r') as json_file:
             data = json.load(json_file, encoding='utf-8')
 
@@ -154,22 +153,7 @@ def inventory(uuid):
                 data = json.load(json_file, encoding='utf-8')
                 json_file.close()
 
-                # not needed unless we are worried about grouping items together
-                # index = RestUtils.find_elem(data, u"uuid", uuid)  # returns index if already exists
-            '''
-            # there already exists this barcode in the inventory
-            if index is not None:
-                #data[index]['qty'] += 1
-                data[index]["expiration"] = unicode(expire_date)
-            else:
-
-                # this order matters, layout will add in same order in json
-                d = {u'barcode': unicode(barcode),
-                     u'added': unicode(added_date),
-                     u'expiration': unicode(expire_date),
-                     u'uuid': unicode(uuid.uuid1())}
-            '''
-            barcode = uuid  # TODO have it this way to not break pre-existing method calls from scanner
+            barcode = uuid  # thi is needed to not break pre-existing method calls from scanner
 
             d = {u'barcode': unicode(barcode),
                  u'added': unicode(added_date),
@@ -184,8 +168,7 @@ def inventory(uuid):
                 json_file.close()
 
         except (IOError, KeyError) as e:
-            # TODO exception error here
-            pass
+            print e
 
         return ''  # should this really return the whole dict?
 

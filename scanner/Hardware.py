@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import RPi.GPIO as GPIO
 import time
-
+import math
 TEST = False
 
 
@@ -32,7 +32,7 @@ class LED(object):
 
 
 class RGB_LED(LED):
-    def __init__(self, pin_r=13, pin_g=5, pin_b=6):
+    def __init__(self, pin_r=12, pin_g=13, pin_b=16):
         super(RGB_LED, self).__init__(pin_r)
 
         # pin values most likely will be changed
@@ -70,6 +70,15 @@ class RGB_LED(LED):
             self.RED.ChangeDutyCycle(0)
             self.GREEN.ChangeDutyCycle(0)
             self.BLUE.ChangeDutyCycle(0)
+
+        else:  # keep on
+            pass
+
+    @staticmethod
+    def PosSinWave(amplitude, angle, frequency):
+        #angle in degrees
+        #creates a positive sin wave between 0 and amplitude*2
+        return amplitude + (amplitude * math.sin(math.radians(angle)*frequency) )
 
     def off(self):
 

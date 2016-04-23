@@ -18,6 +18,7 @@ def find_process(proc_name, kill=False):
             if kill:
                 pid = int(line.split(None, 1)[0])
                 os.kill(pid, 9)
+            print 'killing %s' % line
             return True
 
     return False
