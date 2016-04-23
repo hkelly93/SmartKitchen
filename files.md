@@ -17,6 +17,7 @@
 * ui/app/controllers/mainController.js
 * ui/app/controllers/mainController.js
 * ui/app/controllers/navController.js
+* ui/app/objects/Item.js
 * ui/app/services/cacheService.js
 * ui/app/services/logService.js
 * ui/app/services/messagesService.js

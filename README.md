@@ -101,11 +101,16 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
 # Progress (Week 4/18)
 
 * Harrison Kelly
-    * Fixed bug where the scanner health was actually a different health.
-    * Fixed bug where multiple alerts with the same message were being added.
+    * Bug fixes
+        * Fixed bug where the scanner health was actually a different health.
+        * Fixed bug where multiple alerts with the same message were being added.
+        * Fixed bug where refreshData was refreshing the data before the previous refresh(es) came back.
+        * Fixed bug where setting the refresh date without changing it would increment the day by one.
+        * Fixed bug where items without a uuid were created.
+        * Fixed bug where the barcode was still being cached.
     * Added a way to restart the scanner.
-    * Fixed bug where refreshData was refreshing the data before the previous refresh(es) came back.
-    * Fixed bug where setting the refresh date without changing it would increment the day by one.
+    * Added an Item object instead of using an anonymous JSON object.
+    * Added an Alert object instead of using an anonymous JSON object.
 
 * Brian Day
     * installed raspberry pi in final case

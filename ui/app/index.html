@@ -9,6 +9,8 @@
         <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.js"></script>
 
         <script src="assets/js/moment.js"></script>
+        <script src="objects/Item.js"></script>
+        <script src="objects/Alert.js"></script>
 
         <!-- Declares the AngularJS application and application constants. -->
         <script src="assets/js/smartKitchen.js"></script>
@@ -93,14 +95,14 @@
                     <table>
                         <tr ng-repeat="new in latest track by $index" ng-animate="'animate'">
                             <td>
-                                <img ng-src="{{new.image}}" alt=""/>
+                                <img ng-src="{{new.getImage()}}" alt=""/>
                             </td>
                             <td>
                                 <span>
                                     <strong>{{messages('NAME')}}</strong>:
-                                    {{new.name}}<br/>
+                                    {{new.getName()}}<br/>
                                     <strong>{{messages('EXPIRATION_DATE')}}</strong>:
-                                    {{new.expires}}
+                                    {{new.getExpires()}}
                                 </span>
                             </td>
                             <td>
@@ -125,14 +127,14 @@
                                 <table>
                                     <tr>
                                         <td style="width: 20%">
-                                            <img ng-src="{{item.image}}" alt=""/>
+                                            <img ng-src="{{item.getImage()}}" alt=""/>
                                         </td>
                                         <td style="width: 40%">
                                             <span>
                                                 <strong>{{messages('NAME')}}</strong>:
-                                                {{item.name}}<br/>
+                                                {{item.getName()}}<br/>
                                                 <strong>{{messages('EXPIRATION_DATE')}}</strong>:
-                                                {{item.expires}}
+                                                {{item.getExpires()}}
                                             </span>
                                         </td>
                                         <td>
@@ -164,7 +166,7 @@
                             <td>
                                 <span>
                                     <strong>{{messages('NAME')}}</strong>:
-                                    {{popupObject.name}}<br/>
+                                    {{popupObject.getName()}}<br/>
                                     <strong>{{messages('EXPIRATION_DATE')}}</strong>:
                                     <input id="popupDate" type="date" ng-model="popupObject.expiresDateVal" />
                                 </span>

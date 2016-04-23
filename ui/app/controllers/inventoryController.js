@@ -1,4 +1,5 @@
 /* jshint esversion: 6 */
+/* global Item */
 
 /**
  * Controls the inventory and refreshes the data.
@@ -26,18 +27,23 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
         function createItem(response) {
             var barcode = response.data.code,
                 product = response.data.product.product_name,
-                item = {
-                    name: product,
-                    image: response.data.product.image_front_thumb_url,
-                    expires: response.data.args.expirationdate,
-                    expiresDateVal: toDate(response.data.args.expirationdate),
-                    barcode: barcode,
-                    uuid: response.data.args.uuid
-                };
+                uuid = response.data.args.uuid,
+                item = uuid ? new Item(uuid) : null;
+
+            if (item === null) {
+                logService.warning('inventoryController', 'Could not create an inventory Item because the Item came back without a uuid.');
+                return;
+            }
+            
+            item.setName(product);
+            item.setImage(response.data.product.image_front_thumb_url);
+            item.setExpires(response.data.args.expirationdate);
+            item.setExpiresDate(toDate(response.data.args.expirationdate));
+            item.setBarcode(barcode);
 
             $rootScope.toggleBusy(false);
 
-            $scope.cache[barcode] = item;
+            $scope.cache[uuid] = item;
             $scope.inventory.push(item);
 
             if ($scope.latest.length < 4) {
@@ -86,23 +92,22 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                     expirationDate = response.data[index].expirationdate;
 
                     // Search in the cache first.
-                    if (barcode in $scope.cache) {
-                        var entity = $scope.cache[barcode];
+                    if (uuid in $scope.cache && $scope.cache[uuid] instanceof Item) {
+                        var item = $scope.cache[uuid];
 
-                        // Set the expiration date just in case it is different
-                        entity.expires = expirationDate;
-                        entity.expiresDateVal = toDate(expirationDate);
-                        entity.uuid = uuid;
-                        $scope.inventory.push(entity);
+                        item.setExpires(expirationDate);
+                        item.setExpiresDate(toDate(expirationDate));
+                        item.setBarcode(barcode);
+                        $scope.inventory.push(item);
 
                         if (index > maxForLatest) {
-                            $scope.latest.push(entity);
+                            $scope.latest.push(item);
                         }
 
-                        logService.debug('inventoryController', 'Found ' + barcode + ' in cache.');
+                        logService.debug('inventoryController', 'Found ' + uuid + ' in cache.');
 
                     } else {
-                        logService.debug('inventoryController', 'REST call for barcode ' + barcode);
+                        logService.debug('inventoryController', 'REST call for barcode ' + uuid);
 
                         // Search for the barcode.
 
