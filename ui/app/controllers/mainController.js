@@ -193,7 +193,7 @@ app.controller('mainController', ['$scope', '$rootScope', '$sce', '$parse', '$ti
         $scope.togglePopup = function (item, submit) {
             if (submit !== undefined) {
                 $rootScope.toggleBusy(true);
-                var promise = restService.setExpirationDate(item);
+                var promise = restService.updateItem(item);
                 promise.success(function (response) {
                     // Refresh the inventory.
                     $rootScope.$emit('refreshInventory', {});

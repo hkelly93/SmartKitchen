@@ -77,18 +77,20 @@ app.factory('restService', ['$http', '$q',
             /**
              * Searches for an entry using the Open Food Fact's RESTful API.
              * @param  {String} barcode The barcode that is being looked up
-             * @param  {function} uuid The uuid for the item being searched.
-             * @param  {function} expirationDate The expiration date of the item being searched.
+             * @param  {String} uuid The uuid for the item being searched.
+             * @param  {String} expirationDate The expiration date of the item being searched.
+             * @param  {String} name The name of the item being searched.
              * @return {deferrer} The http GET request promise.
              */
-            searchBarcode: function (barcode, uuid, expirationDate) {
+            searchBarcode: function (barcode, uuid, expirationDate, name) {
                 return this.defer($http({
                     method: 'GET',
                     url: openFoodFactsUri + barcode + dataType,
                     timeout: timeout
                 }), {
                     'uuid': uuid,
-                    'expirateiondate': expirationDate
+                    'expirateiondate': expirationDate,
+                    'name': name
                 }, {});
             },
             /**
@@ -141,7 +143,7 @@ app.factory('restService', ['$http', '$q',
              * @param  {Item} item      The object to set the expiration date on.
              * @return {deferrer}      The http POST request promise.
              */
-            setExpirationDate: function (item) {
+            updateItem: function (item) {
                 var start = moment(new Date()),
                     end = moment(item.getExpiresDate()),
                     diff = end.diff(start, 'days');
@@ -149,11 +151,11 @@ app.factory('restService', ['$http', '$q',
                 if (diff > 0) {
                     diff += 1;
                 }
-                
+
                 return this.defer($http({
-                    method: 'POST',
-                    url: localRestUri + 'expiration/' + item.uuid + '?expires=' + diff,
-                    data: 'barcode=' + item.uuid + '&expires=' + diff,
+                    method: 'PUT',
+                    url: localRestUri + 'inventory/' + item.uuid + '?expires=' + diff + '&name=' + item.getName(),
+                    data: 'barcode=' + item.uuid + '&expires=' + diff + '&name=' + item.getName(),
                     timeout: timeout
                 }), {});
             },

@@ -111,7 +111,7 @@ def get_inventory():
         return Messages.inventoryNotFound()
 
 
-@app.route('/inventory/<string:uuid>', methods=['DELETE', 'GET', 'POST'])
+@app.route('/inventory/<string:uuid>', methods=['DELETE', 'GET', 'POST', 'PUT'])
 def inventory(uuid):
     """
     DELETE will remove first item with given barcode from inventory
@@ -191,6 +191,7 @@ def inventory(uuid):
             d = {u'barcode': unicode(barcode),
                  u'added': unicode(added_date),
                  u'expiration': unicode(expire_date),
+                 u'name': "",
                  u'uuid': unicode(uuid.uuid1())}  # generates unique id for help with deleting items
 
             data.append(d)
@@ -214,6 +215,36 @@ def inventory(uuid):
             lock.release()
 
         return ''  # should this really return the whole dict?
+
+    if request.method == 'PUT':
+        try:
+            expire_date = request.args.get('expires', type=int)
+            name = request.args.get('name', type=str)
+            date = RestUtils.set_expiration(expire_date)
+            lock.acquire()
+            with open('json/inventory.json', 'r') as json_file:
+                data = json.load(json_file, encoding='utf-8')  # Get the current inventory.
+                json_file.close()
+            lock.release()
+
+            index = RestUtils.find_elem(data, 'uuid', uuid)
+
+            if index is not None:
+                data[index]['expirationdate'] = unicode(date)
+                data[index]['name'] = unicode(name)
+                lock.acquire()
+                with open('json/inventory.json', 'w+') as json_file:
+                    json_file.write(json.dumps(data))
+                    json_file.close()
+                lock.release()
+            else:
+                print "nothing to update"
+
+            return ''
+
+        except (IOError, KeyError):
+            lock.release()
+            pass
 
 
 @app.route('/expiration/<string:uuid>', methods=['GET', 'POST'])

@@ -166,7 +166,8 @@
                             <td>
                                 <span>
                                     <strong>{{messages('NAME')}}</strong>:
-                                    {{popupObject.getName()}}<br/>
+                                    <input style="margin-left: 34px; width: 125px" id="popupName" ng-model="popupObject.name" />
+                                    <br/>
                                     <strong>{{messages('EXPIRATION_DATE')}}</strong>:
                                     <input id="popupDate" type="date" ng-model="popupObject.expiresDate" />
                                 </span>

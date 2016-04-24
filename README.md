@@ -111,6 +111,8 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
     * Added an Item object instead of using an anonymous JSON object.
     * Added an Alert object instead of using an anonymous JSON object.
     * Added file locking to the REST api.
+    * Added support for items where the barcode doesn't exist. This involved adding the ability to change
+    the name of an item in the inventory.
 
 * Brian Day
     * installed raspberry pi in final case
