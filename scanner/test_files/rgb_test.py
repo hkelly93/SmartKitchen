@@ -55,7 +55,7 @@ try:
                 PosSinWave(50, i, 2),
                 0.1 )
             '''
-            colour(0, 0, PosSinWave(50, i, 2), .1)
+            colour(100, 0,0,.1) # PosSinWave(50, i, 2), .1)
             # colour(100, 5, 0, .1) # yellowish
 except KeyboardInterrupt:
     pass

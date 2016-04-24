@@ -186,22 +186,7 @@ def inventory(uuid):
                 json_file.close()
             lock.release()
 
-                # not needed unless we are worried about grouping items together
-                # index = RestUtils.find_elem(data, u"uuid", uuid)  # returns index if already exists
-            '''
-            # there already exists this barcode in the inventory
-            if index is not None:
-                #data[index]['qty'] += 1
-                data[index]["expiration"] = unicode(expire_date)
-            else:
-
-                # this order matters, layout will add in same order in json
-                d = {u'barcode': unicode(barcode),
-                     u'added': unicode(added_date),
-                     u'expiration': unicode(expire_date),
-                     u'uuid': unicode(uuid.uuid1())}
-            '''
-            barcode = uuid  # TODO have it this way to not break pre-existing method calls from scanner
+            barcode = uuid  # thi is needed to not break pre-existing method calls from scanner
 
             d = {u'barcode': unicode(barcode),
                  u'added': unicode(added_date),
@@ -222,7 +207,8 @@ def inventory(uuid):
 
             if lock != None:
                 lock.release()
-            pass
+
+            print e
 
         if lock != None:
             lock.release()
