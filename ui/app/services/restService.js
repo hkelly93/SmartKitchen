@@ -1,4 +1,5 @@
 /* jshint esversion: 6 */
+/* global Item */
 /**
  * Performs all of the REST calls and abstracts it from the controllers.
  * @param  {String} 'restService'  The name of the service.
@@ -137,12 +138,12 @@ app.factory('restService', ['$http', '$q',
             },
             /**
              * Set the expiration date of an item.
-             * @param  {Object} item      The object to set the expiration date on.
+             * @param  {Item} item      The object to set the expiration date on.
              * @return {deferrer}      The http POST request promise.
              */
             setExpirationDate: function (item) {
                 var start = moment(new Date()),
-                    end = moment(item.expiresDateVal),
+                    end = moment(item.getExpiresDate()),
                     diff = end.diff(start, 'days');
 
                 if (diff > 0) {

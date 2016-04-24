@@ -106,6 +106,7 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
         * Fixed bug where setting the refresh date without changing it would increment the day by one.
         * Fixed bug where items without a uuid were created.
         * Fixed bug where the barcode was still being cached.
+        * Fixed bug from adding the Item objects.
     * Added a way to restart the scanner.
     * Added an Item object instead of using an anonymous JSON object.
     * Added an Alert object instead of using an anonymous JSON object.
