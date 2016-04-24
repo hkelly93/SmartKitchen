@@ -23,5 +23,5 @@
 * ui/app/services/messagesService.js
 * ui/app/services/refreshDataService.js
 * ui/app/services/restService.js
-* ui/app/index.html
+* ui/app/index.php
 * ui/app/webserver.py

@@ -113,6 +113,8 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
     * Added file locking to the REST api.
     * Added support for items where the barcode doesn't exist. This involved adding the ability to change
     the name of an item in the inventory.
+    * Added a TOKEN based authentication to the REST api using PHP. The actual token is hidden in the PHP (can't be seen by view source), is
+    hashed, and then injected into the javascript. The token is also hashed on the server side and validated before any REST call is made.
 
 * Brian Day
     * installed raspberry pi in final case

@@ -1,8 +1,10 @@
 import datetime
+import hashlib
 import json
 import uuid
 
 from flask import Flask, jsonify, request
+from functools import wraps
 from lockfile import LockFile
 
 from util.RestUtils import RestUtils
@@ -16,8 +18,20 @@ app.config['SECRET_KEY'] = 'UfrWq8uk7bRvKewY9VwKX7FN'
 app.config['CORS_HEADERS'] = 'Content-Type'
 CORS(app)
 
+TOKEN = hashlib.sha256('LEN2M1s0d2Q8ZD9FfTptJg==').hexdigest()
+
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth = request.args.get('token', type=str)
+        if not auth or auth != TOKEN:
+            return 'Invalid token.'
+        return f(*args, **kwargs)
+    return decorated
+
 
 @app.route('/health/<string:part>/', methods=['GET', 'POST'])
+@requires_auth
 def health(part):
     lock = None
     try:
@@ -58,6 +72,7 @@ def health(part):
 
 
 @app.route('/restart/', methods=['GET', 'POST'])
+@requires_auth
 def restart():  # this really could be health
     lock = None
     try:
@@ -91,6 +106,7 @@ def restart():  # this really could be health
 
 
 @app.route('/inventory/', methods=['GET'])
+@requires_auth
 def get_inventory():
     """
     TODO loop through inventory to make sure uuid of every item is unique
@@ -112,6 +128,7 @@ def get_inventory():
 
 
 @app.route('/inventory/<string:uuid>', methods=['DELETE', 'GET', 'POST', 'PUT'])
+@requires_auth
 def inventory(uuid):
     """
     DELETE will remove first item with given barcode from inventory
@@ -248,6 +265,7 @@ def inventory(uuid):
 
 
 @app.route('/expiration/<string:uuid>', methods=['GET', 'POST'])
+@requires_auth
 def expiration_date(uuid):
     """
     need to find the correct item to change

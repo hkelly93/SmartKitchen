@@ -1,5 +1,5 @@
 /* jshint esversion: 6 */
-/* global Item */
+/* global Item, token */
 /**
  * Performs all of the REST calls and abstracts it from the controllers.
  * @param  {String} 'restService'  The name of the service.
@@ -70,7 +70,7 @@ app.factory('restService', ['$http', '$q',
             getInventory: function () {
                 return this.defer($http({
                     method: 'GET',
-                    url: localRestUri + 'inventory/',
+                    url: localRestUri + 'inventory/' + '?token=' + token,
                     timeout: timeout
                 }), {});
             },
@@ -100,7 +100,7 @@ app.factory('restService', ['$http', '$q',
             getFridgeHealth: function () {
                 return this.defer($http({
                     method: 'GET',
-                    url: localRestUri + 'health/fridge',
+                    url: localRestUri + 'health/fridge' + '?token=' + token,
                     timeout: timeout
                 }), {});
             },
@@ -111,7 +111,7 @@ app.factory('restService', ['$http', '$q',
             getNetworkHealth: function () {
                 return this.defer($http({
                     method: 'GET',
-                    url: localRestUri + 'health/network',
+                    url: localRestUri + 'health/network' + '?token=' + token,
                     timeout: timeout
                 }), {});
             },
@@ -122,7 +122,7 @@ app.factory('restService', ['$http', '$q',
             getScannerHealth: function () {
                 return this.defer($http({
                     method: 'GET',
-                    url: localRestUri + 'health/scanner',
+                    url: localRestUri + 'health/scanner' + '?token=' + token,
                     timeout: timeout
                 }));
             },
@@ -134,7 +134,7 @@ app.factory('restService', ['$http', '$q',
             removeFromInventory: function (item) {
                 return this.defer($http({
                     method: 'DELETE',
-                    url: localRestUri + 'inventory/' + item.uuid,
+                    url: localRestUri + 'inventory/' + item.uuid + '?token=' + token,
                     timeout: timeout
                 }), {});
             },
@@ -154,8 +154,8 @@ app.factory('restService', ['$http', '$q',
 
                 return this.defer($http({
                     method: 'PUT',
-                    url: localRestUri + 'inventory/' + item.uuid + '?expires=' + diff + '&name=' + item.getName(),
-                    data: 'barcode=' + item.uuid + '&expires=' + diff + '&name=' + item.getName(),
+                    url: localRestUri + 'inventory/' + item.uuid + '?expires=' + diff + '&name=' + item.getName() + '&token=' + token,
+                    data: 'barcode=' + item.uuid + '&expires=' + diff + '&name=' + item.getName() +  + '&token=' + token,
                     timeout: timeout
                 }), {});
             },
@@ -166,7 +166,7 @@ app.factory('restService', ['$http', '$q',
             restartScanner: function () {
                 return this.defer($http({
                     method: 'POST',
-                    url: localRestUri + 'restart/',
+                    url: localRestUri + 'restart/' + '?token=' + token,
                     timeout: timeout
                 }), {});
             }
