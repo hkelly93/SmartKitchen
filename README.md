@@ -21,8 +21,6 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
         * make eco_mode led status be a little more soothing
         * add buzzer to give a audible signal for barcode found
         * install a light source to help with barcode processing
-* Ajay
-    * locking inventory file to make thread safe
 
 # Progress (Week 3/28)
 
@@ -111,6 +109,7 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
     * Added a way to restart the scanner.
     * Added an Item object instead of using an anonymous JSON object.
     * Added an Alert object instead of using an anonymous JSON object.
+    * Added file locking to the REST api.
 
 * Brian Day
     * installed raspberry pi in final case
