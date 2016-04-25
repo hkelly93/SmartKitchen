@@ -9,7 +9,6 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
 # TODO's
 
 * Harrison Kelly
-    * check for no barcode found on openfoodfacts
     * adding of items not found on openfoodfacts?
 
 * Brian Day
