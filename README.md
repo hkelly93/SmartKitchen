@@ -21,8 +21,6 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
         * make eco_mode led status be a little more soothing
         * add buzzer to give a audible signal for barcode found
         * install a light source to help with barcode processing
-* Ajay
-    * locking inventory file to make thread safe
 
 # Progress (Week 3/28)
 
@@ -108,9 +106,15 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
         * Fixed bug where setting the refresh date without changing it would increment the day by one.
         * Fixed bug where items without a uuid were created.
         * Fixed bug where the barcode was still being cached.
+        * Fixed bug from adding the Item objects.
     * Added a way to restart the scanner.
     * Added an Item object instead of using an anonymous JSON object.
     * Added an Alert object instead of using an anonymous JSON object.
+    * Added file locking to the REST api.
+    * Added support for items where the barcode doesn't exist. This involved adding the ability to change
+    the name of an item in the inventory.
+    * Added a TOKEN based authentication to the REST api using PHP. The actual token is hidden in the PHP (can't be seen by view source), is
+    hashed, and then injected into the javascript. The token is also hashed on the server side and validated before any REST call is made.
 
 * Brian Day
     * installed raspberry pi in final case

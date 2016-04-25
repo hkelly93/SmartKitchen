@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <?php
+            $token = hash('sha256', 'LEN2M1s0d2Q8ZD9FfTptJg==');
+        ?>
+
+        <script>
+            var token = '<?php echo $token ?>';
+        </script>
+
         <link rel="stylesheet" href="assets/css/stylesheet.css" type="text/css"/>
 
         <title>SmartKitchen -- Making food storage easier</title>
@@ -166,9 +174,10 @@
                             <td>
                                 <span>
                                     <strong>{{messages('NAME')}}</strong>:
-                                    {{popupObject.getName()}}<br/>
+                                    <input style="margin-left: 34px; width: 125px" id="popupName" ng-model="popupObject.name" />
+                                    <br/>
                                     <strong>{{messages('EXPIRATION_DATE')}}</strong>:
-                                    <input id="popupDate" type="date" ng-model="popupObject.expiresDateVal" />
+                                    <input id="popupDate" type="date" ng-model="popupObject.expiresDate" />
                                 </span>
                             </td>
                         </tr>

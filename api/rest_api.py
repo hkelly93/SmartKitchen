@@ -1,9 +1,11 @@
 import datetime
+import hashlib
 import json
 import uuid
 
 from flask import Flask, jsonify, request
-
+from functools import wraps
+from lockfile import LockFile
 
 from util.RestUtils import RestUtils
 from messages import Messages
@@ -16,10 +18,27 @@ app.config['SECRET_KEY'] = 'UfrWq8uk7bRvKewY9VwKX7FN'
 app.config['CORS_HEADERS'] = 'Content-Type'
 CORS(app)
 
+TOKEN = hashlib.sha256('LEN2M1s0d2Q8ZD9FfTptJg==').hexdigest()
+
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth = request.args.get('token', type=str)
+        if not auth or auth != TOKEN:
+            return 'Invalid token.'
+        return f(*args, **kwargs)
+    return decorated
+
 
 @app.route('/health/<string:part>/', methods=['GET', 'POST'])
+@requires_auth
 def health(part):
+    lock = None
     try:
+        lock = LockFile('json/health.json')
+        lock.acquire()
+
+        # TODO need to check if scanner is actually on, file is not enough
         with open('json/health.json', 'r') as json_file:
             data = json.load(json_file, encoding='utf-8')
 
@@ -32,7 +51,7 @@ def health(part):
                 # print status
                 with open('json/health.json', 'w') as json_file:
                     json_file.write(json.dumps(data))
-
+                    lock.release()
                     return ''
 
             if request.method == 'GET':
@@ -43,16 +62,22 @@ def health(part):
                         data[part] = 'critical'
                         with open('json/health.json', 'w') as json_file:
                             json_file.write(json.dumps(data))
-
+                lock.release()
                 return data[part]
 
     except IOError:
+        if lock != None:
+            lock.release()
         return Messages.inventoryNotFound()
 
 
 @app.route('/restart/', methods=['GET', 'POST'])
+@requires_auth
 def restart():  # this really could be health
+    lock = None
     try:
+        lock = LockFile('json/health.json', 'r')
+        lock.acquire()
         with open('json/health.json', 'r') as json_file:
 
             data = json.load(json_file, encoding='utf-8')
@@ -68,31 +93,42 @@ def restart():  # this really could be health
 
                 with open('json/health.json', 'w') as json_file:
                     json_file.write(json.dumps(data))
-
+                    lock.release()
                     return 'restart set to %s' % status
             if request.method == 'GET':
+                lock.release()
                 return data['restart']
 
     except IOError:
+        if lock != None:
+            lock.release()
         return Messages.inventoryNotFound()
 
 
 @app.route('/inventory/', methods=['GET'])
+@requires_auth
 def get_inventory():
     """
     TODO loop through inventory to make sure uuid of every item is unique
     only send invenotory if all unique
     """
+    lock = None
     try:
+        lock = LockFile('json/inventory.json')
+        lock.acquire()
         with open('json/inventory.json', 'r') as json_file:
             data = json.load(json_file)  # this will throw correct errors
+            lock.release()
             return json.dumps(data)
 
     except IOError:
+        if lock != None:
+            lock.release()
         return Messages.inventoryNotFound()
 
 
-@app.route('/inventory/<string:uuid>', methods=['DELETE', 'GET', 'POST'])
+@app.route('/inventory/<string:uuid>', methods=['DELETE', 'GET', 'POST', 'PUT'])
+@requires_auth
 def inventory(uuid):
     """
     DELETE will remove first item with given barcode from inventory
@@ -107,38 +143,50 @@ def inventory(uuid):
 
     :usage: http://localhost:5000/inventory/1e4658dc-03d5-11e6-b402-7831c1d2d04e?expire=30
     """
+    lock = LockFile('json/inventory.json')
     if request.method == 'DELETE':
         try:
+            lock.acquire()
             with open('json/inventory.json', 'r') as json_file:
                 data = json.load(json_file, encoding='utf-8')  # Get the current inventory.
                 json_file.close()
+            lock.release()
 
             index = RestUtils.find_elem(data, 'uuid', uuid)
 
             if index is not None:
                 del data[index]
+                lock.acquire()
                 with open('json/inventory.json', 'w+') as json_file:
                     json_file.write(json.dumps(data))
                     json_file.close()
+                lock.release()
             else:
                 print 'nothing to delete'
 
             return ''  # TODO should tell you if it actually deleted something?
 
         except (IOError, KeyError):
+            if lock != None:
+                lock.release()
             print "file doesnt exist or keyerror"
 
     if request.method == 'GET':
         try:
+            lock.acquire()
             with open('json/inventory.json', 'r') as json_file:
                 data = json.load(json_file, encoding='utf-8')
                 json_file.close()
                 index = RestUtils.find_elem(data, 'uuid', uuid)
                 if index is not None:
+                    lock.release()
                     return jsonify(data[index])
                 else:
+                    lock.release()
                     return jsonify({})  # TODO what should this return if item doesnt exist?
         except IOError:
+            if lock != None:
+                lock.release()
             Messages.inventoryNotFound()
 
     if request.method == 'POST':
@@ -149,31 +197,75 @@ def inventory(uuid):
 
         # TODO add some sort of filelock
         try:
+            lock.acquire()
             with open('json/inventory.json', 'r') as json_file:
                 data = json.load(json_file, encoding='utf-8')
                 json_file.close()
+            lock.release()
 
             barcode = uuid  # thi is needed to not break pre-existing method calls from scanner
 
             d = {u'barcode': unicode(barcode),
                  u'added': unicode(added_date),
                  u'expiration': unicode(expire_date),
+                 u'name': "",
                  u'uuid': unicode(uuid.uuid1())}  # generates unique id for help with deleting items
 
             data.append(d)
 
             # open up file again to write to it
+            lock.acquire()
             with open('json/inventory.json', 'w+') as json_file:
                 json_file.write(json.dumps(data, encoding='utf-8'))
                 json_file.close()
+            lock.release()
 
         except (IOError, KeyError) as e:
+            # TODO exception error here
+
+            if lock != None:
+                lock.release()
+
             print e
+
+        if lock != None:
+            lock.release()
 
         return ''  # should this really return the whole dict?
 
+    if request.method == 'PUT':
+        try:
+            expire_date = request.args.get('expires', type=int)
+            name = request.args.get('name', type=str)
+            date = RestUtils.set_expiration(expire_date)
+            lock.acquire()
+            with open('json/inventory.json', 'r') as json_file:
+                data = json.load(json_file, encoding='utf-8')  # Get the current inventory.
+                json_file.close()
+            lock.release()
+
+            index = RestUtils.find_elem(data, 'uuid', uuid)
+
+            if index is not None:
+                data[index]['expirationdate'] = unicode(date)
+                data[index]['name'] = unicode(name)
+                lock.acquire()
+                with open('json/inventory.json', 'w+') as json_file:
+                    json_file.write(json.dumps(data))
+                    json_file.close()
+                lock.release()
+            else:
+                print "nothing to update"
+
+            return ''
+
+        except (IOError, KeyError):
+            lock.release()
+            pass
+
 
 @app.route('/expiration/<string:uuid>', methods=['GET', 'POST'])
+@requires_auth
 def expiration_date(uuid):
     """
     need to find the correct item to change
@@ -182,38 +274,47 @@ def expiration_date(uuid):
     :param barcode: string representation
     :return:
     """
+    lock = LockFile('json/inventory.json')
     if request.method == 'GET':
         try:
+            lock.acquire()
             with open('json/inventory.json', 'r') as json_file:
                 data = json.load(json_file, encoding='utf-8')  # Get the current inventory.
                 json_file.close()
 
-                index = RestUtils.find_elem(data, 'uuid', uuid)
+            lock.release()
+            index = RestUtils.find_elem(data, 'uuid', uuid)
 
-                if index is not None:
-                    return data[index]['expirationdate']
+            if index is not None:
+                return data[index]['expirationdate']
 
         except (IOError, KeyError):
+            lock.release()
             return ''
     if request.method == 'POST':
         try:
             expire_date = request.args.get('expires', type=int)
             date = RestUtils.set_expiration(expire_date)
+            lock.acquire()
             with open('json/inventory.json', 'r') as json_file:
                 data = json.load(json_file, encoding='utf-8')  # Get the current inventory.
                 json_file.close()
+            lock.release()
 
-                index = RestUtils.find_elem(data, 'uuid', uuid)
+            index = RestUtils.find_elem(data, 'uuid', uuid)
 
-                if index is not None:
-                    data[index]['expirationdate'] = unicode(date)
-                    with open('json/inventory.json', 'w+') as json_file:
+            if index is not None:
+                data[index]['expirationdate'] = unicode(date)
+                lock.acquire()
+                with open('json/inventory.json', 'w+') as json_file:
                         json_file.write(json.dumps(data))
                         json_file.close()
-                else:
-                    print "nothing to update"
+                lock.release()
+            else:
+                print "nothing to update"
 
         except (IOError, KeyError):
+            lock.release()
             pass
 
     return ''

@@ -26,7 +26,9 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
          */
         function createItem(response) {
             var barcode = response.data.code,
-                product = response.data.product.product_name,
+                product = response.data.product,
+                name,
+                image,
                 uuid = response.data.args.uuid,
                 item = uuid ? new Item(uuid) : null;
 
@@ -34,9 +36,18 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                 logService.warning('inventoryController', 'Could not create an inventory Item because the Item came back without a uuid.');
                 return;
             }
-            
-            item.setName(product);
-            item.setImage(response.data.product.image_front_thumb_url);
+
+            if (response.data.args.name !== '' || product === undefined) {
+                name = response.data.args.name || 'Unknown';
+                image = 'assets/img/unknown.png';
+            }
+            else {
+                name = product.product_name;
+                image = product.image_front_thumb_url;
+            }
+
+            item.setName(name);
+            item.setImage(image);
             item.setExpires(response.data.args.expirationdate);
             item.setExpiresDate(toDate(response.data.args.expirationdate));
             item.setBarcode(barcode);
@@ -50,7 +61,7 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                 $scope.latest.push(item);
             }
 
-            $rootScope.addAlert(0, product + " was added to the inventory.");
+            $rootScope.addAlert(0, name + " was added to the inventory.");
             $rootScope.toggleInventoryBusy(false);
         }
 
@@ -80,7 +91,8 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                     maxForLatest = (response.data.length < 3) ? response.data.length : response.data.length - 4,
                     barcode,
                     uuid,
-                    expirationDate;
+                    expirationDate,
+                    name;
 
                 $scope.inventory = [];
                 $scope.latest = [];
@@ -90,6 +102,7 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                     barcode = response.data[index].barcode;
                     uuid = response.data[index].uuid;
                     expirationDate = response.data[index].expirationdate;
+                    name = response.data[index].name;
 
                     // Search in the cache first.
                     if (uuid in $scope.cache && $scope.cache[uuid] instanceof Item) {
@@ -98,6 +111,11 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                         item.setExpires(expirationDate);
                         item.setExpiresDate(toDate(expirationDate));
                         item.setBarcode(barcode);
+
+                        if (name !== '') {
+                            item.setName(name)
+                        }
+
                         $scope.inventory.push(item);
 
                         if (index > maxForLatest) {
@@ -116,7 +134,7 @@ app.controller('inventoryController', ['$scope', '$rootScope', 'refreshData', 'c
                         }
 
                         $rootScope.toggleInventoryBusy(true);
-                        var promise = restService.searchBarcode(barcode, uuid, expirationDate);
+                        var promise = restService.searchBarcode(barcode, uuid, expirationDate, name);
                         promise.success(createItem);
                         promise.error(inventoryError);
                     }
