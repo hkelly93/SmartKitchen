@@ -122,3 +122,4 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
             * created timer class to allow timeout functionality
             * using events to cause threads to suspend
     * Created and tested api calls for power saving mode
+    * bug fixes
