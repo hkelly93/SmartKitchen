@@ -32,7 +32,6 @@ else:
 
 
 class Scanner(object):
-
     """
 
     """
@@ -51,7 +50,7 @@ class Scanner(object):
         # threads
         self.status_thread = StatusThread([self.status_event, self.full_power_event])
         self.scanner_tread = ScannerThread([self.status_event, self.full_power_event], self.scanner_queue)
-        self.timer = TimerThread(60, self.full_power_event)  # TODO set this to much higher # of seconds
+        self.timer = TimerThread(10, self.full_power_event)  # TODO set this to much higher # of seconds
 
         # local vars
         self.server_url = url
@@ -80,7 +79,7 @@ class Scanner(object):
                     self.full_power_event.clear()  # ECO Mode
 
                     # makes sure it wont restart unless told to
-                    self.post_to_server('restart/?status=false', 'false')
+                    self.post_to_server('restart/', {'status':'false'})
                     self.timer.done = False
 
                     #if not scanoff:
@@ -111,15 +110,16 @@ class Scanner(object):
                             #self.timer.restart()
 
                             # send barcode to server
-                            uri = '/inventory/' + barcode
+                            uri = 'inventory/' + barcode
                             self.post_to_server(uri, barcode)
 
-                            #self.timer.restart()  # timer needs to be restarted to keep full_power active
+                            self.timer.resume()  # timer needs to be restarted to keep full_power active
+                            #time.sleep(5)
+                            self.status_event.set()  # tell status thread and scanner that we got a barcode
+                            #time.sleep(.1)
 
-                            #self.status_event.set()  # tell status thread and scanner that we got a barcode
-                            time.sleep(.1)
+                self.post_status()  # send status
 
-                #self.post_status()  # send status
         except Queue.Empty as e:
             if DEBUG:
                 print e
@@ -135,6 +135,8 @@ class Scanner(object):
             print e
 
     def restart(self):
+        print self.get_from_server('restart/')
+
         if self.get_from_server('restart/') == 'true':  # ask to see if things should turn back on
 
             print 'main: restarting threads'
@@ -143,7 +145,7 @@ class Scanner(object):
             self.timer.reset(True)  # need to restart timer
             time.sleep(.1)
             # print 'sending command to shut off restart flag'
-            self.post_to_server('restart/?status=false', 'false')
+            self.post_to_server('restart/', {'status':'false'})
 
     def post_to_server(self, uri, data):
         """
@@ -152,15 +154,22 @@ class Scanner(object):
         :param data:
         :return:
         """
-        token = '?token=' + TOKEN
+        data['token'] = TOKEN
+        #print data
+        token = '&token='
         try:
             if self.server_url is not None:
-                r = requests.post(self.server_url + uri , data=data + token)
+                #print data
+                #r = requests.post(self.server_url + uri + TOKEN, data={'status':data, 'token':TOKEN})
+                r = requests.post(self.server_url + uri, params=data)
 
-                #if DEBUG:
+                if DEBUG:
+                    print r.url
                 status = r.status_code
+                '''
                 if DEBUG:
                     print '\t\t%s%s' % (r.url, uri)
+                '''
                 # TODO check response for 200 HTTP ok, 400 bad requests, 500 api issue
                 if status == 200:
                     #print 'all good'
@@ -182,19 +191,19 @@ class Scanner(object):
         """
         try:
             if self.server_url is not None:
-                r = requests.get(self.server_url + uri)
+                r = requests.get(self.server_url + uri+ '?token=' + TOKEN)
                 #print r.content
                 status = r.status_code
-                #print r.url
+                print r.url
                 # TODO check response for 200 HTTP ok, 400 bad requests, 500 api issue
                 if status == 200:
                     #print 'all good'
                     return r.content
                 else:
-                    #print status
-                    return False
+                    print status
             else:
                 print 'cant GET, no server specified'
+                return False
         except(requests.HTTPError, requests.Timeout, requests.exceptions.ConnectionError) as e:
             message = 'Connection to {0} failed. \n {1}'
             print message.format(self.server_url, e)
@@ -221,9 +230,9 @@ class Scanner(object):
             else:
                 status = 'critical'
 
-        post = 'health/scanner/?status=' + status
-
-        self.post_to_server(post, status)
+        post = 'health/scanner/'
+        data = {'status':status}
+        self.post_to_server(post, data)
 
     def shutdown(self):
         """
@@ -311,7 +320,7 @@ class StatusThread(threading.Thread):
                             print '\t\tGreen led'
 
                         print 'status sets status event'
-                        #self.status_event.set()  # wakes up scanner
+                        self.status_event.set()  # wakes up scanner
                         time.sleep(.1)
 
                     else:
@@ -352,7 +361,7 @@ class ScannerThread(threading.Thread):
     def __init__(self, events, queue):
         threading.Thread.__init__(self)
         self.name = 'scanner'
-        self._DEBUG = True
+        self._DEBUG = False
 
         self.queue = queue
         self.zbar = None
@@ -380,10 +389,13 @@ class ScannerThread(threading.Thread):
                     if not ScannerUtils.find_process('zbarcam'):
                         if self._DEBUG:
                             print '\t\tstarting zbarcam'
+                        '''
                         if pi:
                             self.zbar = subprocess.Popen(['/usr/bin/zbarcam', '--nodisplay', '/dev/video0'], stdout=subprocess.PIPE)
                         else:
                             self.zbar = subprocess.Popen(['/usr/bin/zbarcam', '/dev/video0'], stdout=subprocess.PIPE)
+                         '''
+                        self.zbar = subprocess.Popen(['/usr/bin/zbarcam', '--nodisplay','/dev/video0'], stdout=subprocess.PIPE)
 
                         # thread pauses here waiting for barcode to be sent
                     else:
@@ -420,13 +432,13 @@ class ScannerThread(threading.Thread):
 
                         self.queue.put(barcode)  # item in queue will allow main thread to post item to server
                         self.queue.task_done()
-                        #self.status_event.clear()  # will trigger green light in status thread
+                        self.status_event.clear()  # will trigger green light in status thread
 
                         if self._DEBUG:
                             print 'scanner pausing and triggering green light'
                         time.sleep(.1)
-                        #self.zbar.terminate()
-                        #self.status_event.wait()  # waits till status sets this event so we have a break in scanning
+                        self.zbar.terminate()
+                        self.status_event.wait()  # waits till status sets this event so we have a break in scanning
 
                     else:
                         if self._DEBUG:
