@@ -66,7 +66,7 @@ def health(part):
                 return data[part]
 
     except IOError:
-        if lock != None:
+        if lock is not None:
             lock.release()
         return Messages.inventoryNotFound()
 
@@ -100,7 +100,7 @@ def restart():  # this really could be health
                 return data['restart']
 
     except IOError:
-        if lock != None:
+        if lock is not None:
             lock.release()
         return Messages.inventoryNotFound()
 
@@ -122,7 +122,7 @@ def get_inventory():
             return json.dumps(data)
 
     except IOError:
-        if lock != None:
+        if lock is not None:
             lock.release()
         return Messages.inventoryNotFound()
 
@@ -167,7 +167,7 @@ def inventory(uuid):
             return ''  # TODO should tell you if it actually deleted something?
 
         except (IOError, KeyError):
-            if lock != None:
+            if lock is not None:
                 lock.release()
             print "file doesnt exist or keyerror"
 
@@ -185,7 +185,7 @@ def inventory(uuid):
                     lock.release()
                     return jsonify({})  # TODO what should this return if item doesnt exist?
         except IOError:
-            if lock != None:
+            if lock is not None:
                 lock.release()
             Messages.inventoryNotFound()
 
@@ -223,14 +223,14 @@ def inventory(uuid):
         except (IOError, KeyError) as e:
             # TODO exception error here
 
-            if lock != None:
+            if lock is not None:
                 lock.release()
 
             print e
-
-        if lock != None:
+        ''' TODO dont think this is needed
+        if lock is not None:
             lock.release()
-
+        '''
         return ''  # should this really return the whole dict?
 
     if request.method == 'PUT':

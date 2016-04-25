@@ -7,7 +7,7 @@ try:
     import Queue
     from setproctitle import setproctitle
     import requests
-
+    import hashlib
     import ScannerUtils
 
 except ImportError as e:
@@ -15,7 +15,9 @@ except ImportError as e:
 
 setproctitle('barcode_scanner')
 
+TOKEN = hashlib.sha256('LEN2M1s0d2Q8ZD9FfTptJg==').hexdigest()
 DEBUG = True
+scanoff = False
 
 # see if  this is running on pi or other os
 if os.uname()[4][:3] == 'arm':
@@ -36,7 +38,7 @@ class Scanner(object):
     """
     def __init__(self, url=None):
         # Events
-        self.status_event = threading.Event()  # true when a barcode is received
+        self.status_event = threading.Event()  # set when a barcode is received
         self.status_event.set()
 
         self.full_power_event = threading.Event()  # clear means eco mode on
@@ -49,7 +51,7 @@ class Scanner(object):
         # threads
         self.status_thread = StatusThread([self.status_event, self.full_power_event])
         self.scanner_tread = ScannerThread([self.status_event, self.full_power_event], self.scanner_queue)
-        self.timer = TimerThread(10, self.full_power_event)  # TODO set this to much higher # of seconds
+        self.timer = TimerThread(60, self.full_power_event)  # TODO set this to much higher # of seconds
 
         # local vars
         self.server_url = url
@@ -58,15 +60,18 @@ class Scanner(object):
 
     def start(self):
         self.status_thread.start()  # start status thread
-        self.scanner_tread.start()  # scanner thread
+
+        if not scanoff:
+            ScannerUtils.find_process('zbarcam', True)  # kill rogue scanner
+            self.scanner_tread.start()  # scanner thread
+
         self.timer.start()   # timer thread starts
 
-        ScannerUtils.find_process('zbarcam', True)  # kill rogue scanner
         if DEBUG:
             print 'main: starting up'
         try:
             while True:
-                time.sleep(2)
+                time.sleep(1)
 
                 # a finished timer will put system into ECO Mode
 
@@ -74,16 +79,19 @@ class Scanner(object):
                     print 'after timer done'
                     self.full_power_event.clear()  # ECO Mode
 
+                    # makes sure it wont restart unless told to
                     self.post_to_server('restart/?status=false', 'false')
                     self.timer.done = False
-                    self.scanner_tread.scanner.terminate()
-                    #ScannerUtils.find_process('zbarcam', True)  # TODO a nicer way to do this?
+
+                    #if not scanoff:
+                        #self.scanner_tread.zbar.terminate()
+                        #ScannerUtils.find_process('zbarcam', True)  # TODO a nicer way to do this?
 
                 if not self.full_power_event.is_set():
                     if DEBUG:
                         print 'main thread: eco mode'
 
-                    time.sleep(10)  # slow down api calls
+                    time.sleep(2)  # slow down api calls
                     self.restart()  # eco mode check for restart from UI
 
                 else:  # full power mode
@@ -92,21 +100,26 @@ class Scanner(object):
 
                     # barcode received
                     if not self.scanner_queue.empty():
-                        print 'getting item out of queue' + self.scanner_queue.get_nowait()
-                        barcode = self.scanner_queue.get_nowait()
+
+                        barcode = self.scanner_queue.get()
+                        print 'getting item out of queue %s' % barcode
+                        #self.scanner_queue.task_done()
+
+                        print 'after get from queue'
                         if barcode is not '':
                             print 'barcode found, restarting timer'
-                            self.timer.restart()
-                        # send barcode to server
-                        uri = '/inventory/' + barcode
-                        self.post_to_server(uri, barcode)
+                            #self.timer.restart()
 
-                        self.timer.restart()  # timer needs to be restarted to keep full_power active
+                            # send barcode to server
+                            uri = '/inventory/' + barcode
+                            self.post_to_server(uri, barcode)
 
-                        self.status_event.clear()  # tell status thread that we got a barcode
+                            #self.timer.restart()  # timer needs to be restarted to keep full_power active
 
-                self.post_status()  # send status
+                            #self.status_event.set()  # tell status thread and scanner that we got a barcode
+                            time.sleep(.1)
 
+                #self.post_status()  # send status
         except Queue.Empty as e:
             if DEBUG:
                 print e
@@ -127,7 +140,7 @@ class Scanner(object):
             print 'main: restarting threads'
 
             self.full_power_event.set()  # this wakes up every thread but timer
-            #self.timer.reset(True)  # need to restart timer
+            self.timer.reset(True)  # need to restart timer
             time.sleep(.1)
             # print 'sending command to shut off restart flag'
             self.post_to_server('restart/?status=false', 'false')
@@ -139,9 +152,10 @@ class Scanner(object):
         :param data:
         :return:
         """
+        token = '?token=' + TOKEN
         try:
             if self.server_url is not None:
-                r = requests.post(self.server_url + uri, data=data)
+                r = requests.post(self.server_url + uri , data=data + token)
 
                 #if DEBUG:
                 status = r.status_code
@@ -216,14 +230,17 @@ class Scanner(object):
 
         :return:
         """
-        # threads could be in eco or full mode
-        #self.full_power_event.clear()
+
+        if not scanoff:
+            self.scanner_tread.kill()
 
         self.timer.kill()
 
         self.status_thread.kill()
 
-        self.scanner_tread.kill()
+        # threads could be in eco or full mode
+        self.full_power_event.set()  # wakes up timer and scanner functions if in eco mode
+        time.sleep(.1)
 
         try:
             # cleaning up threads will throw error if they are already killed
@@ -233,9 +250,11 @@ class Scanner(object):
             self.timer.join()
             print 'timer_thread joined'
 
-            #ScannerUtils.find_process('zbarcam', True)
-            self.scanner_tread.join()  #TODO scanner thread getting stuck
-            print 'scanner_tread joined'
+            if not scanoff:
+                # make sure zbar is dead before attempting to join
+                #ScannerUtils.find_process('zbarcam', True)
+                self.scanner_tread.join()  #TODO scanner thread getting stuck
+                print 'scanner_tread joined'
 
         except RuntimeError as e:
             print e
@@ -247,7 +266,7 @@ class StatusThread(threading.Thread):
     def __init__(self, events, queue=''):
         threading.Thread.__init__(self)
         self.name = 'status'
-        self._DEBUG = False
+        self._DEBUG = True
         self.queue = queue
 
         # Events
@@ -275,17 +294,14 @@ class StatusThread(threading.Thread):
         if self._DEBUG:
             print '\t\tBlue led'
 
-
-
         try:
             while not self.status_finished.is_set():
-
+                time.sleep(1)
                 if self.full_power_event.is_set():  # full power
                     if pi:  # turn light back to blue
                         self.led.color(blue)
                     if self._DEBUG:
                         print'\tstatus: full power'
-                    time.sleep(.1)
 
                     if not self.status_event.is_set():  # scanner thread has set this to clear if barcode returned
                         if pi:
@@ -294,7 +310,13 @@ class StatusThread(threading.Thread):
                         if self._DEBUG:
                             print '\t\tGreen led'
 
-                        self.status_event.set()  # wakes up scanner
+                        print 'status sets status event'
+                        #self.status_event.set()  # wakes up scanner
+                        time.sleep(.1)
+
+                    else:
+                        if self._DEBUG:
+                            print '\t\tBlue led'
 
                 else:  # is not self.full_power_event.is_set()
                     if self._DEBUG:
@@ -321,9 +343,9 @@ class StatusThread(threading.Thread):
         print '\tstatus: killed'
         if pi:  # shut off led
             self.led.cleanup()
-        # self.status_event.set()  # make sure this is not paused
+        self.status_event.set()  # make sure scanner is not waiting for this event
         self.status_finished.set()  # this will kill main loop
-        time.sleep(.1)  # TODO this seems to help kill thread faster
+        time.sleep(.1)
 
 
 class ScannerThread(threading.Thread):
@@ -333,13 +355,12 @@ class ScannerThread(threading.Thread):
         self._DEBUG = True
 
         self.queue = queue
+        self.zbar = None
 
         # Events
         self.status_event = events[0]
         self.full_power_event = events[1]
         self.scanner_finished = threading.Event()  # set means that we should kill thread
-        # self.pause_event = threading.Event()
-        self.scanner = None
 
     def run(self):
         if self._DEBUG:
@@ -359,9 +380,11 @@ class ScannerThread(threading.Thread):
                     if not ScannerUtils.find_process('zbarcam'):
                         if self._DEBUG:
                             print '\t\tstarting zbarcam'
+                        if pi:
+                            self.zbar = subprocess.Popen(['/usr/bin/zbarcam', '--nodisplay', '/dev/video0'], stdout=subprocess.PIPE)
+                        else:
+                            self.zbar = subprocess.Popen(['/usr/bin/zbarcam', '/dev/video0'], stdout=subprocess.PIPE)
 
-                        self.scanner = subprocess.Popen(['/usr/bin/zbarcam', '--nodisplay', '/dev/video0'], stdout=subprocess.PIPE)
-                        code = self.scanner.communicate()
                         # thread pauses here waiting for barcode to be sent
                     else:
                         if self._DEBUG:
@@ -371,57 +394,71 @@ class ScannerThread(threading.Thread):
                     if self._DEBUG:
                         print '\t\tready to get next barcode'
 
-                    #code = p.stdout.readline()  # thread stuck here waiting for barcode
-                    print code
+                    code = self.zbar.stdout.readline()  # thread stuck here waiting for barcode
+                    '''
+                    code = self.zbar.communicate()
+                    print type(code)
+
                     if code[0] == '':  # when zbarcam is killed code == ''
-                        code = (':','')
+                        code = (':', '')
 
                     barcode = code[0].split(':')[1].rstrip()  # strips out type of barcode and the trailing char
 
+                    '''
+                    if code == '': # need this if zbarcam is killed
+                        code = ':'
+
+                    barcode = code.split(':')[1]
+                    #print type(barcode)
+
                     # got a barcode reset timer
                     if barcode is not '':
+                        #self.zbar.terminate()
+                        print 'still running'
                         if self._DEBUG:
                             print '\t\tbarcode found: %s' % barcode
 
                         self.queue.put(barcode)  # item in queue will allow main thread to post item to server
+                        self.queue.task_done()
+                        #self.status_event.clear()  # will trigger green light in status thread
 
-                        self.status_event.clear()  # will trigger green light in status thread
-
-                        self.status_event.wait(5)  # waits till status sets this event so we have a break in scanning
+                        if self._DEBUG:
+                            print 'scanner pausing and triggering green light'
+                        time.sleep(.1)
+                        #self.zbar.terminate()
+                        #self.status_event.wait()  # waits till status sets this event so we have a break in scanning
 
                     else:
                         if self._DEBUG:
                             print '\t\tinvalid barcode'
                         pass
+
                 else:
                     if self._DEBUG:
                         print '\tscanner: eco mode'
-                        #self.scanner.kill()
+                        #self.zbar.kill()
                         #ScannerUtils.find_process('zbarcam', True)  # kill zbarcam
-                    self.full_power_event.wait()
+                    #self.full_power_event.wait()
 
             else:  # scanner_finished event is set
-                # cleanup
-                ScannerUtils.find_process('zbarcam', True)  # kill zbarcam
+                #ScannerUtils.find_process('zbarcam', True)  # kill zbarcam
                 print '\tscanner: shutting down'
 
-        except subprocess.CalledProcessError as e:
-            # something wrong with trying to start process
+        except Exception as e:
             print e
 
     def kill(self):
         if self._DEBUG:
             print '\t\tscanner: killed'
 
-        # self.pause_event.set()  # make sure this is not paused
         self.scanner_finished.set()  # this will kill main loop
-        #self.status_event.set() # stuck here?
-        time.sleep(1)
 
-        ScannerUtils.find_process('zbarcam', True)
+        time.sleep(.1)
 
+        self.status_event.set()
 
-        print 'scanner kill complete'
+        print 'trying to terminate zbar'
+        self.zbar.terminate()
 
 
 class TimerThread(threading.Thread):
@@ -466,14 +503,11 @@ class TimerThread(threading.Thread):
                     if self._DEBUG:
                         print '\ttimer paused'
                     self.stop()
-                    self.timer_paused.clear()
-                    self.timer_paused.wait()  # needs to be clear to allow wait functionality
 
             else:
                 print 'eco mode but timer not paused'
                 self.stop()
-                self.timer_paused.clear()
-                self.full_power_event.wait()
+                # self.full_power_event.wait()
 
         else:
             print '\ttimer: shutdown'
@@ -481,6 +515,7 @@ class TimerThread(threading.Thread):
     def kill(self):
         print '\ttimer: killed'
         self.timer_finished.set()
+        time.sleep(.1)
         self.timer_paused.set()  # make sure thread is not waiting on this event
         time.sleep(.1)
 
@@ -494,6 +529,9 @@ class TimerThread(threading.Thread):
             if self._DEBUG:
                 print 'already paused just reset'
             self.reset()
+
+        self.timer_paused.clear()
+        self.timer_paused.wait()  # needs to be clear to allow wait functionality
 
     def reset(self, restart=False, duration=None):
         """

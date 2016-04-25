@@ -14,11 +14,10 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
 
 * Brian Day
     * button up hardware layout
-        * solder up more permanent solution for status LED
+        * solder PIR sensor
     * Power saving feature
         * motion sensor
     * extra stuff
-        * make eco_mode led status be a little more soothing
         * add buzzer to give a audible signal for barcode found
         * install a light source to help with barcode processing
 
@@ -126,4 +125,8 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
             * created timer class to allow timeout functionality
             * using events to cause threads to suspend
     * Created and tested api calls for power saving mode
-    * bug fixes
+    * bug fixes, and more bug fixes
+    
+# Progress (Week 4/25)
+
+* Brian Day
