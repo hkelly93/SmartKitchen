@@ -16,7 +16,7 @@ except ImportError as e:
 setproctitle('barcode_scanner')
 
 TOKEN = hashlib.sha256('LEN2M1s0d2Q8ZD9FfTptJg==').hexdigest()
-DEBUG = True
+DEBUG = False
 scanoff = False
 
 # see if  this is running on pi or other os
@@ -79,12 +79,11 @@ class Scanner(object):
                     self.full_power_event.clear()  # ECO Mode
 
                     # makes sure it wont restart unless told to
-                    self.post_to_server('restart/', {'status':'false'})
+                    self.post_to_server('restart/', {'status':'false'})  # TODO might not need to do this
                     self.timer.done = False
 
-                    #if not scanoff:
-                        #self.scanner_tread.zbar.terminate()
-                        #ScannerUtils.find_process('zbarcam', True)  # TODO a nicer way to do this?
+                    if not scanoff:
+                        self.scanner_tread.zbar.terminate()
 
                 if not self.full_power_event.is_set():
                     if DEBUG:
@@ -107,7 +106,7 @@ class Scanner(object):
                         print 'after get from queue'
                         if barcode is not '':
                             print 'barcode found, restarting timer'
-                            #self.timer.restart()
+                            self.timer.restart()
 
                             # send barcode to server
                             uri = 'inventory/' + barcode
@@ -135,8 +134,6 @@ class Scanner(object):
             print e
 
     def restart(self):
-        print self.get_from_server('restart/')
-
         if self.get_from_server('restart/') == 'true':  # ask to see if things should turn back on
 
             print 'main: restarting threads'
@@ -145,7 +142,7 @@ class Scanner(object):
             self.timer.reset(True)  # need to restart timer
             time.sleep(.1)
             # print 'sending command to shut off restart flag'
-            self.post_to_server('restart/', {'status':'false'})
+            self.post_to_server('restart/', {'status' : 'false'})
 
     def post_to_server(self, uri, data):
         """
@@ -189,10 +186,11 @@ class Scanner(object):
         :param uri:
         :return:
         """
+        data = {'token': TOKEN}
         try:
             if self.server_url is not None:
-                r = requests.get(self.server_url + uri+ '?token=' + TOKEN)
-                #print r.content
+                r = requests.get(self.server_url + uri, params=data)
+                # print r.content
                 status = r.status_code
                 print r.url
                 # TODO check response for 200 HTTP ok, 400 bad requests, 500 api issue
@@ -201,6 +199,8 @@ class Scanner(object):
                     return r.content
                 else:
                     print status
+                    return False
+
             else:
                 print 'cant GET, no server specified'
                 return False
@@ -275,7 +275,7 @@ class StatusThread(threading.Thread):
     def __init__(self, events, queue=''):
         threading.Thread.__init__(self)
         self.name = 'status'
-        self._DEBUG = True
+        self._DEBUG = False
         self.queue = queue
 
         # Events
@@ -485,7 +485,7 @@ class TimerThread(threading.Thread):
         self.full_power_event = event
         self.timer_finished = threading.Event()   # clear means keep running
         self.timer_paused = threading.Event()  # clear means timer is not paused
-        # self.timer_paused.set()
+        self.timer_paused.set()
 
         self.done = False
 
@@ -494,16 +494,20 @@ class TimerThread(threading.Thread):
 
     def run(self):
         while not self.timer_finished.is_set():
+            print 'timer on'
             time.sleep(.1)  # tiny pause needed to let other threads run
 
             # full power
             if self.full_power_event.is_set():
-                if not self.timer_paused.is_set():  # not paused (clear) # self.full_power_event.is_set() and not
+                if self.timer_paused.is_set():  # not paused (set) # self.full_power_event.is_set() and not
+                    print self.count
                     if self.count > 0:  # still need to count down
                         #if self._DEBUG:
-                        print self.count
+                        #print self.count
                         self.count -= 1
-                        self.timer_paused.wait(1)  # pause a second to act like a timer
+                        time.sleep(1)
+                        # TODO this wait does not work anymore
+                        #self.timer_paused.wait(1)  # pause a second to act like a timer
 
                     else:  # self.count == 0:
                         if self._DEBUG:
@@ -532,7 +536,7 @@ class TimerThread(threading.Thread):
         time.sleep(.1)
 
     def stop(self):
-        if not self.timer_paused.is_set():  # not paused (clear)
+        if self.timer_paused.is_set():  # not paused (set)
             if self._DEBUG:
                 print 'pause and reset'
             self.pause()
@@ -555,6 +559,7 @@ class TimerThread(threading.Thread):
             self.count = self.length = duration
         else:
             self.count = self.length
+            print 'setting timer to a length of %s' % self.count
 
         if restart:
             if self._DEBUG:
@@ -562,16 +567,16 @@ class TimerThread(threading.Thread):
             self.resume()
 
     def pause(self):  # pauses timer until event is flagged true
-        if not self.timer_paused.is_set():  # if not paused (clear)
-            self.timer_paused.set()  # will pause on next loop
+        if self.timer_paused.is_set():  # if not paused (set)
+            self.timer_paused.clear()  # will pause on next loop
 
         else:
             if self._DEBUG:
                 print '\talready paused'
 
     def resume(self):
-        if self.timer_paused.is_set():  # is paused (set)
-            self.timer_paused.clear()
+        if not self.timer_paused.is_set():  # is paused (set)
+            self.timer_paused.set()
 
         else:
             if self._DEBUG:
