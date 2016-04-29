@@ -4,14 +4,33 @@ import time
 import math
 TEST = False
 
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)  # physical pin numbers
+
+
+class PIR(object):
+    def __init__(self):
+        GPIO.setup(21, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)  # Read output from PIR motion sensor
+
+    @staticmethod
+    def check_motion():
+        i = GPIO.input(21)
+        if i == 0:  # When output from motion sensor is LOW
+            return False
+
+        elif i == 1:  # When output from motion sensor is HIGH
+            return True
+
+    @staticmethod
+    def cleanup():
+        GPIO.cleanup()
+
 
 class LED(object):
     """
     should set these up to use PWM
     """
     def __init__(self, pin=13):
-        # TODO change setmode to BOARD in case it changes on each raspberry pi revision
-        GPIO.setmode(GPIO.BCM)  # physical pin numbers
 
         # pin values most likely will be changed
         self._DEBUG = False
@@ -94,8 +113,20 @@ class Buzzer(object):
 
 
 if TEST:
+    '''
     led = RGB_LED()
     led.color(100, 20, 0, 10)
     led.off()
+    '''
+    PIR = PIR()
+    while True:
+        cur_state = PIR.check_motion()
+
+        # will only update if what was read varies from prev state
+        if cur_state is not PIR.state:
+            PIR.state = cur_state
+            print PIR.state
+
+        time.sleep(.1)
 
 

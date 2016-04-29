@@ -112,6 +112,7 @@ app.controller('healthController', ['$scope', '$rootScope', '$sce', 'refreshData
             var dangerColor = '#e74c3c',
                 warningColor = '#f1c40f',
                 healthyColor = '#2ecc71',
+                ecoColor = '#33ffe6',
                 color = '',
                 sev,
                 svg;
@@ -121,11 +122,13 @@ app.controller('healthController', ['$scope', '$rootScope', '$sce', 'refreshData
                     color = healthyColor;
                     break;
                 case STATUS.WARNING:
-                case STATUS.WEAK:
                     color = warningColor;
                     break;
                 case STATUS.CRITICAL:
                     color = dangerColor;
+                    break;
+                case STATUS.ECO:
+                    color = ecoColor;
                     break;
                 default:
                     color = "#BEBEBE";

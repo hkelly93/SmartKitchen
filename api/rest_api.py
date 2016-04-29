@@ -127,9 +127,9 @@ def get_inventory():
         return Messages.inventoryNotFound()
 
 
-@app.route('/inventory/<string:uuid>', methods=['DELETE', 'GET', 'POST', 'PUT'])
+@app.route('/inventory/<string:uuid_var>', methods=['DELETE', 'GET', 'POST', 'PUT'])
 @requires_auth
-def inventory(uuid):
+def inventory(uuid_var):
     """
     DELETE will remove first item with given barcode from inventory
 
@@ -152,7 +152,7 @@ def inventory(uuid):
                 json_file.close()
             lock.release()
 
-            index = RestUtils.find_elem(data, 'uuid', uuid)
+            index = RestUtils.find_elem(data, 'uuid', uuid_var)
 
             if index is not None:
                 del data[index]
@@ -177,7 +177,7 @@ def inventory(uuid):
             with open('json/inventory.json', 'r') as json_file:
                 data = json.load(json_file, encoding='utf-8')
                 json_file.close()
-                index = RestUtils.find_elem(data, 'uuid', uuid)
+                index = RestUtils.find_elem(data, 'uuid', uuid_var)
                 if index is not None:
                     lock.release()
                     return jsonify(data[index])
@@ -203,7 +203,7 @@ def inventory(uuid):
                 json_file.close()
             lock.release()
 
-            barcode = uuid  # thi is needed to not break pre-existing method calls from scanner
+            barcode = uuid_var  # this is needed to not break pre-existing method calls from scanner
 
             d = {u'barcode': unicode(barcode),
                  u'added': unicode(added_date),
@@ -244,7 +244,7 @@ def inventory(uuid):
                 json_file.close()
             lock.release()
 
-            index = RestUtils.find_elem(data, 'uuid', uuid)
+            index = RestUtils.find_elem(data, 'uuid', uuid_var)
 
             if index is not None:
                 data[index]['expirationdate'] = unicode(date)
@@ -264,9 +264,9 @@ def inventory(uuid):
             pass
 
 
-@app.route('/expiration/<string:uuid>', methods=['GET', 'POST'])
+@app.route('/expiration/<string:uuid_var>', methods=['GET', 'POST'])
 @requires_auth
-def expiration_date(uuid):
+def expiration_date(uuid_var):
     """
     need to find the correct item to change
     without an index id this would find the first item with the same barcode in the inventory
@@ -283,7 +283,7 @@ def expiration_date(uuid):
                 json_file.close()
 
             lock.release()
-            index = RestUtils.find_elem(data, 'uuid', uuid)
+            index = RestUtils.find_elem(data, 'uuid', uuid_var)
 
             if index is not None:
                 return data[index]['expirationdate']
@@ -301,7 +301,7 @@ def expiration_date(uuid):
                 json_file.close()
             lock.release()
 
-            index = RestUtils.find_elem(data, 'uuid', uuid)
+            index = RestUtils.find_elem(data, 'uuid', uuid_var)
 
             if index is not None:
                 data[index]['expirationdate'] = unicode(date)

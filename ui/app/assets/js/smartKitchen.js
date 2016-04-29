@@ -27,7 +27,7 @@
         HEALTHY: 'healthy',
         WARNING: 'warning',
         CRITICAL: 'critical',
-        WEAK: 'weak'
+        ECO: 'eco'
     });
 
 })();
