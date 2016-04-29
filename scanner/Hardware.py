@@ -20,6 +20,8 @@ class PIR(object):
 
         elif i == 1:  # When output from motion sensor is HIGH
             return True
+        else:
+            return False
 
     @staticmethod
     def cleanup():

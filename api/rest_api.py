@@ -195,7 +195,6 @@ def inventory(uuid_var):
         added_date = datetime.datetime.today().strftime("%m/%d/%Y %H:%M:%S")
         expire_date = RestUtils.set_expiration(expiration)
 
-        # TODO add some sort of filelock
         try:
             lock.acquire()
             with open('json/inventory.json', 'r') as json_file:
@@ -220,18 +219,13 @@ def inventory(uuid_var):
                 json_file.close()
             lock.release()
 
-        except (IOError, KeyError) as e:
-            # TODO exception error here
+            return jsonify(data)
 
+        except (IOError, KeyError) as e:
             if lock is not None:
                 lock.release()
-
             print e
-        ''' TODO dont think this is needed
-        if lock is not None:
-            lock.release()
-        '''
-        return ''  # should this really return the whole dict?
+            return ''
 
     if request.method == 'PUT':
         try:

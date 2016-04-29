@@ -13,10 +13,6 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
     * adding of items not found on openfoodfacts?
 
 * Brian Day
-    * button up hardware layout
-        * solder PIR sensor
-    * Power saving feature
-        * motion sensor
     * extra stuff
         * add buzzer to give a audible signal for barcode found
         * install a light source to help with barcode processing
@@ -130,3 +126,5 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
 # Progress (Week 4/25)
 
 * Brian Day
+    * PIR sensor physically added
+    * power saving shut off with UI button and motion sensor
