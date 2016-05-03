@@ -6,21 +6,8 @@ and open the application at the grocery store to know if you need milk or not.
 # Contributors
 Harrison Kelly, Brian Day, AjayKumar Sarikonda
 
-# TODO's
-
-* Harrison Kelly
-    * check for no barcode found on openfoodfacts
-    * adding of items not found on openfoodfacts?
-
-* Brian Day
-    * button up hardware layout
-        * solder up more permanent solution for status LED
-    * Power saving feature
-        * motion sensor
-    * extra stuff
-        * make eco_mode led status be a little more soothing
-        * add buzzer to give a audible signal for barcode found
-        * install a light source to help with barcode processing
+# Demo
+https://www.youtube.com/watch?v=LZN7rU4Pwio
 
 # Progress (Week 3/28)
 
