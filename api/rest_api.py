@@ -66,7 +66,7 @@ def health(part):
                 return data[part]
 
     except IOError:
-        if lock != None:
+        if lock is not None:
             lock.release()
         return Messages.inventoryNotFound()
 
@@ -100,7 +100,7 @@ def restart():  # this really could be health
                 return data['restart']
 
     except IOError:
-        if lock != None:
+        if lock is not None:
             lock.release()
         return Messages.inventoryNotFound()
 
@@ -122,14 +122,14 @@ def get_inventory():
             return json.dumps(data)
 
     except IOError:
-        if lock != None:
+        if lock is not None:
             lock.release()
         return Messages.inventoryNotFound()
 
 
-@app.route('/inventory/<string:uuid>', methods=['DELETE', 'GET', 'POST', 'PUT'])
+@app.route('/inventory/<string:uuid_var>', methods=['DELETE', 'GET', 'POST', 'PUT'])
 @requires_auth
-def inventory(uuid):
+def inventory(uuid_var):
     """
     DELETE will remove first item with given barcode from inventory
 
@@ -152,7 +152,7 @@ def inventory(uuid):
                 json_file.close()
             lock.release()
 
-            index = RestUtils.find_elem(data, 'uuid', uuid)
+            index = RestUtils.find_elem(data, 'uuid', uuid_var)
 
             if index is not None:
                 del data[index]
@@ -167,7 +167,7 @@ def inventory(uuid):
             return ''  # TODO should tell you if it actually deleted something?
 
         except (IOError, KeyError):
-            if lock != None:
+            if lock is not None:
                 lock.release()
             print "file doesnt exist or keyerror"
 
@@ -177,7 +177,7 @@ def inventory(uuid):
             with open('json/inventory.json', 'r') as json_file:
                 data = json.load(json_file, encoding='utf-8')
                 json_file.close()
-                index = RestUtils.find_elem(data, 'uuid', uuid)
+                index = RestUtils.find_elem(data, 'uuid', uuid_var)
                 if index is not None:
                     lock.release()
                     return jsonify(data[index])
@@ -185,7 +185,7 @@ def inventory(uuid):
                     lock.release()
                     return jsonify({})  # TODO what should this return if item doesnt exist?
         except IOError:
-            if lock != None:
+            if lock is not None:
                 lock.release()
             Messages.inventoryNotFound()
 
@@ -195,7 +195,6 @@ def inventory(uuid):
         added_date = datetime.datetime.today().strftime("%m/%d/%Y %H:%M:%S")
         expire_date = RestUtils.set_expiration(expiration)
 
-        # TODO add some sort of filelock
         try:
             lock.acquire()
             with open('json/inventory.json', 'r') as json_file:
@@ -203,7 +202,7 @@ def inventory(uuid):
                 json_file.close()
             lock.release()
 
-            barcode = uuid  # thi is needed to not break pre-existing method calls from scanner
+            barcode = uuid_var  # this is needed to not break pre-existing method calls from scanner
 
             d = {u'barcode': unicode(barcode),
                  u'added': unicode(added_date),
@@ -220,18 +219,13 @@ def inventory(uuid):
                 json_file.close()
             lock.release()
 
+            return jsonify(data)
+
         except (IOError, KeyError) as e:
-            # TODO exception error here
-
-            if lock != None:
+            if lock is not None:
                 lock.release()
-
             print e
-
-        if lock != None:
-            lock.release()
-
-        return ''  # should this really return the whole dict?
+            return ''
 
     if request.method == 'PUT':
         try:
@@ -244,7 +238,7 @@ def inventory(uuid):
                 json_file.close()
             lock.release()
 
-            index = RestUtils.find_elem(data, 'uuid', uuid)
+            index = RestUtils.find_elem(data, 'uuid', uuid_var)
 
             if index is not None:
                 data[index]['expirationdate'] = unicode(date)
@@ -264,9 +258,9 @@ def inventory(uuid):
             pass
 
 
-@app.route('/expiration/<string:uuid>', methods=['GET', 'POST'])
+@app.route('/expiration/<string:uuid_var>', methods=['GET', 'POST'])
 @requires_auth
-def expiration_date(uuid):
+def expiration_date(uuid_var):
     """
     need to find the correct item to change
     without an index id this would find the first item with the same barcode in the inventory
@@ -283,7 +277,7 @@ def expiration_date(uuid):
                 json_file.close()
 
             lock.release()
-            index = RestUtils.find_elem(data, 'uuid', uuid)
+            index = RestUtils.find_elem(data, 'uuid', uuid_var)
 
             if index is not None:
                 return data[index]['expirationdate']
@@ -301,7 +295,7 @@ def expiration_date(uuid):
                 json_file.close()
             lock.release()
 
-            index = RestUtils.find_elem(data, 'uuid', uuid)
+            index = RestUtils.find_elem(data, 'uuid', uuid_var)
 
             if index is not None:
                 data[index]['expirationdate'] = unicode(date)
@@ -320,4 +314,4 @@ def expiration_date(uuid):
     return ''
 
 if __name__ == '__main__':
-    app.run(host='localhost', debug=True)
+    app.run(host='0.0.0.0', debug=True)

@@ -1,1 +1,1 @@
-{"scanner": "healthy", "fridge": "healthy", "network": "healthy", "restart": "false"}
+{"fridge": "healthy", "network": "healthy", "restart": "false", "scanner": "critical"}
