@@ -9,6 +9,11 @@ Harrison Kelly, Brian Day, AjayKumar Sarikonda
 # Demo
 https://www.youtube.com/watch?v=LZN7rU4Pwio
 
+# Screenshots
+![full](screenshots/full.png)
+![kitchenhealth](screenshots/kitchenhealth.png)
+![latestinventory](screenshots/latestinventory.png)
+
 # Progress (Week 3/28)
 
 * Harrison Kelly

@@ -10,7 +10,7 @@ app.factory('restService', ['$http', '$q',
     function ($http, $q) {
         'use strict';
 
-        var localRestUri = 'http://192.168.2.38:5000/',
+        var localRestUri = 'http://127.0.0.1:5000/',
             openFoodFactsUri = 'http://world.openfoodfacts.org/api/v0/product/', // URI for OFF RESTful api.
             dataType = '.json', // Datatype to get data back in.
             timeout = 30 * 1000; // Timeout in milliseconds.
